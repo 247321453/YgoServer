@@ -11,6 +11,10 @@ namespace YGOCore
 			if(Program.Config.ConsoleLog)
 				Console.WriteLine((useTag ? "[Log] ": "") + text);
 		}
+		
+		public static void WriteLineWithColor(string text, ConsoleColor color= ConsoleColor.White){
+			Console.WriteLine(text, color);
+		}
 
 		public static void WriteError(object error)
 		{
@@ -38,7 +42,7 @@ namespace YGOCore
 				catch(Exception ex)
 				{
 					if (Program.Config.ConsoleLog)
-						Console.WriteLine(ex);
+						Console.WriteLine(ex.ToString(), ConsoleColor.Yellow);
 				}
 			}
 		}

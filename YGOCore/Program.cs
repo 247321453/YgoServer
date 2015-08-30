@@ -13,7 +13,6 @@ namespace YGOCore
 		static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-			
 			Config = new ServerConfig();
 			bool loaded = args.Length > 1 ? Config.Load(args[1]): Config.Load();
 

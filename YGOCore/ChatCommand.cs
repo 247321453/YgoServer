@@ -24,6 +24,7 @@ namespace YGOCore
 				return;
 			}
 			string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			Console.Title="YgoServer "+Version;
 			Logger.WriteLine("┌───────────────────────────────────",false);
 			Logger.WriteLine("│ __     _______  ____   _____",false);
 			Logger.WriteLine("│ \\ \\   / / ____|/ __ \\ / ____|", false);
@@ -40,7 +41,7 @@ namespace YGOCore
 		{
 			if(!string.IsNullOrEmpty(msg)){
 				if(msg.StartsWith("/help")){
-					Logger.WriteLine(player.Name+":"+msg.Replace("/help",""),false);
+					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("/help",""), ConsoleColor.Yellow);
 				}
 			}
 		}
@@ -97,7 +98,7 @@ namespace YGOCore
 				}
 			}
 			else{
-				Console.WriteLine(">>no this cmd");
+				Console.WriteLine(">>no this cmd", ConsoleColor.Yellow);
 			}
 		}
 	}
