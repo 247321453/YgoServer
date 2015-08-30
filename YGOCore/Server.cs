@@ -25,8 +25,6 @@ namespace YGOCore
 		/// </summary>
 		private System.Timers.Timer WinSaveTimer;
 		
-		private System.Timers.Timer LogTimer;
-
 		public Server()
 		{
 			m_clients = new List<GameClient>();
@@ -36,13 +34,6 @@ namespace YGOCore
 			WinSaveTimer.AutoReset=true;
 			WinSaveTimer.Enabled=true;
 			WinSaveTimer.Elapsed+=new System.Timers.ElapsedEventHandler(WinSaveTimer_Elapsed);
-			if(Program.Config.Log){
-				LogTimer = new System.Timers.Timer(60*1000);
-				LogTimer.AutoReset=true;
-				LogTimer.Enabled=true;
-				LogTimer.Elapsed+=new System.Timers.ElapsedEventHandler(LogTimer_Elapsed);
-				LogTimer.Start();
-			}
 		}
 		
 		public string getRoomJson(){
@@ -70,13 +61,6 @@ namespace YGOCore
 			return count;
 		}
 		
-		private void LogTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e){
-			int count=0;
-			m_mutexClients.WaitOne();
-			count=m_clients.Count;
-			m_mutexClients.ReleaseMutex();
-			Logger.WriteLine("online client="+count);
-		}
 		private void WinSaveTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
 			if(!Program.Config.RecordWin){
@@ -197,12 +181,12 @@ namespace YGOCore
 		public static bool onLogin(string name,string pass){
 			//Logger.WriteLine(name+"$"+pass+" is login");
 			try{
-				string dpass=Convert.ToBase64String(Encoding.UTF8.GetBytes(Tool.GetMd5(pass)));
+				string dpass=Tool.GetMd5(pass);
 				string result=Tool.PostHtmlContentByUrl(Program.Config.LoginUrl,
 				                                        "username="+name.Replace("&","")+"&password="+dpass,
 				                                        10*1000
 				                                       );
-				if(result.IndexOf("0")>=0){
+				if(result.IndexOf("-")<0){
 					return true;
 				}
 			}catch(Exception){

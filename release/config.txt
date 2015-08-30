@@ -1,0 +1,10 @@
+﻿#
+clientversion=1336
+needauth=true
+maxroom=200
+consolelog=true
+autoreplay=true
+replayfolder=replay
+recordwin=true
+handshuffle=true
+loginurl=http://www.ygobbs.com/index.php?ctrl=api
