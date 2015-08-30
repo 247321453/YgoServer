@@ -167,9 +167,6 @@ namespace YGOCore.Game
 				Players[pos] = player;
 				IsReady[pos] = false;
 				player.Type = pos;
-				if(player.IsAuthentified){
-					SendToAll(GameManager.getMessage("[Server] "+player.Name+" join game.", PlayerType.White));
-				}
 			}
 			else
 			{

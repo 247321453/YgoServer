@@ -119,66 +119,7 @@ namespace YGOCore
 						string[] data = line.Split(new[] { '=' }, 2);
 						string variable = data[0].Trim().ToLower();
 						string value = data[1].Trim();
-						switch (variable)
-						{
-							case "serverport":
-								ServerPort = Convert.ToInt32(value);
-								break;
-							case "path":
-								Path = value;
-								break;
-							case "scriptfolder":
-								ScriptFolder = value;
-								break;
-							case "cardcdb":
-								CardCDB = value;
-								break;
-							case "banlist":
-								BanlistFile = value;
-								break;
-							case "errorlog":
-								Log = Convert.ToBoolean(value);
-								break;
-							case "consolelog":
-								ConsoleLog = Convert.ToBoolean(value);
-								break;
-							case "handshuffle":
-								HandShuffle = Convert.ToBoolean(value);
-								break;
-							case "autoendturn":
-								AutoEndTurn = Convert.ToBoolean(value);
-								break;
-							case "clientversion":
-								ClientVersion = Convert.ToInt32(value, 16);
-								break;
-							case "needauth":
-								isNeedAuth = (value.ToLower()=="true"||value=="1");
-								break;
-							case "maxroom":
-								MaxRoomCount=Convert.ToInt32(value, 10);
-								break;
-							case "autoreplay":
-								AutoReplay= (value.ToLower()=="true"||value=="1");
-								break;
-							case "replayfolder":
-								replayFolder=value;
-								break;
-							case "windbname":
-								WinDbName=value;
-								break;
-							case "recordwin":
-								RecordWin=(value.ToLower()=="true"||value=="1");
-								break;
-							case "saverecordtime":
-								SaveRecordTime=Convert.ToInt32(value, 1);
-								if(SaveRecordTime<=0){
-									SaveRecordTime=1;
-								}
-								break;
-							case "loginurl":
-								LoginUrl=value;
-								break;
-						}
+						setValue(variable, value);
 					}
 				}
 				catch (Exception ex)
@@ -192,6 +133,76 @@ namespace YGOCore
 			}
 
 			return false;
+		}
+		
+		public bool setValue(string variable,string value){
+			if(string.IsNullOrEmpty(value)||string.IsNullOrEmpty(variable)){
+				return false;
+			}
+			variable=variable.ToLower();
+			switch (variable)
+			{
+				case "serverport":
+					ServerPort = Convert.ToInt32(value);
+					break;
+				case "path":
+					Path = value;
+					break;
+				case "scriptfolder":
+					ScriptFolder = value;
+					break;
+				case "cardcdb":
+					CardCDB = value;
+					break;
+				case "banlist":
+					BanlistFile = value;
+					break;
+				case "errorlog":
+					Log = Convert.ToBoolean(value);
+					break;
+				case "consolelog":
+					ConsoleLog = Convert.ToBoolean(value);
+					break;
+				case "handshuffle":
+					HandShuffle = Convert.ToBoolean(value);
+					break;
+				case "autoendturn":
+					AutoEndTurn = Convert.ToBoolean(value);
+					break;
+				case "clientversion":
+					ClientVersion = Convert.ToInt32(value, 16);
+					break;
+				case "needauth":
+					isNeedAuth = (value.ToLower()=="true"||value=="1");
+					break;
+				case "maxroom":
+					MaxRoomCount=Convert.ToInt32(value, 10);
+					break;
+				case "autoreplay":
+					AutoReplay= (value.ToLower()=="true"||value=="1");
+					break;
+				case "replayfolder":
+					replayFolder=value;
+					break;
+				case "windbname":
+					WinDbName=value;
+					break;
+				case "recordwin":
+					RecordWin=(value.ToLower()=="true"||value=="1");
+					break;
+				case "saverecordtime":
+					SaveRecordTime=Convert.ToInt32(value, 1);
+					if(SaveRecordTime<=0){
+						SaveRecordTime=1;
+					}
+					break;
+				case "loginurl":
+					LoginUrl=value;
+					break;
+				default:
+					return false;
+			}
+			return true;
 		}
 
 	}

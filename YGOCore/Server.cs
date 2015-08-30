@@ -113,7 +113,10 @@ namespace YGOCore
 				return false;
 			}
 
-			Logger.WriteLine("Listening on "+Tool.GetIP()+":" + (port == 0 ? Program.Config.ServerPort : port));
+			Logger.WriteLine("Listening on port " + (port == 0 ? Program.Config.ServerPort : port));
+			if(BanlistManager.Banlists!=null && BanlistManager.Banlists.Count>0){
+				Logger.WriteLine("Banlist = "+BanlistManager.Banlists[0].Name);
+			}
 			return true;
 		}
 

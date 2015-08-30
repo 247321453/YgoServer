@@ -21,7 +21,7 @@ namespace YGOCore.Game
                     continue;
                 if (line.StartsWith("!"))
                 {
-                    current = new Banlist();
+                	current = new Banlist(line.Replace("!",""));
                     Banlists.Add(current);
                     continue;
                 }

@@ -8,9 +8,10 @@ namespace YGOCore.Game
         public IList<int> LimitedIds { get; private set; }
         public IList<int> SemiLimitedIds { get; private set; }
         public uint Hash { get; private set; }
-
-        public Banlist()
+        public string Name{get;private set;}
+        public Banlist(string name)
         {
+        	Name=name;
             BannedIds = new List<int>();
             LimitedIds = new List<int>();
             SemiLimitedIds = new List<int>();

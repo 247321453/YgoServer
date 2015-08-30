@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.IO;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace YGOCore
 {
@@ -18,7 +17,7 @@ namespace YGOCore
 			Config = new ServerConfig();
 			bool loaded = args.Length > 1 ? Config.Load(args[1]): Config.Load();
 
-			WriteHead();
+			ChatCommand.WriteHead(Config);
 			if(loaded)
 				Logger.WriteLine("Config loaded.");
 			else
@@ -46,39 +45,13 @@ namespace YGOCore
 				Thread.Sleep(1);
 			}
 		}
-		
-		private static void WriteHead(){
-			string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			Logger.WriteLine("©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤",false);
-			Logger.WriteLine("©¦ __     _______  ____   _____",false);
-			Logger.WriteLine("©¦ \\ \\   / / ____|/ __ \\ / ____|", false);
-			Logger.WriteLine("©¦  \\ \\_/ / |  __| |  | | |     ___  _ __ ___", false);
-			Logger.WriteLine("©¦   \\   /| | |_ | |  | | |    / _ \\| '__/ _ \\", false);
-			Logger.WriteLine("©¦    | | | |__| | |__| | |___| (_) | | |  __/", false);
-			Logger.WriteLine("©¦    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|    Build: " + Version, false);
-			Logger.WriteLine("©¦", false);
-			Logger.WriteLine("©¦Client version 0x" + Config.ClientVersion.ToString("x") + " or new, Max Room Count:"+Config.MaxRoomCount, false);
-			Logger.WriteLine("©¦Login NeedAtuh = "+Config.isNeedAuth+", AutoReplay = "+Config.AutoReplay, false);
-			Logger.WriteLine("©¸©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤",false);
-		}
+
 		
 		private static void Command(object obj){
 			Server server=obj as Server;
 			string cmd="";
 			while((cmd=Console.ReadLine())!=null){
-				if(cmd=="roomcount"){
-					Console.WriteLine(">>room count:"+server.getRoomCount());
-				}else if(cmd=="playercount"){
-					Console.WriteLine(">>player count:"+server.getPlayerCount());
-				}else if(cmd=="cls"){
-					Console.Clear();
-					WriteHead();
-				}else if(cmd=="roomlist"){
-					Console.WriteLine(">>count:"+server.getRoomCount());
-					Console.WriteLine(server.getRoomJson());
-				}else{
-					Console.WriteLine(">>no this cmd");
-				}
+				ChatCommand.onCommand(server, cmd);
 			}
 		}
 
