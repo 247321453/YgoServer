@@ -37,15 +37,22 @@ namespace YGOCore
 			Logger.WriteLine("│NeedAtuh = "+config.isNeedAuth+", AutoReplay = "+config.AutoReplay+", RecordWin = "+config.RecordWin, false);
 			Logger.WriteLine("└───────────────────────────────────",false);
 		}
-		public static void onCommand(Player player,string msg)
+		public static bool onCommand(Player player,string msg)
 		{
+			bool check=ChatTool.Check(player.Name, msg);
+			if(check){
+				return false;
+			}
 			if(!string.IsNullOrEmpty(msg)){
 				if(msg.StartsWith("@server ")){
 					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@server ",""), ConsoleColor.Yellow);
+					return false;
 				}else if(msg.StartsWith("@system ")){
 					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@system ",""), ConsoleColor.Yellow);
+					return false;
 				}else if(msg.StartsWith("@@ ")){
 					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@@ ",""), ConsoleColor.Yellow);
+					return false;
 				}else if(msg.StartsWith("@")){
 					//私聊
 					int i=msg.IndexOf(' ');
@@ -55,6 +62,8 @@ namespace YGOCore
 							string cxt=msg.Substring(i+1);
 							if(!GameManager.SendErrorMessage("["+player.Name+"] "+cxt, name)){
 								player.ServerMessage("send fail.");
+							}else{
+								return false;
 							}
 						}catch(Exception){
 							
@@ -62,6 +71,7 @@ namespace YGOCore
 					}
 				}
 			}
+			return true;
 		}
 		
 		public static void onCommand(Server server,string cmd){

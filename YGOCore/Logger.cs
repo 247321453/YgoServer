@@ -18,8 +18,12 @@ namespace YGOCore
 
 		public static void WriteError(object error)
 		{
-			if (Program.Config.ConsoleLog)
+			if (Program.Config.ConsoleLog){
+				ConsoleColor color=Console.ForegroundColor;
+				Console.ForegroundColor=ConsoleColor.Cyan;
 				Console.WriteLine("[Error] " + error);
+				Console.ForegroundColor=color;
+			}
 			WriteError("[Error] " + error);
 		}
 

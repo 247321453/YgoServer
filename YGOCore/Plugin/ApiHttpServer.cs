@@ -47,7 +47,7 @@ namespace YGOCore
 			}catch(Exception){
 				
 			}
-			Logger.WriteLine("Room List = http://ip:"+port+"/room.json");
+			Logger.WriteLine("Room List = http://{your ip}:"+port+"/room.json");
 		}
 		
 		public void Stop(){
@@ -76,8 +76,8 @@ namespace YGOCore
 		void Listen(){
 			try{
 				httpListener.Start();
-			}catch(Exception ex){
-				Logger.WriteError(ex);
+			}catch(Exception){
+				Logger.WriteError("Please run as Administrator.");
 			}
 			while (httpListener.IsListening)
 			{

@@ -19,7 +19,7 @@ namespace YGOCore.Game
 		private byte[] m_data;
 		private string fileName;
 
-		public Replay(string name,uint seed, bool tag)
+		public Replay(string name,int mode,uint seed, bool tag)
 		{
 			Header.Id = 0x31707279;
 			Header.Version = (uint)Program.Config.ClientVersion;

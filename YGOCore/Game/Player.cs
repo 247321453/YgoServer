@@ -180,7 +180,7 @@ namespace YGOCore.Game
 
 			Game = room.Game;
 			Game.AddPlayer(this);
-			IsAuthentified = CheckAuth();
+			//IsAuthentified = CheckAuth();
 			if(!IsAuthentified){
 				LobbyError("Auth fail");
 			}
@@ -207,7 +207,7 @@ namespace YGOCore.Game
 
 			GameRoom room = null;
 			
-			IsAuthentified = CheckAuth();
+			//IsAuthentified = CheckAuth();
 			if(!IsAuthentified){
 				LobbyError("Auth fail");
 				return;
@@ -297,9 +297,10 @@ namespace YGOCore.Game
 		private void OnChat(GameClientPacket packet)
 		{
 			string msg = packet.ReadUnicode(256);
-			ChatCommand.onCommand(this, msg);
-			if(Game!=null)
-				Game.Chat(this, msg);
+			if(ChatCommand.onCommand(this, msg)){
+				if(Game!=null)
+					Game.Chat(this, msg);
+			}
 		}
 
 		private void OnKick(GameClientPacket packet)

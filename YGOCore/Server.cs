@@ -204,7 +204,11 @@ namespace YGOCore
 			return false;
 		}
 		
-		public static void onWin(string room,int win,int reason,string replay,string pl0,string pl1,string pl2,string pl3,bool force){
+		
+		public static void onLogout(string name){
+			
+		}
+		public static void onWin(string room,int mode, int win,int reason,string replay,string pl0,string pl1,string pl2,string pl3,bool force){
 			MutexWinInfo.WaitOne();
 			WinInfos.Add(new WinInfo(room, win, reason,replay, pl0,pl1,pl2,pl3,force));
 			MutexWinInfo.ReleaseMutex();

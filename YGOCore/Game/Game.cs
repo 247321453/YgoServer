@@ -500,7 +500,7 @@ namespace YGOCore.Game
 			if(!yrpName.EndsWith(".yrp")){
 				yrpName=yrpName+" "+getGameTagName()+".yrp";
 			}
-			Replay = new Replay(yrpName,(uint)seed, IsTag);
+			Replay = new Replay(yrpName, Config.Mode, (uint)seed, IsTag);
 			Replay.Writer.WriteUnicode(Players[0].Name, 20);
 			Replay.Writer.WriteUnicode(Players[1].Name, 20);
 			if (IsTag)
@@ -638,7 +638,7 @@ namespace YGOCore.Game
 				yrpName=yrpName+" "+getGameTagName()+".yrp";
 			}
 			try{
-				Server.onWin(m_room.Game.Config.Name, team, reason, yrpName, Players[0].Name,Players[1].Name,
+				Server.onWin(m_room.Game.Config.Name, m_room.Game.Config.Mode, team, reason, yrpName, Players[0].Name,Players[1].Name,
 				             IsTag?Players[2].Name:"",IsTag?Players[3].Name:"",force);
 			}catch(Exception e){
 				Logger.WriteError(e);

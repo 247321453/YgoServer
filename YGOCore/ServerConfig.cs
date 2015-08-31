@@ -52,6 +52,10 @@ namespace YGOCore
 		/// </summary>
 		public int ClientVersion { get; private set; }
 		
+//		/// <summary>
+//		/// 允许重复登陆
+//		/// </summary>
+//		public bool RepeatLogin{get;private set;}
 		/// <summary>
 		/// 需要密码
 		/// </summary>
@@ -96,6 +100,7 @@ namespace YGOCore
 			CardCDB = "cards.cdb";
 			BanlistFile = "lflist.conf";
 			Log = true;
+			//RepeatLogin=true;
 			ConsoleLog = true;
 			HandShuffle = false;
 			AutoEndTurn = true;
@@ -174,6 +179,9 @@ namespace YGOCore
 				case "errorlog":
 					Log = Convert.ToBoolean(value);
 					break;
+//				case "repeatlogin":
+//					RepeatLogin = Convert.ToBoolean(value);
+//					break;
 				case "consolelog":
 					ConsoleLog = Convert.ToBoolean(value);
 					break;
