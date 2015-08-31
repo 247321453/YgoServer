@@ -37,7 +37,7 @@ namespace YGOCore
 			WinSaveTimer.AutoReset=true;
 			WinSaveTimer.Enabled=true;
 			WinSaveTimer.Elapsed+=new System.Timers.ElapsedEventHandler(WinSaveTimer_Elapsed);
-			ApiServer=new ApiHttpServer(this, Program.Config.ApiPort);
+			ApiServer=new ApiHttpServer(this, "127.0.0.1", Program.Config.ApiPort);
 		}
 		
 		public string getRoomJson(){

@@ -25,7 +25,7 @@ namespace YGOCore
 		string json="[]";
 		bool isStart=false;
 		
-		public ApiHttpServer(Server server,int port=18911){
+		public ApiHttpServer(Server server,string ip="localhost", int port=18911){
 			this.server=server;
 			Timer=new System.Timers.Timer(1000);
 			Timer.Elapsed+= new System.Timers.ElapsedEventHandler(Timer_Elapsed);
@@ -37,38 +37,71 @@ namespace YGOCore
 				port=18911;
 			}
 			try{
-				httpListener.Prefixes.Add("http://localhost:"+port+"/");
+				if(ip!="127.0.0.1"){
+					httpListener.Prefixes.Add("http://127.0.0.1:"+port+"/");
+				}
+				if(ip!="localhost"){
+					httpListener.Prefixes.Add("http://localhost:"+port+"/");
+				}
+				httpListener.Prefixes.Add("http://"+ip+":"+port+"/");
+			}catch(Exception){
+				
+			}
+			Logger.WriteLine("Room List = http://"+ip+":"+port+"/room.json");
+		}
+		
+		public void Stop(){
+			try{
+				httpListener.Stop();
 			}catch(Exception){
 				
 			}
 		}
-		
 		public void Start(){
+			if(!HttpListener.IsSupported){
+				Logger.WriteError("Don't support HttpListener.");
+				return;
+			}
 			if(isStart){
 				return;
 			}
+			
 			isStart=true;
 			Timer.Start();
-			httpListener.Start();
 			Thread thread=new Thread(new ThreadStart(Listen));
 			thread.IsBackground=true;
 			thread.Start();
 		}
 
 		void Listen(){
-			while (true)
+			httpListener.Start();
+			while (httpListener.IsListening)
 			{
-				
 				HttpListenerContext httpListenerContext = httpListener.GetContext();
-				httpListenerContext.Response.StatusCode = 200;
-				//httpListenerContext.Request.Url
-				using (StreamWriter writer = new StreamWriter(httpListenerContext.Response.OutputStream))
-				{
-					writer.Write(json);
-				}
+				ThreadPool.QueueUserWorkItem(new WaitCallback(TaskProc), httpListenerContext);
 			}
 		}
-		
+		void TaskProc(object obj){
+			HttpListenerContext context=obj as HttpListenerContext;
+			if(context!=null){
+				try{
+					string url=context.Request.Url.AbsoluteUri;
+					context.Response.StatusCode = 200;
+					if(url.EndsWith("room")||url.EndsWith("room.json")){
+						//httpListenerContext.Request.Url
+						using (StreamWriter writer = new StreamWriter(context.Response.OutputStream))
+						{
+							lock(_lock){
+								writer.Write(json);
+							}
+						}
+					}else{
+						context.Response.StatusCode = 404;
+						context.Response.Close();
+					}
+				}catch(Exception){}
+			}
+		}
 		void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
 			try{
