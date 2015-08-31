@@ -1,9 +1,0 @@
-[16:58:53] Decks initialized, 2 found.
-[17:36:37] Decks initialized, 2 found.
-[17:37:35] Decks initialized, 2 found.
-[17:37:47] Decks initialized, 2 found.
-[17:38:39] Decks initialized, 2 found.
-[17:39:35] Decks initialized, 2 found.
-[17:46:26] Decks initialized, 2 found.
-[20:00:11] Decks initialized, 2 found.
-[20:00:59] Decks initialized, 2 found.
