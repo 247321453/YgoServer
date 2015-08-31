@@ -13,6 +13,7 @@ namespace YGOCore
 		static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
 			Config = new ServerConfig();
 			bool loaded = args.Length > 1 ? Config.Load(args[1]): Config.Load();
 
@@ -45,11 +46,20 @@ namespace YGOCore
 			}
 		}
 
+		static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+		{
+			e.Cancel=true;
+			ConsoleColor color=Console.ForegroundColor;
+			Console.ForegroundColor=ConsoleColor.Cyan;
+			Console.WriteLine("Please input to close server.");
+			Console.ForegroundColor=color;
+		}
 		
 		private static void Command(object obj){
 			Server server=obj as Server;
 			string cmd="";
-			while((cmd=Console.ReadLine())!=null){
+			while(server.IsListening){
+				cmd=Console.ReadLine();
 				ChatCommand.onCommand(server, cmd);
 			}
 		}
@@ -57,9 +67,7 @@ namespace YGOCore
 		private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			Exception exception = e.ExceptionObject as Exception ?? new Exception();
-
 			File.WriteAllText("crash_" + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt", exception.ToString());
-
 			Process.GetCurrentProcess().Kill();
 		}
 	}

@@ -125,6 +125,20 @@ namespace YGOCore
 			}else if(cmd == "cancel close"){
 				Console.WriteLine(">>Server cancel close.");
 				server.CacelCloseDealyed();
+			}else if(cmd=="help"){
+				Console.WriteLine(">>");
+				Console.WriteLine("roomcount		room count");
+				Console.WriteLine("playercount		plyaer count");
+				Console.WriteLine("cls			clear");
+				Console.WriteLine("roomlist		room list json");
+				Console.WriteLine("say xxx			text is yellow");
+				Console.WriteLine("warring xxx		text is red");
+				Console.WriteLine("config {key} {value}   	set key=value");
+				Console.WriteLine("load config		reload config,but some config need restart.");
+				Console.WriteLine("banlist			look banlist");
+				Console.WriteLine("to xxx			send msg to player");
+				Console.WriteLine("close			close server");
+				Console.WriteLine("cancel close		cancel close server");
 			}
 			else{
 				Console.WriteLine(">>no this cmd", ConsoleColor.Yellow);
