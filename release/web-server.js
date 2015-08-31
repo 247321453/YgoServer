@@ -3,7 +3,7 @@
 var http = require('http'),
     fs = require('fs'),
     url = require('url'),
-//	util = require('util'),
+	util = require('util'),
     events = require('events');
 
 var DEFAULT_PORT = 80;
@@ -55,7 +55,7 @@ HttpServer.prototype.handleRequest_ = function(req, res) {
   if (req.headers['user-agent']) {
     logEntry += ' ' + req.headers['user-agent'];
   }
-  util.puts(logEntry);
+//  util.puts(logEntry);
   req.url = this.parseUrl_(req.url);
   var handler = this.handlers[req.method];
   if (!handler) {
@@ -110,8 +110,8 @@ StaticServlet.prototype.sendError_ = function(req, res, error) {
   res.write('<title>Internal Server Error</title>\n');
   res.write('<h1>Internal Server Error</h1>');
   res.write('<pre>' + escapeHtml(util.inspect(error)) + '</pre>');
-  util.puts('500 Internal Server Error');
-  util.puts(util.inspect(error));
+//  util.puts('500 Internal Server Error');
+ // util.puts(util.inspect(error));
 };
 
 StaticServlet.prototype.sendMissing_ = function(req, res, path) {
@@ -128,7 +128,7 @@ StaticServlet.prototype.sendMissing_ = function(req, res, path) {
     ' was not found on this server.</p>'
   );
   res.end();
-  util.puts('404 Not Found: ' + path);
+ // util.puts('404 Not Found: ' + path);
 };
 
 StaticServlet.prototype.sendForbidden_ = function(req, res, path) {
@@ -144,7 +144,7 @@ StaticServlet.prototype.sendForbidden_ = function(req, res, path) {
     escapeHtml(path) + ' on this server.</p>'
   );
   res.end();
-  util.puts('403 Forbidden: ' + path);
+ // util.puts('403 Forbidden: ' + path);
 };
 
 StaticServlet.prototype.sendRedirect_ = function(req, res, redirectUrl) {
@@ -161,7 +161,7 @@ StaticServlet.prototype.sendRedirect_ = function(req, res, redirectUrl) {
     '">here</a>.</p>'
   );
   res.end();
-  util.puts('301 Moved Permanently: ' + redirectUrl);
+//  util.puts('301 Moved Permanently: ' + redirectUrl);
 };
 
 StaticServlet.prototype.sendFile_ = function(req, res, path) {
@@ -202,7 +202,7 @@ StaticServlet.prototype.sendDirectory_ = function(req, res, path) {
     escapeHtml(path) + ' on this server.</p>'
   );
   res.end();
-  util.puts('403 Forbidden: ' + path);
+ // util.puts('403 Forbidden: ' + path);
 	/*
   var self = this;
   if (path.match(/[^\/]$/)) {
