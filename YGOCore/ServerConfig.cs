@@ -88,6 +88,11 @@ namespace YGOCore
 		/// </summary>
 		public string LoginUrl{get;private set;}
 		
+		/// <summary>
+		/// к╫ад
+		/// </summary>
+		public bool PrivateChat{get;private set;}
+		
 		public ServerConfig()
 		{
 			ClientVersion = 0x1335;
@@ -108,6 +113,7 @@ namespace YGOCore
 			MaxRoomCount=200;
 			WinDbName="wins.db";
 			RecordWin=false;
+			PrivateChat=false;
 			SaveRecordTime=1;//
 			LoginUrl="http://127.0.0.1/login.php";
 		}
@@ -175,6 +181,9 @@ namespace YGOCore
 					break;
 				case "banlist":
 					BanlistFile = value;
+					break;
+				case "privatechat":
+					PrivateChat=Convert.ToBoolean(value);
 					break;
 				case "errorlog":
 					Log = Convert.ToBoolean(value);

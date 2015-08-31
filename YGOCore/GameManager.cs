@@ -136,6 +136,12 @@ namespace YGOCore
 									return true;
 								}
 							}
+							foreach(Player pl in room.Game.Observers){
+								if(pl!=null && pl.Name==name){
+									pl.Send(msg);
+									return true;
+								}
+							}
 						}
 					}catch(Exception){
 						

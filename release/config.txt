@@ -9,4 +9,5 @@ autoreplay=true
 replayfolder=replay
 recordwin=true
 handshuffle=true
+privatechat=true
 loginurl=http://www.ygobbs.com/index.php?ctrl=api

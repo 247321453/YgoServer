@@ -34,7 +34,7 @@ namespace YGOCore
 			Logger.WriteLine("│    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|    Build: " + Version, false);
 			Logger.WriteLine("│", false);
 			Logger.WriteLine("│Client version 0x" + config.ClientVersion.ToString("x") + " or new, MaxRooms = "+config.MaxRoomCount, false);
-			Logger.WriteLine("│NeedAtuh = "+config.isNeedAuth+", AutoReplay = "+config.AutoReplay+", RecordWin = "+config.RecordWin, false);
+			Logger.WriteLine("│NeedAtuh="+config.isNeedAuth+", AutoReplay="+config.AutoReplay+", RecordWin="+config.RecordWin+", PrivateChat="+config.PrivateChat, false);
 			Logger.WriteLine("└───────────────────────────────────",false);
 		}
 		public static bool onCommand(Player player,string msg)
@@ -44,6 +44,10 @@ namespace YGOCore
 				return false;
 			}
 			if(!string.IsNullOrEmpty(msg)){
+				if(msg.StartsWith("@") && !Program.Config.PrivateChat){
+					player.ServerMessage("Can not private chat.");
+					return false;
+				}
 				if(msg.StartsWith("@server ")){
 					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@server ",""), ConsoleColor.Yellow);
 					return false;
@@ -58,9 +62,9 @@ namespace YGOCore
 					int i=msg.IndexOf(' ');
 					if(i>0){
 						try{
-							string name=msg.Substring(1, i);
+							string name=msg.Substring(1, i-1);
 							string cxt=msg.Substring(i+1);
-							if(!GameManager.SendErrorMessage("["+player.Name+"] "+cxt, name)){
+							if(!GameManager.SendErrorMessage(player.Name+": "+cxt, name)){
 								player.ServerMessage("send fail.");
 							}else{
 								return false;
