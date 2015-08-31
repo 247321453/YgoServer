@@ -216,7 +216,7 @@ namespace YGOCore.Game
 			}
 			if (player.Equals(HostPlayer) && State == GameState.Lobby){
 				//Logger.WriteLine("HostPlayer is leave", false);
-				m_room.Close();
+				m_room.Close(true);
 			}
 			else if (player.Type == (int)PlayerType.Observer)
 			{

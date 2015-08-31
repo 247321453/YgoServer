@@ -24,26 +24,28 @@ namespace YGOCore.Game
 		{
 			m_clients.Remove(client);
 		}
-		public void Close()
+		public void Close(bool forceclose=false)
 		{
-			foreach(Player plager in Game.Players){
-				if(plager==null){
-					continue;
+			if(forceclose){
+				foreach(Player plager in Game.Players){
+					if(plager==null){
+						continue;
+					}
+					try{
+						plager.Disconnect();
+					}catch(KeyNotFoundException){
+						
+					}
 				}
-				try{
-					plager.Disconnect();
-				}catch(KeyNotFoundException){
-					
-				}
-			}
-			foreach(Player plager in Game.Observers){
-				if(plager==null){
-					continue;
-				}
-				try{
-					plager.Disconnect();
-				}catch(KeyNotFoundException){
-					
+				foreach(Player plager in Game.Observers){
+					if(plager==null){
+						continue;
+					}
+					try{
+						plager.Disconnect();
+					}catch(KeyNotFoundException){
+						
+					}
 				}
 			}
 			IsOpen = false;

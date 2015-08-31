@@ -6,3 +6,11 @@
    在 System.Net.HttpListener.AddAllPrefixes()
    在 System.Net.HttpListener.Start()
    在 YGOCore.ApiHttpServer.Listen()
+[Error] System.Net.HttpListenerException (0x80004005): 拒绝访问。
+   在 System.Net.HttpListener.AddAllPrefixes()
+   在 System.Net.HttpListener.Start()
+   在 YGOCore.ApiHttpServer.Listen() 位置 f:\git\ygoserver\YGOCore\ApiHttpServer.cs:行号 78
+[Error] System.Net.HttpListenerException (0x80004005): 拒绝访问。
+   在 System.Net.HttpListener.AddAllPrefixes()
+   在 System.Net.HttpListener.Start()
+   在 YGOCore.ApiHttpServer.Listen() 位置 f:\git\ygoserver\YGOCore\ApiHttpServer.cs:行号 78
