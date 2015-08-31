@@ -220,6 +220,8 @@ namespace YGOCore
 				string GuidString = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
 				GuidString = GuidString.Replace("=", "");
 				GuidString = GuidString.Replace("+", "");
+				GuidString = GuidString.Replace("#", "");
+				GuidString = GuidString.Replace("$", "");
 				string roomname = GuidString.Substring(0, 5);
 				//MutexRooms.WaitOne();
 				if (!m_rooms.ContainsKey(roomname)){

@@ -81,10 +81,11 @@ namespace YGOCore.Game
 					//random
 					Name = GameManager.RandomRoomName();
 				}
-				else if(NameRegex.IsMatch(gameinfo)){
-					//normal
-					Name = gameinfo;
-				}else{
+//				else if(NameRegex.IsMatch(gameinfo)){
+//					//normal
+//					Name = gameinfo;
+//				}
+				else{
 					int head=gameinfo.IndexOf("#");
 					if(head<0){
 						Name=gameinfo;

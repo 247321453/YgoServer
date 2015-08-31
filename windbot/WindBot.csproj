@@ -101,7 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="sqlite3.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
