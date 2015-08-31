@@ -58,6 +58,13 @@ namespace YGOCore.Game
 		/// </summary>
 		[DataMember(Order = 7, Name="watchs")]
 		public string[] observers{get;private set;}
+		[DataMember(Order = 8, Name="lp")]
+		public int StartLP{get;private set;}
+		/// <summary>
+		/// 特殊规则
+		/// </summary>
+		[DataMember(Order = 9, Name="warring")]
+		public bool Warring{get;private set;}
 		/// <summary>
 		/// 玩家数
 		/// </summary>
@@ -74,6 +81,8 @@ namespace YGOCore.Game
 				}else{
 					NeedPass =false;
 				}
+				StartLP=game.Config.StartLp;
+				Warring=game.Config.EnablePriority|game.Config.NoCheckDeck|game.Config.NoShuffleDeck;
 				Rule=game.Config.Rule;
 				Mode=game.Config.Mode;
 				Lflist=game.Config.LfList;

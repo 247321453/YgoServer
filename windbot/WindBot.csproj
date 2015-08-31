@@ -47,7 +47,7 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <StartAction>Project</StartAction>
-    <StartArguments>AI ai_deck01 127.0.0.1 8911 hello</StartArguments>
+    <StartArguments>AI ai_deck01 127.0.0.1 8911 T#hello</StartArguments>
     <StartWorkingDirectory>..\release\</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
