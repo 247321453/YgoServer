@@ -8,7 +8,7 @@
  */
 using System;
 using YGOCore.Game;
-
+using System.IO;
 using System.Reflection;
 
 namespace YGOCore
@@ -40,10 +40,18 @@ namespace YGOCore
 		public static void onCommand(Player player,string msg)
 		{
 			if(!string.IsNullOrEmpty(msg)){
-				if(msg.StartsWith("@server")){
-					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@server",""), ConsoleColor.Yellow);
-				}else if(msg.StartsWith("@system")){
-					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@system",""), ConsoleColor.Yellow);
+				if(msg.StartsWith("@server ")){
+					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@server ",""), ConsoleColor.Yellow);
+				}else if(msg.StartsWith("@system ")){
+					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@system ",""), ConsoleColor.Yellow);
+				}else if(msg.StartsWith("@@ ")){
+					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@@ ",""), ConsoleColor.Yellow);
+				}else if(msg.StartsWith("@")){
+					//私聊
+					int i=msg.IndexOf(' ');
+					if(i>0){
+						string name=msg.Substring(1, i);
+					}
 				}
 			}
 		}
@@ -58,7 +66,9 @@ namespace YGOCore
 				WriteHead(Program.Config);
 			}else if(cmd=="roomlist"){
 				Console.WriteLine(">>count:"+server.getRoomCount());
-				Console.WriteLine(server.getRoomJson());
+				string json=server.getRoomJson();
+				Console.WriteLine(json);
+				File.WriteAllText("room.json", json);
 			}else if(cmd.StartsWith("say ")){
 				try{
 					GameManager.SendWarringMessage("[Server] "+cmd.Substring("say ".Length));

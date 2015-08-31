@@ -1,6 +1,6 @@
 ﻿#
 clientversion=1336
-needauth=true
+needauth=false
 maxroom=200
 consolelog=true
 autoreplay=true

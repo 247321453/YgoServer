@@ -59,12 +59,16 @@ namespace YGOCore.Game
 			if(game!=null&&game.Config!=null){
 				RoomName=game.Config.Name;
 				int i=RoomName.LastIndexOf("$");
-				RoomName=RoomName.Substring(0, i);
+				if(i>=0){
+					RoomName=RoomName.Substring(0, i);
+					NeedPass =true;
+				}else{
+					NeedPass =false;
+				}
 				Rule=game.Config.Rule;
 				Mode=game.Config.Mode;
 				Lflist=game.Config.LfList;
 				IsStart= (game.State!=GameState.Lobby);
-				NeedPass = (i>=0);
 				if(game.Players!=null){
 					int len=game.Players.Length;
 					Player[] pls=new Player[len];
@@ -100,12 +104,12 @@ namespace YGOCore.Game
 		}
 		
 		public string toJson(){
-			return "{\"name\":\""+RoomName+"\",\"Rule\":"+Rule+",\"Mode\":"+Mode+
+			return "{\"name\":\""+Tool.StringToUnicode(RoomName)+"\",\"Rule\":"+Rule+",\"Mode\":"+Mode+
 				",\"NeedPass\":"+(NeedPass?1:0)+",\"IsStart\":"+(IsStart?1:0)
 				+",\"Lflist\":\""+(Lflist==0?"o":"t")+"\",\"Count\":"+Count+",\"player\":"+Array2Json(players)+"}";
 		}
 		public string toJsonWithWatch(){
-			return "{\"name\":\""+RoomName+"\",\"Rule\":"+Rule+",\"Mode\":"+Mode+
+			return "{\"name\":\""+Tool.StringToUnicode(RoomName)+"\",\"Rule\":"+Rule+",\"Mode\":"+Mode+
 				",\"NeedPass\":"+(NeedPass?1:0)+",\"IsStart\":"+(IsStart?1:0)
 				+",\"Lflist\":\""+(Lflist==0?"o":"t")+"\",\"Count\":"+Count+
 				",\"player\":"+Array2Json(players)+",\"watch\":"+Array2Json(observers)+"}";
@@ -114,7 +118,13 @@ namespace YGOCore.Game
 			if(arr.Length==0){
 				return "[]";
 			}
-			return "";
+			int count=arr.Length;
+			string str="[";
+			for(int i=0;i<count-1;i++){
+				str+="\""+Tool.StringToUnicode(arr[i])+"\",";
+			}
+			str+="\""+Tool.StringToUnicode(arr[count-1])+"\"]";
+			return str;
 		}
 	}
 }
