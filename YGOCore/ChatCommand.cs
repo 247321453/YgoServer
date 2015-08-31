@@ -40,8 +40,10 @@ namespace YGOCore
 		public static void onCommand(Player player,string msg)
 		{
 			if(!string.IsNullOrEmpty(msg)){
-				if(msg.StartsWith("/help")){
-					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("/help",""), ConsoleColor.Yellow);
+				if(msg.StartsWith("@server")){
+					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@server",""), ConsoleColor.Yellow);
+				}else if(msg.StartsWith("@system")){
+					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@system",""), ConsoleColor.Yellow);
 				}
 			}
 		}

@@ -56,7 +56,7 @@ namespace YGOCore
 			List<RoomInfo> list=GameManager.getRoomInfos();
 			int count=0;
 			foreach(RoomInfo info in list){
-				count+=info.count;
+				count+=info.Count;
 			}
 			return count;
 		}

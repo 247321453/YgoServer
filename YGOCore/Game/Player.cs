@@ -285,6 +285,9 @@ namespace YGOCore.Game
 				if(room.Game.Config.Rule!=2){
 					ServerMessage("Warning: this room is "+(room.Game.Config.Rule==1?"TCG":"OCG")+" rule .");
 				}
+				if(room.Game.Config.LfList!=0){
+					ServerMessage("Warning: this room's banlist is TCG");
+				}
 			}
 			Game = room.Game;
 			Game.AddPlayer(this);

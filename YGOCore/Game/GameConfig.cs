@@ -100,7 +100,11 @@ namespace YGOCore.Game
 						}
 						if(index < head){
 							tmp=gameinfo.Substring(index++,1);
-							Rule = "1"==tmp?1:("0"==tmp?0:2);
+							Rule = ("1"==tmp||"t"==tmp)?1:(("0"==tmp||"o"==tmp)?0:2);
+						}
+						if(index < head){
+							tmp=gameinfo.Substring(index++,1);
+							LfList = ("1"==tmp||"t"==tmp)?1:0;
 						}
 						if(index < head){
 							tmp=gameinfo.Substring(index++,1);
@@ -151,8 +155,8 @@ namespace YGOCore.Game
 				Name = GameManager.RandomRoomName();
 			}
 			//
-			//(N|M|T)(0|1|2)(0-9)(T|F|1|0)(T|F|1|0)(T|F|1|0)(0-9)(0-9)(0-9)#name$password
-			//mode,rule,outtime[minute],EnablePriority,NoCheckDeck,NoShuffleDeck,lp[*4000],hand,draw
+			//(N|M|T)(0|1|2)(0|1|o|t)(0-9)(T|F|1|0)(T|F|1|0)(T|F|1|0)(0-9)(0-9)(0-9)#name$password
+			//mode,rule,banlist,outtime[minute],EnablePriority,NoCheckDeck,NoShuffleDeck,lp[*4000],hand,draw
 			//N23FFF851#xxxx$123
 			//N23#xxxx$123
 			//N2#xxxx$123
