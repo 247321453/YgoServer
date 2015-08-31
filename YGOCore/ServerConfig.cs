@@ -10,10 +10,7 @@ namespace YGOCore
 		/// </summary>
 		public int ServerPort { get; private set; }
 		
-		/// <summary>
-		/// api
-		/// </summary>
-		public string ApiIp{get;private set;}
+	//	public string ApiIp{get;private set;}
 		/// <summary>
 		/// api¶Ë¿Ú
 		/// </summary>
@@ -91,7 +88,7 @@ namespace YGOCore
 		{
 			ClientVersion = 0x1335;
 			ServerPort = 8911;
-			ApiIp="127.0.0.1";
+		//	ApiIp="127.0.0.1";
 			ApiPort=18911;
 			Path = ".";
 			ScriptFolder = "script";
@@ -156,9 +153,9 @@ namespace YGOCore
 				case "serverport":
 					ServerPort = Convert.ToInt32(value);
 					break;
-				case "apiip":
-					ApiIp=value;
-					break;
+//				case "apiip":
+//					ApiIp=value;
+//					break;
 				case "apiport":
 					ApiPort = Convert.ToInt32(value);
 					break;

@@ -153,6 +153,18 @@ namespace YGOCore
 		}
 		#endregion
 		
+		#region 文件路径
+		public static string RemoveInvalid(string str){
+			if(str==null){
+				return "";
+			}
+			char[] chars=Path.GetInvalidFileNameChars();
+			foreach(char c in chars){
+				str=str.Replace(c, '_');
+			}
+			return str;
+		}
+		
 		/// <summary>
 		/// 合并路径
 		/// </summary>
@@ -201,30 +213,9 @@ namespace YGOCore
 				return builder.ToString();
 			}
 		}
-		public static String GetIP()
-		{
-			string tempip = "0.0.0.0";
-			try
-			{
-				WebRequest wr = WebRequest.Create("http://ip.cn/");
-				Stream s = wr.GetResponse().GetResponseStream();
-				StreamReader sr = new StreamReader(s, Encoding.UTF8);
-				string all = sr.ReadToEnd(); //读取网站的数据
-
-				int start = all.IndexOf("<code>");
-				if(start<0){
-					return tempip;
-				}
-				int end = all.IndexOf("</code>", start);
-				tempip = all.Substring(start+"<code>".Length, end - start-"<code>".Length);
-				sr.Close();
-				s.Close();
-			}
-			catch
-			{
-			}
-			return tempip;
-		}
+		#endregion
+		
+		#region string unicode
 		/// <summary>
 		/// 字符串转为UniCode码字符串
 		/// </summary>
@@ -265,21 +256,25 @@ namespace YGOCore
 			}
 			return dst;
 		}
-		 public static T Parse<T>(string jsonString)
-        {
-            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonString)))
-            {
-                return (T)new DataContractJsonSerializer(typeof(T)).ReadObject(ms);
-            }
-        }
+		#endregion
+		
+		#region json
+		public static T Parse<T>(string jsonString)
+		{
+			using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonString)))
+			{
+				return (T)new DataContractJsonSerializer(typeof(T)).ReadObject(ms);
+			}
+		}
 
-        public static string ToJson(object jsonObject)
-        {
-            using (var ms = new MemoryStream())
-            {
-                new DataContractJsonSerializer(jsonObject.GetType()).WriteObject(ms, jsonObject);
-                return Encoding.UTF8.GetString(ms.ToArray());
-            }
-        }
+		public static string ToJson(object jsonObject)
+		{
+			using (var ms = new MemoryStream())
+			{
+				new DataContractJsonSerializer(jsonObject.GetType()).WriteObject(ms, jsonObject);
+				return Encoding.UTF8.GetString(ms.ToArray());
+			}
+		}
+		#endregion
 	}
 }

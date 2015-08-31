@@ -81,7 +81,6 @@
     <Compile Include="Game\Replay.cs" />
     <Compile Include="Game\ReplayHeader.cs" />
     <Compile Include="Game\RoomInfo.cs" />
-    <Compile Include="JsonHelp.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

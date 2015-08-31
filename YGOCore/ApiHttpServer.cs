@@ -25,7 +25,7 @@ namespace YGOCore
 		string json="[]";
 		bool isStart=false;
 		
-		public ApiHttpServer(Server server,string ip="localhost", int port=18911){
+		public ApiHttpServer(Server server,int port=18911){
 			this.server=server;
 			Timer=new System.Timers.Timer(1000);
 			Timer.Elapsed+= new System.Timers.ElapsedEventHandler(Timer_Elapsed);
@@ -37,17 +37,17 @@ namespace YGOCore
 				port=18911;
 			}
 			try{
-				if(ip!="127.0.0.1"){
-					httpListener.Prefixes.Add("http://127.0.0.1:"+port+"/");
-				}
-				if(ip!="localhost"){
-					httpListener.Prefixes.Add("http://localhost:"+port+"/");
-				}
-				httpListener.Prefixes.Add("http://"+ip+":"+port+"/");
+//				if(ip!="127.0.0.1"){
+//					httpListener.Prefixes.Add("http://127.0.0.1:"+port+"/");
+//				}
+//				if(ip!="localhost"){
+//					httpListener.Prefixes.Add("http://localhost:"+port+"/");
+//				}
+				httpListener.Prefixes.Add("http://+:"+port+"/");
 			}catch(Exception){
 				
 			}
-			Logger.WriteLine("Room List = http://"+ip+":"+port+"/room.json");
+			Logger.WriteLine("Room List = http://ip:"+port+"/room.json");
 		}
 		
 		public void Stop(){
@@ -74,7 +74,11 @@ namespace YGOCore
 		}
 
 		void Listen(){
-			httpListener.Start();
+			try{
+				httpListener.Start();
+			}catch(Exception ex){
+				Logger.WriteError(ex);
+			}
 			while (httpListener.IsListening)
 			{
 				HttpListenerContext httpListenerContext = httpListener.GetContext();

@@ -76,11 +76,11 @@ namespace YGOCore.Game
 
 			m_data = ms.ToArray();
 			
-			if(Program.Config.AutoReplay){
-				Thread thread=new Thread(new ThreadStart(saveYrp));
-				thread.IsBackground=true;
-				thread.Start();
-			}
+//			if(Program.Config.AutoReplay){
+//				Thread thread=new Thread(new ThreadStart(saveYrp));
+//				thread.IsBackground=true;
+//				thread.Start();
+//			}
 		}
 		
 		private void saveYrp(){

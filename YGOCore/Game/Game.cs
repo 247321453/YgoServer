@@ -67,7 +67,7 @@ namespace YGOCore.Game
 				Banlist = BanlistManager.Banlists[config.LfList];
 			m_room = room;
 			m_analyser = new GameAnalyser(this);
-			yrpName=DateTime.Now.ToString().Replace("/", "-").Replace(":","-");
+			yrpName=DateTime.Now.ToString("yyyyMMddHHmmss");
 		}
 
 		public void ReloadGameConfig(string gameinfo)
@@ -591,10 +591,14 @@ namespace YGOCore.Game
 		private string getGameTagName(){
 			string filename="";
 			try{
-				filename="{"+m_room.Game.Config.Name+"} 0=["+Players[0].Name+
-					"] 1=["+Players[1].Name+"]";
+				filename=" {"+Tool.RemoveInvalid(m_room.Game.Config.Name)+"} ";
 				if (IsTag){
-					filename+=" 2=["+Players[2].Name+"] 3=["+Players[3].Name+"]";
+					filename+=Tool.RemoveInvalid(Players[0].Name)+"+"
+						+Tool.RemoveInvalid(Players[1].Name)+" vs "
+						+Tool.RemoveInvalid(Players[2].Name)+"+"
+						+Tool.RemoveInvalid(Players[3].Name);
+				}else{
+					filename+=Tool.RemoveInvalid(Players[0].Name)+" vs "+Tool.RemoveInvalid(Players[1].Name);
 				}
 			}catch(Exception){
 				
