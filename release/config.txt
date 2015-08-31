@@ -1,7 +1,6 @@
 ﻿#
 clientversion=1336
 serverport=8911
-apiip=localhost
 apiport=18911
 needauth=false
 maxroom=200
