@@ -10,6 +10,8 @@ using System;
 using System.Net;
 using System.IO;
 using System.Text;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Security.Cryptography;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -263,5 +265,21 @@ namespace YGOCore
 			}
 			return dst;
 		}
+		 public static T Parse<T>(string jsonString)
+        {
+            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonString)))
+            {
+                return (T)new DataContractJsonSerializer(typeof(T)).ReadObject(ms);
+            }
+        }
+
+        public static string ToJson(object jsonObject)
+        {
+            using (var ms = new MemoryStream())
+            {
+                new DataContractJsonSerializer(jsonObject.GetType()).WriteObject(ms, jsonObject);
+                return Encoding.UTF8.GetString(ms.ToArray());
+            }
+        }
 	}
 }

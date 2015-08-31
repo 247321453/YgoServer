@@ -50,13 +50,25 @@ namespace YGOCore
 					//私聊
 					int i=msg.IndexOf(' ');
 					if(i>0){
-						string name=msg.Substring(1, i);
+						try{
+							string name=msg.Substring(1, i);
+							string cxt=msg.Substring(i+1);
+							if(!GameManager.SendErrorMessage("["+player.Name+"] "+cxt, name)){
+								player.ServerMessage("send fail.");
+							}
+						}catch(Exception){
+							
+						}
 					}
 				}
 			}
 		}
 		
 		public static void onCommand(Server server,string cmd){
+			if(cmd==null){
+				return;
+			}
+			cmd=cmd.Trim();
 			if(cmd=="roomcount"){
 				Console.WriteLine(">>room count:"+server.getRoomCount());
 			}else if(cmd=="playercount"){
@@ -98,7 +110,6 @@ namespace YGOCore
 				string[] names=cmd.Split(' ');
 				if(names.Length>=2){
 					try{
-						
 						if(GameManager.SendErrorMessage("[Server] "+cmd.Substring(("to "+names[1]).Length+1), names[1])){
 							Console.WriteLine(">>send to "+names[1]);
 						}else{
@@ -108,10 +119,17 @@ namespace YGOCore
 						
 					}
 				}
+			}else if(cmd=="close"){
+				Console.WriteLine(">>Server will close after 5 minute.");
+				server.CloseDealyed();
+			}else if(cmd == "cancel close"){
+				Console.WriteLine(">>Server cancel close.");
+				server.CacelCloseDealyed();
 			}
 			else{
 				Console.WriteLine(">>no this cmd", ConsoleColor.Yellow);
 			}
 		}
 	}
+
 }

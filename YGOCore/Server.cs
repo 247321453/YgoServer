@@ -20,10 +20,12 @@ namespace YGOCore
 		private static List<WinInfo> WinInfos=new List<WinInfo>();
 		private static Mutex MutexWinInfo=new Mutex();
 		
+		private bool isClosing=false;
 		/// <summary>
 		/// 定时保存游戏记录
 		/// </summary>
 		private System.Timers.Timer WinSaveTimer;
+		private System.Timers.Timer CloseTimer;
 		
 		public Server()
 		{
@@ -38,15 +40,16 @@ namespace YGOCore
 		
 		public string getRoomJson(){
 			List<RoomInfo> list=GameManager.getRoomInfos();
-			string json="[";
-			foreach(RoomInfo info in list){
-				json+=info.toJson()+",";
-			}
-			if(list.Count>0){
-				json=json.Substring(0,json.Length-1);
-			}
-			json+="]";
-			return json;
+			return Tool.ToJson(list);
+//			string json="[";
+//			foreach(RoomInfo info in list){
+//				json+=info.toJson()+",";
+//			}
+//			if(list.Count>0){
+//				json=json.Substring(0,json.Length-1);
+//			}
+//			json+="]";
+//			return json;
 		}
 		public int getRoomCount(){
 			return GameManager.getRoomInfos().Count;
@@ -202,6 +205,35 @@ namespace YGOCore
 			MutexWinInfo.WaitOne();
 			WinInfos.Add(new WinInfo(room, win, reason,replay, pl0,pl1,pl2,pl3,force));
 			MutexWinInfo.ReleaseMutex();
+		}
+		
+		public void CacelCloseDealyed(){
+			isClosing=false;
+			CloseTimer.Stop();
+		}
+		
+		public void CloseDealyed(){
+			if(isClosing){
+				return;
+			}
+			isClosing=true;
+			//TODO 延时关闭
+			GameManager.SendWarringMessage("Server will close after 5 minute.");
+			GameManager.SendErrorMessage("Server will close after 5 minute.");
+			if(CloseTimer==null){
+				CloseTimer = new System.Timers.Timer(5*60*1000);
+				CloseTimer.AutoReset=false;
+				CloseTimer.Enabled=true;
+				CloseTimer.Elapsed+=new System.Timers.ElapsedEventHandler(CloseTimer_Elapsed);
+			}
+			CloseTimer.Start();
+		}
+		
+		private void CloseTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+		{
+			if(isClosing){
+				Stop();
+			}
 		}
 
 	}
