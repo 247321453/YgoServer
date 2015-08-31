@@ -1,5 +1,7 @@
 ﻿#
 clientversion=1336
+serverport=8911
+apiport=18911
 needauth=false
 maxroom=200
 consolelog=true

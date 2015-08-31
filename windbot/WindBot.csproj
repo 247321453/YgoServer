@@ -40,6 +40,8 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <StartAction>Project</StartAction>
+    <StartArguments>AI ai_deck01 127.0.0.1 8911 hello</StartArguments>
+    <StartWorkingDirectory>..\release\</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>

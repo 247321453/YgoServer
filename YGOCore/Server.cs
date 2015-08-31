@@ -26,6 +26,7 @@ namespace YGOCore
 		/// </summary>
 		private System.Timers.Timer WinSaveTimer;
 		private System.Timers.Timer CloseTimer;
+		private ApiHttpServer ApiServer;
 		
 		public Server()
 		{
@@ -36,6 +37,7 @@ namespace YGOCore
 			WinSaveTimer.AutoReset=true;
 			WinSaveTimer.Enabled=true;
 			WinSaveTimer.Elapsed+=new System.Timers.ElapsedEventHandler(WinSaveTimer_Elapsed);
+			ApiServer=new ApiHttpServer(this, Program.Config.ApiPort);
 		}
 		
 		public string getRoomJson(){
@@ -103,6 +105,7 @@ namespace YGOCore
 				acceptThread.IsBackground=true;
 				acceptThread.Start();
 				WinSaveTimer.Start();
+				ApiServer.Start();
 				IsListening = true;
 			}
 			catch (SocketException)

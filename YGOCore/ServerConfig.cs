@@ -9,6 +9,11 @@ namespace YGOCore
 		/// 服务端口
 		/// </summary>
 		public int ServerPort { get; private set; }
+		
+		/// <summary>
+		/// api端口
+		/// </summary>
+		public int ApiPort{get;private set;}
 		/// <summary>
 		/// 工作目录
 		/// </summary>
@@ -82,6 +87,7 @@ namespace YGOCore
 		{
 			ClientVersion = 0x1335;
 			ServerPort = 8911;
+			ApiPort=18911;
 			Path = ".";
 			ScriptFolder = "script";
 			replayFolder="replay";
@@ -144,6 +150,9 @@ namespace YGOCore
 			{
 				case "serverport":
 					ServerPort = Convert.ToInt32(value);
+					break;
+				case "apiport":
+					ApiPort = Convert.ToInt32(value);
 					break;
 				case "path":
 					Path = value;

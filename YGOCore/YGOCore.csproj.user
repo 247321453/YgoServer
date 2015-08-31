@@ -4,6 +4,6 @@
     <StartWorkingDirectory>..\release\</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <StartWorkingDirectory>E:\DevPro\</StartWorkingDirectory>
+    <StartWorkingDirectory>..\release\</StartWorkingDirectory>
   </PropertyGroup>
 </Project>
