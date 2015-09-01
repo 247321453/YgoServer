@@ -1,4 +1,3 @@
-D:\code\ygoserver\YGOClient\obj\Debug\YGOClient.csprojResolveAssemblyReference.cache
 D:\code\ygoserver\YGOClient\obj\Debug\YGOClient.NotificationIcon.resources
 D:\code\ygoserver\YGOClient\obj\Debug\YGOClient.csproj.GenerateResource.Cache
 D:\code\ygoserver\YGOClient\bin\Debug\YGOClient.exe
@@ -6,3 +5,4 @@ D:\code\ygoserver\YGOClient\bin\Debug\YGOClient.pdb
 D:\code\ygoserver\YGOClient\obj\Debug\YGOClient.exe
 D:\code\ygoserver\YGOClient\obj\Debug\YGOClient.pdb
 D:\code\ygoserver\YGOClient\obj\Debug\YGOClient.ClinetForm.resources
+D:\code\ygoserver\YGOClient\obj\Debug\YGOClient.csprojResolveAssemblyReference.cache

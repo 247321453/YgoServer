@@ -42,9 +42,9 @@ namespace YGOClient
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(284, 262);
+			this.ClientSize = new System.Drawing.Size(711, 510);
 			this.Name = "ClinetForm";
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "ClinetForm";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ClinetFormFormClosing);
 			this.ResumeLayout(false);

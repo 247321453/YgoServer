@@ -49,9 +49,7 @@ namespace YGOClient
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			if(args.Length==1){
+			if(args.Length >= 1){
 				switch(args[0]){
 					case "install":
 						Protocol.Reg(PRO);
@@ -61,21 +59,36 @@ namespace YGOClient
 						Protocol.UnReg(PRO);
 						MessageBox.Show("uninstall");
 						break;
+					default:
+						if(args[0].StartsWith(PRO)){
+							RoomTool.JoinRoom(args[0]);
+							//MessageBox.Show(args[0]);
+						}
+						break;
 				}
+				Environment.Exit(0);
 			}
-			bool isFirstInstance;
-			// Please use a unique name for the mutex to prevent conflicts with other programs
-			using (Mutex mtx = new Mutex(true, "YGOClient", out isFirstInstance)) {
-				if (isFirstInstance) {
-					NotificationIcon notificationIcon = new NotificationIcon();
-					notificationIcon.notifyIcon.Visible = true;
-					Application.Run();
-					notificationIcon.notifyIcon.Dispose();
-				} else {
-					// The application is already running
-					// TODO: Display message box or change focus to existing application instance
-				}
-			} // releases the Mutex
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			NotificationIcon notificationIcon = new NotificationIcon();
+			notificationIcon.notifyIcon.Visible = true;
+			Application.Run();
+			notificationIcon.notifyIcon.Dispose();
+//			bool isFirstInstance;
+//			// Please use a unique name for the mutex to prevent conflicts with other programs
+//			using (Mutex mtx = new Mutex(true, "YGOClient", out isFirstInstance)) {
+//				if (isFirstInstance) {
+//					NotificationIcon notificationIcon = new NotificationIcon();
+//					notificationIcon.notifyIcon.Visible = true;
+//					Application.Run();
+//					notificationIcon.notifyIcon.Dispose();
+//				} else {
+//					// The application is already running
+//					// TODO: Display message box or change focus to existing application instance
+//					MessageBox.Show("Client is running.");
+//					Environment.Exit(0);
+//				}
+//			} // releases the Mutex
 		}
 		#endregion
 		
