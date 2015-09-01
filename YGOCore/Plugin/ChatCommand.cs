@@ -24,7 +24,7 @@ namespace YGOCore
 				return;
 			}
 			string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			Console.Title="YgoServer "+Version;
+			Console.Title=(string.IsNullOrEmpty(config.ServerName)?"YgoServer":config.ServerName)+" "+Version;
 			Logger.WriteLine("┌───────────────────────────────────",false);
 			Logger.WriteLine("│ __     _______  ____   _____",false);
 			Logger.WriteLine("│ \\ \\   / / ____|/ __ \\ / ____|", false);

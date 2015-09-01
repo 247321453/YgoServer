@@ -1113,7 +1113,7 @@ namespace YGOCore.Game
 			}
 		}
 
-		private int GetAvailablePlayerPos()
+		public int GetAvailablePlayerPos()
 		{
 			for (int i = 0; i < Players.Length; i++)
 			{

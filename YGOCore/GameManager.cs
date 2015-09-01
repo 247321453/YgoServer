@@ -68,9 +68,11 @@ namespace YGOCore
 			//MutexRooms.ReleaseMutex();
 			foreach (GameRoom room in rooms)
 			{
-				if (room.Game.State == GameState.Lobby
-				    && (filter == -1 ? true : room.Game.Config.Rule == filter))
+				//随机房间不能带密码
+				if (!room.Game.Config.HasPassword()&& room.Game.State == GameState.Lobby
+				    && (filter == -1 ? true : room.Game.Config.Rule == filter)){
 					filteredRooms.Add(room);
+				}
 			}
 
 			if (filteredRooms.Count == 0)
@@ -78,27 +80,27 @@ namespace YGOCore
 
 			return filteredRooms[Program.Random.Next(0, filteredRooms.Count)];
 		}
-
-		public static GameRoom SpectateRandomGame()
-		{
-			List<GameRoom> filteredRooms = new List<GameRoom>();
-			GameRoom[] rooms;
-			//MutexRooms.WaitOne();
-			rooms = new GameRoom[m_rooms.Count];
-			m_rooms.Values.CopyTo(rooms, 0);
-			//MutexRooms.ReleaseMutex();
-
-			foreach (GameRoom room in rooms)
-			{
-				if (room.Game.State != GameState.Lobby)
-					filteredRooms.Add(room);
-			}
-
-			if (filteredRooms.Count == 0)
-				return null;
-
-			return filteredRooms[Program.Random.Next(0, filteredRooms.Count)];
-		}
+//
+//		public static GameRoom SpectateRandomGame()
+//		{
+//			List<GameRoom> filteredRooms = new List<GameRoom>();
+//			GameRoom[] rooms;
+//			//MutexRooms.WaitOne();
+//			rooms = new GameRoom[m_rooms.Count];
+//			m_rooms.Values.CopyTo(rooms, 0);
+//			//MutexRooms.ReleaseMutex();
+//
+//			foreach (GameRoom room in rooms)
+//			{
+//				if (room.Game.State != GameState.Lobby)
+//					filteredRooms.Add(room);
+//			}
+//
+//			if (filteredRooms.Count == 0)
+//				return null;
+//
+//			return filteredRooms[Program.Random.Next(0, filteredRooms.Count)];
+//		}
 
 		private static GameRoom CreateRoom(GameConfig config)
 		{
@@ -219,8 +221,24 @@ namespace YGOCore
 			return true;
 		}
 
+		public static string GetGuidString(){
+			string GuidString = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+			GuidString = GuidString.Replace("=", "");
+			GuidString = GuidString.Replace("+", "");
+			GuidString = GuidString.Replace("#", "");
+			GuidString = GuidString.Replace("$", "");
+			string roomname = GuidString.Substring(0, 5);
+			return roomname;
+		}
+		
+		/// <summary>
+		/// 返回没条件的随机名
+		/// </summary>
+		/// <returns></returns>
 		public static string RandomRoomName()
 		{
+			List<string> rooms=new List<string>();
+			rooms.AddRange(m_rooms.Keys);
 			while (true) //keep searching till one is found!!
 			{
 				string GuidString = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
@@ -230,7 +248,7 @@ namespace YGOCore
 				GuidString = GuidString.Replace("$", "");
 				string roomname = GuidString.Substring(0, 5);
 				//MutexRooms.WaitOne();
-				if (!m_rooms.ContainsKey(roomname)){
+				if (!rooms.Contains(roomname)){
 					//MutexRooms.ReleaseMutex();
 					return roomname;
 				}else{
@@ -238,19 +256,44 @@ namespace YGOCore
 				}
 			}
 		}
-		public static string RandomRoomName(String tag)
+		/// <summary>
+		/// 返回有条件的随机名，并且从多个随机一个，如果为null，则请
+		/// </summary>
+		/// <param name="tag"></param>
+		/// <returns></returns>
+		public static string RandomRoomName(string tag)
 		{
-			string[] rooms;
-			//MutexRooms.WaitOne();
-			rooms = new string[m_rooms.Count];
-			m_rooms.Keys.CopyTo(rooms, 0);
-			//MutexRooms.ReleaseMutex();
-			foreach(string name in rooms){
-				if(name.StartsWith(tag)){
-					return name;
+			if(tag==null){
+				return null;
+			}
+			if(!tag.EndsWith("#")){
+				tag+="#";
+			}
+			List<string> rooms=new List<string>();
+			foreach(string key in m_rooms.Keys){
+				if(key!=null&&key.IndexOf('$')<0&&key.StartsWith(tag)){
+					rooms.Add(key);
 				}
 			}
-			return null;
+			if(rooms.Count == 0){
+				return null;
+			}
+			int index=Program.Random.Next(rooms.Count);
+			string name=null;
+			try{
+				name=rooms[index];
+				//最好做个判断是否满了
+				GameRoom room=m_rooms[name];
+				if(room!=null){
+					if(room.Game.GetAvailablePlayerPos()<0){
+						//满了
+						name=null;
+					}
+				}
+			}catch(Exception){
+				
+			}
+			return name;
 		}
 
 	}

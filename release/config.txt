@@ -1,5 +1,6 @@
 ﻿#
 clientversion=1336
+servername=菜菜服务器
 serverport=8911
 apiport=18911
 needauth=false

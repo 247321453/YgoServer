@@ -59,6 +59,10 @@ namespace YGOCore.Game
 			if (string.IsNullOrEmpty(Name))
 				Name = GameManager.RandomRoomName();
 		}
+		
+		public bool HasPassword(){
+			return Name!=null && Name.IndexOf("$")>=0;
+		}
 
 		public void Load(string gameinfo)
 		{
@@ -142,8 +146,10 @@ namespace YGOCore.Game
 						if(head+1>=gameinfo.Length){
 							string _name=GameManager.RandomRoomName(gameinfo);
 							if(_name==null){
-								Name=gameinfo+GameManager.RandomRoomName();
+								//条件#的随机房间名没找到，则创建一个
+								Name=gameinfo+GameManager.GetGuidString();
 							}else{
+								//条件#的随机房间名存在，则进去，可能重复观战
 								Name=_name;
 							}
 						}else{

@@ -216,15 +216,16 @@ namespace YGOCore.Game
 				LobbyError("Password Error");
 				return;
 			}
-			if(string.IsNullOrEmpty(joinCommand)){
+			if(string.IsNullOrEmpty(joinCommand) ||joinCommand.ToLower()=="random"){
 				room = GameManager.GetRandomGame();
 				if (room == null){
 					room =  GameManager.CreateOrGetGame(new GameConfig(joinCommand));
 				}
 			}
-			else if (GameManager.GameExists(joinCommand)){
-				room = GameManager.GetGame(joinCommand);
-			}
+			#region old
+//			else if (GameManager.GameExists(joinCommand)){
+//				room = GameManager.GetGame(joinCommand);
+//			}
 //			else if (joinCommand.ToLower() == "random")
 //			{
 //				room = GameManager.GetRandomGame();
@@ -256,6 +257,7 @@ namespace YGOCore.Game
 //				if (room == null) //if no games just make a new one!!
 //					room = GameManager.CreateOrGetGame(new GameConfig(joinCommand));
 //			}
+			#endregion
 			else
 				room = GameManager.CreateOrGetGame(new GameConfig(joinCommand));
 

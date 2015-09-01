@@ -93,10 +93,16 @@ namespace YGOCore
 		/// </summary>
 		public bool PrivateChat{get;private set;}
 		
+		/// <summary>
+		/// ·þÎñ¶ËÃû×Ö
+		/// </summary>
+		public string ServerName{get;private set;}
+		
 		public ServerConfig()
 		{
 			ClientVersion = 0x1335;
 			ServerPort = 8911;
+			ServerName="YGOserver";
 		//	ApiIp="127.0.0.1";
 			ApiPort=18911;
 			Path = ".";
@@ -161,6 +167,9 @@ namespace YGOCore
 			variable=variable.ToLower();
 			switch (variable)
 			{
+				case "servername":
+					ServerName=value;
+					break;
 				case "serverport":
 					ServerPort = Convert.ToInt32(value);
 					break;
