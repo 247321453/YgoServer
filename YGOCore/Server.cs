@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using YGOCore.Game;
 using OcgWrapper;
+using YGOCore.Plugin;
 
 namespace YGOCore
 {
@@ -26,7 +27,7 @@ namespace YGOCore
 		/// </summary>
 		private System.Timers.Timer WinSaveTimer;
 		private System.Timers.Timer CloseTimer;
-		private ApiHttpServer ApiServer;
+		private MyHttpServer ApiServer;
 		
 		public Server()
 		{
@@ -38,7 +39,7 @@ namespace YGOCore
 			WinSaveTimer.AutoReset=true;
 			WinSaveTimer.Enabled=true;
 			WinSaveTimer.Elapsed+=new System.Timers.ElapsedEventHandler(WinSaveTimer_Elapsed);
-			ApiServer=new ApiHttpServer(this, Program.Config.ApiPort);
+			ApiServer=new MyHttpServer(this, Program.Config.ApiPort);
 		}
 		
 		public string getRoomJson(){
@@ -154,6 +155,7 @@ namespace YGOCore
 				m_mutexClients.WaitOne();
 				m_clients.Add(client);
 				m_mutexClients.ReleaseMutex();
+				Thread.Sleep(1);
 			}
 		}
 
