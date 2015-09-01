@@ -103,6 +103,7 @@ namespace YGOCore
 					
 				}
 				m_listener = new TcpListener(IPAddress.Any, port == 0 ? Program.Config.ServerPort : port);
+				m_listener.Start();
 				Thread acceptThread=new Thread(new ThreadStart(AcceptClient));
 				acceptThread.IsBackground=true;
 				acceptThread.Start();
@@ -141,7 +142,6 @@ namespace YGOCore
 		}
 		
 		private void AcceptClient(){
-			m_listener.Start();
 			while(IsListening){
 				GameClient client=null;
 				try{
