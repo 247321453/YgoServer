@@ -76,10 +76,6 @@ namespace YGOCore
 		public bool RecordWin{get;private set;}
 		
 		/// <summary>
-		/// 记录结果的时间（分钟）
-		/// </summary>
-		public int SaveRecordTime{get;private set;}
-		/// <summary>
 		/// 记录
 		/// </summary>
 		public string WinDbName{get;private set;}
@@ -99,7 +95,7 @@ namespace YGOCore
 		public string ServerName{get;private set;}
 		
 		/// <summary>
-		/// 消息过滤文本
+		/// 公告文本
 		/// </summary>
 		public string ServerMsgs{get;private set;}
 		
@@ -127,7 +123,7 @@ namespace YGOCore
 			WinDbName="wins.db";
 			RecordWin=false;
 			PrivateChat=false;
-			SaveRecordTime=1;//
+			//SaveRecordTime=1;//
 			ServerMsgs="server_msg.txt";
 			MaxAICount=10;
 			LoginUrl="http://127.0.0.1/login.php";
@@ -242,12 +238,12 @@ namespace YGOCore
 				case "recordwin":
 					RecordWin=(value.ToLower()=="true"||value=="1");
 					break;
-				case "saverecordtime":
-					SaveRecordTime=Convert.ToInt32(value, 1);
-					if(SaveRecordTime<=0){
-						SaveRecordTime=1;
-					}
-					break;
+//				case "saverecordtime":
+//					SaveRecordTime=Convert.ToInt32(value, 1);
+//					if(SaveRecordTime<=0){
+//						SaveRecordTime=1;
+//					}
+//					break;
 				case "loginurl":
 					LoginUrl=value;
 					break;

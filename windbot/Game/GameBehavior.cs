@@ -220,7 +220,8 @@ namespace WindBot.Game
         private void OnChat(GameServerPacket packet)
         {
             packet.ReadInt16(); // player
-            packet.ReadUnicode(256); // message
+            string msg=packet.ReadUnicode(256); // message
+            Console.WriteLine("Player:"+msg);
         }
 
         private void OnStart(GameServerPacket packet)

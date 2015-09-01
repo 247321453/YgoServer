@@ -32,8 +32,9 @@ namespace YGOCore
 		{
 			m_clients = new List<GameClient>();
 			m_mutexClients=new Mutex();
-			int time=Program.Config.SaveRecordTime<=0?1*60*1000:Program.Config.SaveRecordTime*60*1000;
-			WinSaveTimer = new System.Timers.Timer(time);
+			//int time=Program.Config.SaveRecordTime<=0?1*60*1000:Program.Config.SaveRecordTime*60*1000;
+			//每30秒记录游戏结果记录
+			WinSaveTimer = new System.Timers.Timer(30*1000);
 			WinSaveTimer.AutoReset=true;
 			WinSaveTimer.Enabled=true;
 			WinSaveTimer.Elapsed+=new System.Timers.ElapsedEventHandler(WinSaveTimer_Elapsed);
@@ -94,6 +95,7 @@ namespace YGOCore
 				Api.Init(Program.Config.Path, Program.Config.ScriptFolder, Program.Config.CardCDB);
 				BanlistManager.Init(Program.Config.BanlistFile);
 				//DecksManager.Init();
+				MsgSystem.Init(Program.Config.ServerMsgs);
 				SQLiteTool.Init(Program.Config.WinDbName, WinInfo.SQL_Table);
 				try{
 					Directory.CreateDirectory(Program.Config.replayFolder);

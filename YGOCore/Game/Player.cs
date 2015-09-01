@@ -146,6 +146,9 @@ namespace YGOCore.Game
 				LobbyError("Username Required");
 			}
 			IsAuthentified = CheckAuth();
+			if(IsAuthentified){
+				ServerMessage(MsgSystem.getMessage(Name, 0));
+			}
 		}
 		
 		private bool CheckAuth(){
