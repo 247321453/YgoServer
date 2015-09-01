@@ -904,7 +904,7 @@ namespace YGOCore.Game
 
 		public void End()
 		{
-			SendToAll(new GameServerPacket(StocMessage.DuelEnd));
+			//SendToAll(new GameServerPacket(StocMessage.DuelEnd));
 			m_room.CloseDelayed();
 		}
 

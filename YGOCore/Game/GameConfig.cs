@@ -78,7 +78,6 @@ namespace YGOCore.Game
 			GameTimer = 120;
 			try{
 				if(!string.IsNullOrEmpty(gameinfo)){
-					gameinfo = gameinfo.ToLower();
 					gameinfo = gameinfo.Trim();
 				}
 				if(string.IsNullOrEmpty(gameinfo)||gameinfo=="random"){
@@ -99,17 +98,17 @@ namespace YGOCore.Game
 						int index=0;
 						string tmp=gameinfo.Substring(index++,1);
 						int tmpInt=0;
-						Mode = "t"==tmp?2:("m"==tmp?1:0);
+						Mode = ("t"==tmp||"T"==tmp)?2:(("m"==tmp||"M"==tmp)?1:0);
 						if(Mode==2){
 							StartLp=16000;
 						}
 						if(index < head){
 							tmp=gameinfo.Substring(index++,1);
-							Rule = ("1"==tmp||"t"==tmp)?1:(("0"==tmp||"o"==tmp)?0:2);
+							Rule = ("1"==tmp||"t"==tmp||"T"==tmp)?1:(("0"==tmp||"o"==tmp||"O"==tmp)?0:2);
 						}
 						if(index < head){
 							tmp=gameinfo.Substring(index++,1);
-							LfList = ("1"==tmp||"t"==tmp)?1:0;
+							LfList = ("1"==tmp||"t"==tmp||"T"==tmp)?1:0;
 						}
 						if(index < head){
 							tmp=gameinfo.Substring(index++,1);
@@ -118,15 +117,15 @@ namespace YGOCore.Game
 						}
 						if(index < head){
 							tmp=gameinfo.Substring(index++,1);
-							EnablePriority=(tmp=="t"||tmp=="1");
+							EnablePriority=(tmp=="t"||tmp=="1"||"T"==tmp);
 						}
 						if(index < head){
 							tmp=gameinfo.Substring(index++,1);
-							NoCheckDeck=(tmp=="t"||tmp=="1");
+							NoCheckDeck=(tmp=="t"||tmp=="1"||tmp=="T");
 						}
 						if(index < head){
 							tmp=gameinfo.Substring(index++,1);
-							NoShuffleDeck=(tmp=="t"||tmp=="1");
+							NoShuffleDeck=(tmp=="t"||tmp=="1"||"T"==tmp);
 						}
 						if(index < head){
 							tmp=gameinfo.Substring(index++,1);

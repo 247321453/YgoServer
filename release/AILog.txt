@@ -9,3 +9,17 @@
 [15:48:05] Decks initialized, 2 found.
 [15:48:08] Decks initialized, 2 found.
 [15:48:28] Server is close
+[21:10:40] Decks initialized, 2 found.
+[21:11:18] AI is watch.
+[21:13:27] Decks initialized, 2 found.
+[21:13:41] AI is watch.
+[21:15:22] Decks initialized, 2 found.
+[21:15:49] Duel started: 菜菜 versus AI
+[21:15:49] OnStart
+[21:17:27] Duel finished against 菜菜, result: Lose
+[21:22:38] Decks initialized, 2 found.
+[21:23:27] Duel started: AI versus 菜菜
+[21:23:27] OnStart
+[21:24:52] Duel finished against 菜菜, result: Lose
+[21:28:52] Decks initialized, 2 found.
+[21:29:14] Server is close

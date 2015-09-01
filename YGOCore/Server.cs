@@ -102,6 +102,7 @@ namespace YGOCore
 				}catch(IOException){
 					
 				}
+				IsListening = true;
 				m_listener = new TcpListener(IPAddress.Any, port == 0 ? Program.Config.ServerPort : port);
 				m_listener.Start();
 				Thread acceptThread=new Thread(new ThreadStart(AcceptClient));
@@ -109,7 +110,7 @@ namespace YGOCore
 				acceptThread.Start();
 				WinSaveTimer.Start();
 				ApiServer.Start();
-				IsListening = true;
+				
 			}
 			catch (SocketException)
 			{

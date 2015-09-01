@@ -147,7 +147,7 @@ namespace YGOCore.Game
 			}
 			IsAuthentified = CheckAuth();
 			if(IsAuthentified){
-				ServerMessage(MsgSystem.getMessage(Name, 0));
+				ServerMessage(MsgSystem.getMessage(Name, 0), PlayerType.White);
 			}
 		}
 		
@@ -402,11 +402,11 @@ namespace YGOCore.Game
 			Send(enter);
 		}
 
-		public void ServerMessage(string msg, string head="[Server] ")
+		public void ServerMessage(string msg, PlayerType type=PlayerType.Yellow, string head="[Server] ")
 		{
 			string finalmsg = head + msg;
 			GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
-			packet.Write((short)PlayerType.Yellow);
+			packet.Write((short)type);
 			packet.Write(finalmsg, finalmsg.Length + 1);
 			Send(packet);
 		}

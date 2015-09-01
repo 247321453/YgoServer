@@ -248,7 +248,8 @@ namespace WindBot.Game
         
         private bool IsInGame(){
         	if(Game.Username==null)return false;
-        	if(Game.Username.StartsWith(_room.Names[0]+"$")||Game.Username.StartsWith(_room.Names[1]+"$")){
+        	if(Game.Username.StartsWith(_room.Names[0]+"$")||Game.Username.StartsWith(_room.Names[1]+"$")
+        	   ||Game.Username==_room.Names[0]||Game.Username==_room.Names[1]){
         		return true;
         	}
         	return false;
