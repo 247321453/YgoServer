@@ -98,6 +98,11 @@ namespace YGOCore
 		/// </summary>
 		public string ServerName{get;private set;}
 		
+		/// <summary>
+		/// 消息过滤文本
+		/// </summary>
+		public string ServerMsgs{get;private set;}
+		
 		public ServerConfig()
 		{
 			ClientVersion = 0x1335;
@@ -121,6 +126,7 @@ namespace YGOCore
 			RecordWin=false;
 			PrivateChat=false;
 			SaveRecordTime=1;//
+			ServerMsgs="server_msg.txt";
 			LoginUrl="http://127.0.0.1/login.php";
 		}
 
@@ -173,9 +179,9 @@ namespace YGOCore
 				case "serverport":
 					ServerPort = Convert.ToInt32(value);
 					break;
-//				case "apiip":
-//					ApiIp=value;
-//					break;
+				case "servermsgs":
+					ServerMsgs=value;
+					break;
 				case "apiport":
 					ApiPort = Convert.ToInt32(value);
 					break;

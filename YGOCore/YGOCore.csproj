@@ -82,7 +82,6 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Plugin\ApiHttpServer.cs" />
     <Compile Include="Plugin\ChatCommand.cs" />
-    <Compile Include="Plugin\ChatTool.cs" />
     <Compile Include="Plugin\Tool.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

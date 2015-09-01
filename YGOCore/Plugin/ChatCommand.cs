@@ -9,6 +9,7 @@
 using System;
 using YGOCore.Game;
 using System.IO;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace YGOCore
@@ -18,6 +19,7 @@ namespace YGOCore
 	/// </summary>
 	public class ChatCommand
 	{
+
 		
 		public static void WriteHead(ServerConfig config){
 			if(config==null){
@@ -39,10 +41,6 @@ namespace YGOCore
 		}
 		public static bool onCommand(Player player,string msg)
 		{
-			bool check=ChatTool.Check(player.Name, msg);
-			if(check){
-				return false;
-			}
 			if(!string.IsNullOrEmpty(msg)){
 				if(msg.StartsWith("@") && !Program.Config.PrivateChat){
 					player.ServerMessage("Can not private chat.");

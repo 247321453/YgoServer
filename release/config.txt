@@ -11,4 +11,5 @@ replayfolder=replay
 recordwin=true
 handshuffle=true
 privatechat=true
+filtermsg=filter_msg.txt
 loginurl=http://www.ygobbs.com/index.php?ctrl=api
