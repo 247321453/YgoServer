@@ -10,7 +10,7 @@ namespace YGOCore
 		/// </summary>
 		public int ServerPort { get; private set; }
 		
-	//	public string ApiIp{get;private set;}
+		//	public string ApiIp{get;private set;}
 		/// <summary>
 		/// api¶Ë¿Ú
 		/// </summary>
@@ -101,12 +101,14 @@ namespace YGOCore
 		
 		public int MaxAICount{get;private set;}
 		
+		public string AIPass{get;private set;}
+		
 		public ServerConfig()
 		{
 			ClientVersion = 0x1335;
 			ServerPort = 8911;
 			ServerName="YGOserver";
-		//	ApiIp="127.0.0.1";
+			//	ApiIp="127.0.0.1";
 			ApiPort=18911;
 			Path = ".";
 			ScriptFolder = "script";
@@ -126,6 +128,7 @@ namespace YGOCore
 			//SaveRecordTime=1;//
 			ServerMsgs="server_msg.txt";
 			MaxAICount=10;
+			AIPass="3ab51053212386455461483e66c65425";//kenan123
 			LoginUrl="http://127.0.0.1/login.php";
 		}
 
@@ -172,6 +175,9 @@ namespace YGOCore
 			variable=variable.ToLower();
 			switch (variable)
 			{
+				case "aipassword":
+					AIPass=value;
+					break;
 				case "maxai":
 					MaxAICount=Convert.ToInt32(value, 10);
 					break;

@@ -193,15 +193,20 @@ namespace YGOCore
 		}
 		
 		public static bool onLogin(string name,string pass){
+			
 			//Logger.WriteLine(name+"$"+pass+" is login");
 			try{
 				string dpass=Tool.GetMd5(pass);
-				string result=Tool.PostHtmlContentByUrl(Program.Config.LoginUrl,
-				                                        "username="+name.Replace("&","")+"&password="+dpass,
-				                                        10*1000
-				                                       );
-				if(result.IndexOf("-")<0){
-					return true;
+				if(name.StartsWith("[AI]")){
+					return dpass==Program.Config.AIPass;
+				}else{
+					string result=Tool.PostHtmlContentByUrl(Program.Config.LoginUrl,
+					                                        "username="+name.Replace("&","")+"&password="+dpass,
+					                                        10*1000
+					                                       );
+					if(result.IndexOf("-")<0){
+						return true;
+					}
 				}
 			}catch(Exception){
 				

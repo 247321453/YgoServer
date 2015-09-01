@@ -12,4 +12,5 @@ recordwin=true
 handshuffle=true
 privatechat=true
 servermsgs=server_msg.txt
+aipassword=3ab51053212386455461483e66c65425
 loginurl=http://www.ygobbs.com/index.php?ctrl=api

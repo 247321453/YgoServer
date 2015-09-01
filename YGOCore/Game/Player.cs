@@ -152,7 +152,10 @@ namespace YGOCore.Game
 		}
 		
 		private bool CheckAuth(){
-			if(Program.Config.isNeedAuth){
+			if(namepassword==null){
+				return true;
+			}
+			if(Program.Config.isNeedAuth || namepassword.StartsWith("[AI]")){
 				string[] _names=namepassword.Split('$');
 				if(_names.Length==1){
 					LobbyError("You need a password.");
@@ -397,7 +400,7 @@ namespace YGOCore.Game
 			Send(join);
 
 			GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
-			enter.Write("[" + message + "]", 20);
+			enter.Write("[err]" + message, 20);
 			enter.Write((byte)0);
 			Send(enter);
 		}

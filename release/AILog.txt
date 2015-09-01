@@ -23,3 +23,9 @@
 [21:24:52] Duel finished against 菜菜, result: Lose
 [21:28:52] Decks initialized, 2 found.
 [21:29:14] Server is close
+[22:42:26] Decks initialized, 2 found.
+[22:42:40] Decks initialized, 2 found.
+[22:49:39] Decks initialized, 2 found.
+[22:50:06] Decks initialized, 2 found.
+[22:50:16] Decks initialized, 2 found.
+[22:50:19] Decks initialized, 2 found.

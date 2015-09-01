@@ -142,6 +142,10 @@ namespace WindBot.Game
         private void OnPlayerEnter(GameServerPacket packet)
         {
             string name = packet.ReadUnicode(20);
+            if(name.StartsWith("[err]")){
+            	Connection.Close();
+            	return;
+            }
             int pos = packet.ReadByte();
             if (pos < 8)
                 _room.Names[pos] = name;
