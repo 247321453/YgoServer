@@ -299,7 +299,7 @@ namespace YGOCore.Game
 		private void OnChat(GameClientPacket packet)
 		{
 			string msg = packet.ReadUnicode(256);
-			if(ChatCommand.onCommand(this, msg)){
+			if(ChatCommand.onChat(Game.Config, this, msg)){
 				if(Game!=null)
 					Game.Chat(this, msg);
 			}

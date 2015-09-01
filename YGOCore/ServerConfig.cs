@@ -103,6 +103,8 @@ namespace YGOCore
 		/// </summary>
 		public string ServerMsgs{get;private set;}
 		
+		public int MaxAICount{get;private set;}
+		
 		public ServerConfig()
 		{
 			ClientVersion = 0x1335;
@@ -127,6 +129,7 @@ namespace YGOCore
 			PrivateChat=false;
 			SaveRecordTime=1;//
 			ServerMsgs="server_msg.txt";
+			MaxAICount=10;
 			LoginUrl="http://127.0.0.1/login.php";
 		}
 
@@ -173,6 +176,9 @@ namespace YGOCore
 			variable=variable.ToLower();
 			switch (variable)
 			{
+				case "maxai":
+					MaxAICount=Convert.ToInt32(value, 10);
+					break;
 				case "servername":
 					ServerName=value;
 					break;

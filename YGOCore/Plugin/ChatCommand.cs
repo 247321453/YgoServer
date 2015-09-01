@@ -11,6 +11,8 @@ using YGOCore.Game;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Diagnostics;
+using OcgWrapper.Enums;
 
 namespace YGOCore
 {
@@ -19,7 +21,7 @@ namespace YGOCore
 	/// </summary>
 	public class ChatCommand
 	{
-
+		static int AICount=0;
 		
 		public static void WriteHead(ServerConfig config){
 			if(config==null){
@@ -39,9 +41,17 @@ namespace YGOCore
 			Logger.WriteLine("│NeedAtuh="+config.isNeedAuth+", AutoReplay="+config.AutoReplay+", RecordWin="+config.RecordWin+", PrivateChat="+config.PrivateChat, false);
 			Logger.WriteLine("└───────────────────────────────────",false);
 		}
-		public static bool onCommand(Player player,string msg)
+		public static bool onChat(GameConfig config,Player player,string msg)
 		{
 			if(!string.IsNullOrEmpty(msg)){
+				if(msg=="/ai"){
+					if(config!=null && AddAI(config.Name)){
+						player.ServerMessage("Add AI success.");
+					}else{
+						player.ServerMessage("Add AI fail.");
+					}
+					return false;
+				}
 				if(msg.StartsWith("@") && !Program.Config.PrivateChat){
 					player.ServerMessage("Can not private chat.");
 					return false;
@@ -74,6 +84,33 @@ namespace YGOCore
 				}
 			}
 			return true;
+		}
+		
+		/// <summary>
+		/// 拥有一定数量
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="room"></param>
+		/// <param name="deck"></param>
+		/// <returns></returns>
+		private static bool AddAI(string room){
+			if(AICount>=Program.Config.MaxAICount){
+				return false;
+			}
+			AICount++;
+			Process ai=new Process();
+			ai.StartInfo.FileName = "addai.bat";
+			//设定程式执行参数
+			ai.StartInfo.Arguments = " " + room;
+			ai.StartInfo.CreateNoWindow = true;
+			ai.Exited+=new EventHandler(ai_Exited);
+			ai.Start();
+			return true;
+		}
+
+		static void ai_Exited(object sender, EventArgs e)
+		{
+			AICount--;
 		}
 		
 		public static void onCommand(Server server,string cmd){
@@ -137,6 +174,20 @@ namespace YGOCore
 			}else if(cmd == "cancel close"){
 				Console.WriteLine(">>Server cancel close.");
 				server.CacelCloseDealyed();
+			}else if(cmd=="addai"){
+				try{
+					GameRoom room=GameManager.GetRandomGame();
+					if(room!=null){
+						if(AddAI(room.Game.Config.Name)){
+							room.Game.SendToAll(GameManager.getMessage("[Server] AI join Game.", PlayerType.Yellow));
+							Console.WriteLine("Add AI success.");
+						}else{
+							Console.WriteLine("Add AI fail.");
+						}
+					}
+				}catch(Exception){
+					
+				}
 			}else if(cmd=="help"){
 				Console.WriteLine(">>");
 				Console.WriteLine("roomcount		room count");
@@ -151,6 +202,8 @@ namespace YGOCore
 				Console.WriteLine("to xxx			send msg to player");
 				Console.WriteLine("close			close server");
 				Console.WriteLine("cancel close		cancel close server");
+				Console.WriteLine("maxai			max Ai count");
+				Console.WriteLine("addai			add a AI to random room");
 			}
 			else{
 				Console.WriteLine(">>no this cmd", ConsoleColor.Yellow);
