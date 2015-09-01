@@ -184,6 +184,8 @@ namespace YGOCore
 						}else{
 							Console.WriteLine("Add AI fail.");
 						}
+					}else{
+						Console.WriteLine("Add AI fail:no room");
 					}
 				}catch(Exception){
 					
