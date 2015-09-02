@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -20,7 +21,7 @@ namespace YGOClient
 	public class RoomTool
 	{
 		/// <summary>
-		/// ccygo://127.0.0.1:8911/hello$123
+		/// ccygo://127.0.0.1:8911/hello$123/username
 		/// </summary>
 		/// <param name="cmd"></param>
 		public static void Command(string cmd){
@@ -30,21 +31,28 @@ namespace YGOClient
 			int index=(Program.PRO+"://").Length+1;
 			if(index<cmd.Length){
 				string room =cmd.Substring((Program.PRO+"://").Length+1);
-				Start(cmd);
+				Start(room);
 			}else{
 				MessageBox.Show("error");
 			}
 		}
 		
-		public static void Start(string room)
+		public static void Start(string cmd)
 		{
-			string[] names=room.Split('/');
-			string pass=names[0];
-			string user=names[1];
-			if(!string.IsNullOrEmpty(user)){
-				Write("nickname", user);
+			string[] names=cmd.Split('/');
+			string server=names[0];
+			string room=names.Length>1?names[1]:"";
+			string name=names.Length>2?names[2]:null;
+			string ip=server.Split(':')[0];
+			string port=server.IndexOf(':')>0?server.Split(':')[1]:"7911";
+			Dictionary<string, string> args=new Dictionary<string, string>();
+			if(!string.IsNullOrEmpty(name)){
+				args.Add("nickname", name);
 			}
-			Write("password", pass);
+			args.Add("lastip", ip);
+			args.Add("lastport", port);
+			args.Add("roompass", room);
+			Write(args);
 			RunGame("-r");
 		}
 		
@@ -62,7 +70,7 @@ namespace YGOClient
 			MessageBox.Show("no find ygopro.exe");
 		}
 		
-		private static void Write(string key,string value){
+		private static void Write(Dictionary<string, string> args){
 			string file= Combine(Application.StartupPath, "system.conf");
 			if(File.Exists(file)){
 				string[] lines=File.ReadAllLines(file);
@@ -70,11 +78,27 @@ namespace YGOClient
 					if(lines[i]==null){
 						continue;
 					}
-					if(lines[i].StartsWith(key)){
-						lines[i]=key+" = "+value;
+					foreach(string key in args.Keys){
+						if(lines[i].StartsWith(key)){
+							lines[i]=key+" = "+args[key];
+							args.Remove(key);
+							break;
+						}
+					}
+					if(args.Count==0){
+						break;
 					}
 				}
-				File.WriteAllLines(file, lines);
+				if(args.Count>0){
+					List<string> newlines=new List<string>();
+					newlines.AddRange(lines);
+					foreach(string key in args.Keys){
+						newlines.Add(key+" = "+args[key]);
+					}
+					File.WriteAllLines(file, newlines.ToArray());
+				}else{
+					File.WriteAllLines(file, lines);
+				}
 				return;
 			}
 			MessageBox.Show("no find system.conf");
