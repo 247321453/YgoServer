@@ -50,6 +50,7 @@ namespace WindBot.Game.Data {
         	if(!name.EndsWith(".ydk")){
         		name+=".ydk";
         	}
+        	Logger.WriteLine("use deck is "+name);
             StreamReader reader = null;
             try {
                 reader = new StreamReader(new FileStream("Decks/" + name, FileMode.Open, FileAccess.Read));

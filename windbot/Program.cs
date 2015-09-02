@@ -18,8 +18,6 @@ namespace WindBot
 
 		public static void Main(string[] args)
 		{
-			DecksManager.Init();
-			Console.ReadKey();
 			if(args.Length < 3)
 			{
 				Console.Out.WriteLine("String username, String serverIP, int serverPort,String room,String deck");
@@ -46,6 +44,7 @@ namespace WindBot
 
 		private static void Run(String username, String serverIP, int serverPort,String room, String deck)
 		{
+			Logger.WriteLine("AI is running...");
 			Rand = new Random();
 			PathManager.Init(".", "script", "cards.cdb");
 			CardsManager.Init();

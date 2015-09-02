@@ -1,5 +1,0 @@
-[09:43:04] Decks initialized, 2 found.
-[09:48:17] Decks initialized, 2 found.
-[09:59:29] Decks initialized, 2 found.
-[09:59:29] read deck fail.
-[10:48:17] Decks initialized, 2 found.

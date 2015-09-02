@@ -40,7 +40,6 @@ namespace WindBot.Game.AI
 					{
 						DeckAttribute deck = (DeckAttribute)attribute;
 						_decks.Add(deck.Name, new DeckInstance(deck.File, type));
-						Console.WriteLine(""+type);
 					}
 				}
 			}

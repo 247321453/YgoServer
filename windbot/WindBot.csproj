@@ -39,7 +39,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <StartAction>Project</StartAction>
-    <StartArguments>AI ai_deck01 127.0.0.1 8911 hello</StartArguments>
+    <StartArguments>[AI]test$kenan123 127.0.0.1 8911 hello AI_Horus</StartArguments>
     <StartWorkingDirectory>..\release\</StartWorkingDirectory>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
@@ -48,7 +48,7 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <StartAction>Project</StartAction>
-    <StartArguments>[AI]$kenan123 127.0.0.1 8911 T#hello ai_deck01 </StartArguments>
+    <StartArguments>[AI]$kenan123 127.0.0.1 8911 T#hello AI_Horus</StartArguments>
     <StartWorkingDirectory>..\release\</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
