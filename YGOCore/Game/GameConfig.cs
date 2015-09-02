@@ -142,6 +142,8 @@ namespace YGOCore.Game
 							int.TryParse(tmp, out tmpInt);
 							DrawCount = tmpInt>0?tmpInt:1;
 						}
+						//M#
+						//head=1
 						if(head+1>=gameinfo.Length){
 							string _name=GameManager.RandomRoomName(gameinfo);
 							if(_name==null){
@@ -152,7 +154,7 @@ namespace YGOCore.Game
 								Name=_name;
 							}
 						}else{
-							Name=gameinfo.Substring(head+1);
+							Name=gameinfo;//.Substring(head+1);
 						}
 					}
 				}

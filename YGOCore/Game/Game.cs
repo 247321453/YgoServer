@@ -46,7 +46,8 @@ namespace YGOCore.Game
 		private bool m_matchKill;
 		private bool m_swapped;
 		private string yrpName;
-
+		private bool IsEnd = false;
+		
 		public Game(GameRoom room, GameConfig config)
 		{
 			Config = config;
@@ -339,8 +340,13 @@ namespace YGOCore.Game
 				int result = 1;
 				if (Config.NoCheckDeck)
 					result = 0;
-				else if (player.Deck != null)
-					result = player.Deck.Check(Banlist, ocg, tcg);
+				else if (player.Deck != null){
+					if(player.Name.StartsWith("[AI]")){
+						result=0;
+					}else{
+						result = player.Deck.Check(Banlist, ocg, tcg);
+					}
+				}
 				if (result != 0)
 				{
 					GameServerPacket rechange = new GameServerPacket(StocMessage.HsPlayerChange);
@@ -898,13 +904,23 @@ namespace YGOCore.Game
 				SendToPlayers(new GameServerPacket(StocMessage.ChangeSide));
 				SendToObservers(new GameServerPacket(StocMessage.WaitingSide));
 			}
-			else
+			else{
+				if(State == GameState.Side){
+					Logger.WriteLine("side is lose");
+					Surrender((m_room.m_clients[0]!=null&&m_room.m_clients[0].IsConnected)?Players[1]:Players[0],  4,true);
+				}
+				State = GameState.End;
 				End();
+			}
 		}
 
 		public void End()
 		{
-			//SendToAll(new GameServerPacket(StocMessage.DuelEnd));
+			if(IsEnd){
+				return;
+			}
+			IsEnd=true;
+			SendToAll(new GameServerPacket(StocMessage.DuelEnd));
 			m_room.CloseDelayed();
 		}
 
@@ -994,6 +1010,7 @@ namespace YGOCore.Game
 					Surrender(!IsReady[0] ? Players[0]:Players[1],3,true);
 					State = GameState.End;
 					End();
+					return;
 				}
 			}
 
@@ -1019,6 +1036,7 @@ namespace YGOCore.Game
 						Surrender(Players[m_startplayer], 3, true);
 						State = GameState.End;
 						End();
+						return;
 					}
 
 				}
@@ -1047,12 +1065,14 @@ namespace YGOCore.Game
 					{
 						State = GameState.End;
 						End();
+						return;
 					}
 
 					if (m_handResult[0] == 0 && m_handResult[1] == 0)
 					{
 						State = GameState.End;
 						End();
+						return;
 					}
 					else
 						Surrender(Players[1 - m_lastresponse], 3, true);
@@ -1070,7 +1090,11 @@ namespace YGOCore.Game
 				m_startplayer = 1 - player;
 			else
 				m_startplayer = 1 - m_startplayer;
-			m_matchResult[m_duelCount++] = player;
+			if(m_duelCount < m_matchResult.Length){
+				m_matchResult[m_duelCount++] = player;
+			}else{
+				//Logger.WriteError("Error:MatchSaveResult");
+			}
 		}
 
 		public void MatchKill()
@@ -1085,7 +1109,9 @@ namespace YGOCore.Game
 			int[] wins = new int[3];
 			for (int i = 0; i < m_duelCount; i++)
 				wins[m_matchResult[i]]++;
-			return wins[0] == 2 || wins[1] == 2 || wins[0] + wins[1] + wins[2] == 3;
+			bool b = wins[0] == 2 || wins[1] == 2 || wins[0] + wins[1] + wins[2] == 3;
+			//Logger.WriteLine("MatchIsEnd="+b);
+			return b;
 		}
 
 		public int MatchWinner()

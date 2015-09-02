@@ -1,0 +1,137 @@
+[21:57:14] Duel finished against 阿斯, result: Lose
+[21:57:14] onChangeSide
+[21:57:20] Duel started: 阿斯 versus [AI]
+[21:57:20] OnStart
+[21:58:29] Duel finished against 阿斯, result: Lose
+[21:58:29] OnDuelEnd
+[22:09:26] [AI]$kenan123 join 127.0.0.1:8911 M#DdgDJ use 
+[22:09:26] Decks initialized, 2 found.
+[22:09:26] use deck is Horus
+[22:09:28] Duel started: 阿斯 versus [AI]
+[22:09:28] OnStart
+[22:10:43] Duel finished against 阿斯, result: Lose
+[22:10:43] onChangeSide
+[22:10:48] Duel started: 阿斯 versus [AI]
+[22:10:48] OnStart
+[22:12:45] Duel finished against 阿斯, result: Lose
+[22:12:45] OnDuelEnd
+[22:13:21] [AI]$kenan123 join 127.0.0.1:8911 M#6tN9z use 
+[22:13:21] Decks initialized, 2 found.
+[22:13:21] use deck is AI_Horus
+[22:13:25] Duel started: 阿斯 versus [AI]
+[22:13:25] OnStart
+[22:13:51] Duel finished against 阿斯, result: Win
+[22:13:51] onChangeSide
+[22:13:57] Duel started: 阿斯 versus [AI]
+[22:13:57] OnStart
+[22:14:25] Duel finished against 阿斯, result: Win
+[22:14:25] onChangeSide
+[22:14:38] Duel started: 阿斯 versus [AI]
+[22:14:38] OnStart
+[22:15:26] Duel finished against 阿斯, result: Win
+[22:15:26] OnDuelEnd
+[22:17:07] [AI]$kenan123 join 127.0.0.1:8911 M#CrpYn use 
+[22:17:07] Decks initialized, 2 found.
+[22:17:07] use deck is AI_OldSchool
+[22:17:14] Duel started: 阿斯 versus [AI]
+[22:17:14] OnStart
+[22:17:47] Duel finished against 阿斯, result: Win
+[22:17:47] onChangeSide
+[22:17:55] Duel started: 阿斯 versus [AI]
+[22:17:55] OnStart
+[22:18:29] Duel finished against 阿斯, result: Win
+[22:18:29] onChangeSide
+[22:18:48] Duel started: 阿斯 versus [AI]
+[22:18:48] OnStart
+[22:19:37] Duel finished against 阿斯, result: Win
+[22:19:37] OnDuelEnd
+[22:20:36] [AI]$kenan123 join 127.0.0.1:8911 M#HDLzq use 
+[22:20:36] Decks initialized, 2 found.
+[22:20:36] use deck is AI_Horus
+[22:20:39] Duel started: 阿斯 versus [AI]
+[22:20:39] OnStart
+[22:21:05] Duel finished against 阿斯, result: Win
+[22:21:05] onChangeSide
+[22:21:19] Duel started: 阿斯 versus [AI]
+[22:21:19] OnStart
+[22:21:55] Duel finished against 阿斯, result: Win
+[22:21:55] onChangeSide
+[22:22:07] Duel started: 阿斯 versus [AI]
+[22:22:07] OnStart
+[22:22:29] Server is close
+[22:24:30] [AI]$kenan123 join 127.0.0.1:8911 M#s1pkD use 
+[22:24:30] Decks initialized, 2 found.
+[22:24:30] use deck is AI_Horus
+[22:24:34] Duel started: 阿斯 versus [AI]
+[22:24:34] OnStart
+[22:25:06] Duel finished against 阿斯, result: Win
+[22:25:06] onChangeSide
+[22:25:12] Duel started: 阿斯 versus [AI]
+[22:25:12] OnStart
+[22:26:03] Duel finished against 阿斯, result: Win
+[22:26:03] onChangeSide
+[22:27:44] [AI]$kenan123 join 127.0.0.1:8911 M#D7/C0 use 
+[22:27:44] Decks initialized, 2 found.
+[22:27:44] use deck is AI_OldSchool
+[22:27:52] Duel started: 阿斯 versus [AI]
+[22:27:52] OnStart
+[22:28:29] Duel finished against 阿斯, result: Win
+[22:28:29] onChangeSide
+[22:28:34] Duel started: 阿斯 versus [AI]
+[22:28:34] OnStart
+[22:29:08] Duel finished against 阿斯, result: Win
+[22:29:08] OnDuelEnd
+[22:29:26] [AI]$kenan123 join 127.0.0.1:8911 M#tEfgt use 
+[22:29:26] Decks initialized, 2 found.
+[22:29:26] use deck is Horus
+[22:29:29] Duel started: 阿斯 versus [AI]
+[22:29:29] OnStart
+[22:29:57] Duel finished against 阿斯, result: Win
+[22:29:57] onChangeSide
+[22:34:46] [AI]$kenan123 join 127.0.0.1:8911 M#DMx41 use 
+[22:34:46] Decks initialized, 2 found.
+[22:34:46] use deck is Horus
+[22:34:49] Duel started: 阿斯 versus [AI]
+[22:34:49] OnStart
+[22:35:21] Duel finished against 阿斯, result: Win
+[22:35:21] onChangeSide
+[22:49:26] [AI]$kenan123 join 127.0.0.1:8911 M#mlAZP use 
+[22:49:26] Decks initialized, 2 found.
+[22:49:26] use deck is AI_Horus
+[22:49:28] Duel started: 阿斯 versus [AI]
+[22:49:28] OnStart
+[22:50:32] Duel finished against 阿斯, result: Win
+[22:50:32] onChangeSide
+[22:50:37] Duel started: 阿斯 versus [AI]
+[22:50:37] OnStart
+[22:51:15] Duel finished against 阿斯, result: Win
+[22:51:15] OnDuelEnd
+[22:51:41] [AI]$kenan123 join 127.0.0.1:8911 M#BEUch use 
+[22:51:41] Decks initialized, 2 found.
+[22:51:41] use deck is Horus
+[22:52:13] Duel started: 阿斯 versus [AI]
+[22:52:13] OnStart
+[22:53:01] Duel finished against 阿斯, result: Win
+[22:53:01] onChangeSide
+[23:48:52] [AI]$kenan123 join 127.0.0.1:8911 M#GRf7n use 
+[23:48:52] Decks initialized, 2 found.
+[23:48:52] use deck is AI_Horus
+[23:48:54] Duel started: 阿斯2 versus [AI]
+[23:48:54] OnStart
+[23:49:35] Duel finished against 阿斯2, result: Win
+[23:49:35] onChangeSide
+[23:49:40] Duel started: 阿斯2 versus [AI]
+[23:49:40] OnStart
+[23:50:26] Duel finished against 阿斯2, result: Win
+[23:50:26] OnDuelEnd
+[23:51:39] [AI]$kenan123 join 127.0.0.1:8911 M#oEsXT use 
+[23:51:39] Decks initialized, 2 found.
+[23:51:39] use deck is AI_Horus
+[23:51:42] Duel started: 阿斯2 versus [AI]
+[23:51:42] OnStart
+[23:52:30] Duel finished against 阿斯2, result: Win
+[23:52:30] onChangeSide
+[23:52:38] Duel started: 阿斯2 versus [AI]
+[23:52:38] OnStart
+[23:53:12] Duel finished against 阿斯2, result: Win
+[23:53:12] OnDuelEnd

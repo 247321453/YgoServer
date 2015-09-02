@@ -198,7 +198,7 @@ namespace YGOCore
 			try{
 				string dpass=Tool.GetMd5(pass);
 				if(name.StartsWith("[AI]")){
-					return dpass==Program.Config.AIPass;
+					return dpass==Tool.GetMd5(Program.Config.AIPass);
 				}else{
 					string result=Tool.PostHtmlContentByUrl(Program.Config.LoginUrl,
 					                                        "username="+name.Replace("&","")+"&password="+dpass,

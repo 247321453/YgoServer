@@ -28,7 +28,7 @@ namespace YGOCore
 				return;
 			}
 			string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			Console.Title=(string.IsNullOrEmpty(config.ServerName)?"YgoServer":config.ServerName)+" "+Version;
+			Console.Title=(string.IsNullOrEmpty(config.ServerName)?"YgoServer":config.ServerName);
 			Logger.WriteLine("┌───────────────────────────────────",false);
 			Logger.WriteLine("│ __     _______  ____   _____",false);
 			Logger.WriteLine("│ \\ \\   / / ____|/ __ \\ / ____|", false);
@@ -48,7 +48,7 @@ namespace YGOCore
 					if(config!=null && AddAI(config.Name)){
 						player.ServerMessage("Add AI success.");
 					}else{
-						player.ServerMessage("Add AI fail.");
+						player.ServerMessage("no free AI.");
 					}
 					return false;
 				}
@@ -99,10 +99,13 @@ namespace YGOCore
 			}
 			AICount++;
 			Process ai=new Process();
-			ai.StartInfo.FileName = "addai.bat";
+			ai.StartInfo.FileName = "ai";
 			//设定程式执行参数
-			ai.StartInfo.Arguments = " " + room;
-			ai.StartInfo.CreateNoWindow = true;
+			ai.StartInfo.Arguments =
+				" [AI]$"+Program.Config.AIPass
+				+" 127.0.0.1 "
+				+Program.Config.ServerPort
+				+ " "+room;
 			ai.Exited+=new EventHandler(ai_Exited);
 			ai.Start();
 			return true;
@@ -110,6 +113,7 @@ namespace YGOCore
 
 		static void ai_Exited(object sender, EventArgs e)
 		{
+			Logger.WriteLine("AI exit game. count="+AICount);
 			AICount--;
 		}
 		
@@ -177,15 +181,14 @@ namespace YGOCore
 			}else if(cmd=="addai"){
 				try{
 					GameRoom room=GameManager.GetRandomGame();
+					string _rname=GameManager.RandomRoomName();
 					if(room!=null){
-						if(AddAI(room.Game.Config.Name)){
-							room.Game.SendToAll(GameManager.getMessage("[Server] AI join Game.", PlayerType.Yellow));
-							Console.WriteLine("Add AI success.");
-						}else{
-							Console.WriteLine("Add AI fail.");
-						}
+						_rname=room.Game.Config.Name;
+					}
+					if(AddAI(_rname)){
+						Console.WriteLine("Add AI success:"+_rname);
 					}else{
-						Console.WriteLine("Add AI fail:no room");
+						Console.WriteLine("Add AI fail, max="+Program.Config.MaxAICount);
 					}
 				}catch(Exception){
 					

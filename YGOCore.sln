@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 # SharpDevelop 4.4
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YGOCore", "YGOCore\YGOCore.csproj", "{96C45ACA-7729-4147-AD99-B829EFAD23B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YGOServer", "YGOCore\YGOServer.csproj", "{96C45ACA-7729-4147-AD99-B829EFAD23B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindBot", "windbot\WindBot.csproj", "{3E7FAF67-A27D-4A61-B161-93AD4414183E}"
 EndProject

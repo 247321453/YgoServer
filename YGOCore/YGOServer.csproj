@@ -18,6 +18,8 @@
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <StartupObject>YGOCore.Program</StartupObject>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -111,6 +113,9 @@
     </Compile>
     <Compile Include="..\lib\Ocgcore\Network\DuelPhase.cs">
       <Link>Ocgcore\Network\DuelPhase.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\Error.cs">
+      <Link>Ocgcore\Network\Error.cs</Link>
     </Compile>
     <Compile Include="..\lib\Ocgcore\Network\GameMessage.cs">
       <Link>Ocgcore\Network\GameMessage.cs</Link>

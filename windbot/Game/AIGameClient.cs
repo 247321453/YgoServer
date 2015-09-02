@@ -1,5 +1,7 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Text;
+using System.IO;
 using WindBot.Game;
 using WindBot.Game.AI;
 using WindBot.Game.Data;
@@ -31,6 +33,17 @@ namespace WindBot.Game
 			_serverHost = serverHost;
 			_serverPort = serverPort;
 			_roomInfos = roomInfos;
+			Random random=new Random(Environment.TickCount);
+			if(string.IsNullOrEmpty(Deck_)){
+				DirectoryInfo dir=new DirectoryInfo("Decks/");
+				FileInfo[] files=dir.GetFiles("*.ydk");
+				if(files.Length>0){
+					int index=random.Next(files.Length);
+					Deck_=files[index].Name;
+				}
+			}
+			Deck_=Deck_.Replace(".ydk", "");
+			Logger.WriteLine("use deck is "+Deck_);
 		}
 
 		public void Start()
@@ -49,6 +62,7 @@ namespace WindBot.Game
 
 			packet.Write(_roomInfos, 30);
 
+			
 			Deck deck = Deck.Load(Deck_);
 			if(deck == null) {
 				Logger.WriteLine("read deck fail.");

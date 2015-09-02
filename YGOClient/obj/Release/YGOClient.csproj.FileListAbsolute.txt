@@ -1,10 +1,8 @@
 F:\git\ygoserver\YGOClient\bin\Release\YGOClient.exe
 F:\git\ygoserver\YGOClient\obj\Release\YGOClient.csprojResolveAssemblyReference.cache
-F:\git\ygoserver\YGOClient\obj\Release\YGOClient.ClinetForm.resources
-F:\git\ygoserver\YGOClient\obj\Release\YGOClient.NotificationIcon.resources
-F:\git\ygoserver\YGOClient\obj\Release\YGOClient.csproj.GenerateResource.Cache
 F:\git\ygoserver\YGOClient\obj\Release\YGOClient.exe
 D:\code\ygoserver\YGOClient\bin\Release\YGOClient.exe
 D:\code\ygoserver\YGOClient\obj\Release\YGOClient.exe
 D:\code\ygoserver\YGOClient\bin\Release\install.bat
 D:\code\ygoserver\YGOClient\obj\Release\YGOClient.csprojResolveAssemblyReference.cache
+F:\git\ygoserver\YGOClient\bin\Release\install.bat

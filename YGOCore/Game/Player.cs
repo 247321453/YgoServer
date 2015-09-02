@@ -264,8 +264,10 @@ namespace YGOCore.Game
 //					room = GameManager.CreateOrGetGame(new GameConfig(joinCommand));
 //			}
 			#endregion
-			else
+			else{
 				room = GameManager.CreateOrGetGame(new GameConfig(joinCommand));
+				//Logger.WriteLine("join "+room.Game.Config.Name);
+			}
 
 			if (room == null)
 			{
@@ -299,7 +301,6 @@ namespace YGOCore.Game
 			}
 			Game = room.Game;
 			Game.AddPlayer(this);
-
 		}
 
 		private void OnChat(GameClientPacket packet)

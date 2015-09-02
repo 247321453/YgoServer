@@ -37,14 +37,14 @@ namespace WindBot
 			}
 			catch (Exception ex)
 			{
-				Console.Error.WriteLine("Error: " + ex);
+				Logger.WriteLine("Error: " + ex);
 				Console.ReadKey();
 			}
 		}
 
 		private static void Run(String username, String serverIP, int serverPort,String room, String deck)
 		{
-			Logger.WriteLine("AI is running...");
+			Logger.WriteLine(username+" join "+serverIP+":"+serverPort+" "+room+" use "+deck);
 			Rand = new Random();
 			PathManager.Init(".", "script", "cards.cdb");
 			CardsManager.Init();

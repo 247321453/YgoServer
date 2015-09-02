@@ -3,6 +3,7 @@ clientversion=1336
 servername=菜菜服务器
 serverport=8911
 apiport=18911
+maxai=50
 needauth=false
 maxroom=200
 consolelog=true
@@ -12,5 +13,5 @@ recordwin=true
 handshuffle=true
 privatechat=true
 servermsgs=server_msg.txt
-aipassword=3ab51053212386455461483e66c65425
+aipassword=kenan123
 loginurl=http://www.ygobbs.com/index.php?ctrl=api
