@@ -50,7 +50,7 @@ namespace WindBot.Game.AI
 
 			Logger.WriteLine("Decks initialized, " + _decks.Count + " found.");
 		}
-
+		
 		public static Executor Instantiate(GameAI ai, Duel duel)
 		{
 			DeckInstance infos;

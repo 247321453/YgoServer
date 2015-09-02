@@ -3,7 +3,7 @@ using OcgWrapper.Enums;
 
 namespace WindBot.Game.AI.Decks
 {
-    [Deck("ai_deck01")]
+    [Deck("Horus", "AI_Horus")]
     public class HorusExecutor : DefaultExecutor
     {
         public enum CardId

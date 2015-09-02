@@ -160,10 +160,18 @@
     <Folder Include="Ocgcore" />
     <Folder Include="Ocgcore\Enums" />
     <Folder Include="Ocgcore\Network" />
+    <Folder Include="Decks" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\lib\sqlite3.dll">
       <Link>sqlite3.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Decks\AI_Horus.ydk" />
+    <None Include="Decks\AI_OldSchool.ydk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Decks\Horus.ydk">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
