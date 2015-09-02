@@ -42,8 +42,8 @@ namespace YGOCore
 			ApiServer=new MyHttpServer(this, Program.Config.ApiPort);
 		}
 		
-		public string getRoomJson(){
-			List<RoomInfo> list=GameManager.getRoomInfos();
+		public string getRoomJson(bool hasLock=true,bool hasStart=true){
+			List<RoomInfo> list=GameManager.getRoomInfos(hasLock, hasStart);
 			return Tool.ToJson(list);
 //			string json="[";
 //			foreach(RoomInfo info in list){

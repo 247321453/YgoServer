@@ -42,7 +42,7 @@ namespace YGOCore
 		/// 房间列表
 		/// </summary>
 		/// <returns></returns>
-		public static List<RoomInfo> getRoomInfos(){
+		public static List<RoomInfo> getRoomInfos(bool hasLock=true,bool hasStart=true){
 			List<RoomInfo> rooms=new List<RoomInfo>();
 			GameRoom[] grooms;
 			//MutexRooms.WaitOne();
