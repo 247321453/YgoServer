@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using OcgWrapper;
+using WindBot.Game.AI;
 
 namespace WindBot.Game.Data {
     public class Deck {
@@ -34,6 +35,12 @@ namespace WindBot.Game.Data {
         }
 
         public static Deck Load(string name) {
+        	if(string.IsNullOrEmpty(name)){
+        		name=DecksManager.GetRandomDeck();
+        	}
+        	if(string.IsNullOrEmpty(name)){
+        		return null;
+        	}
             StreamReader reader = null;
             try {
                 reader = new StreamReader(new FileStream("Decks/" + name + ".ydk", FileMode.Open, FileAccess.Read));

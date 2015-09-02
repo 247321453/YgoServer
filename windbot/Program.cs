@@ -20,16 +20,18 @@ namespace WindBot
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			if(args.Length < 4)
 			{
-				Console.Out.WriteLine("String username, String deck, String serverIP, int serverPort,String password");
+				Console.Out.WriteLine("String username, String serverIP, int serverPort,String room,String deck");
 				//  args=new String[] {"AI", ""};
 				return;
 			}
 			try
 			{
-				if(args.Length==4){
-					Run(args[0], args[1], args[2], int.Parse(args[3]), "");
+				if(args.Length==3){
+					Run(args[0], args[1], int.Parse(args[2]), "", "");
+				}else if(args.Length==4){
+					Run(args[0], args[1], int.Parse(args[2]), args[3], "");
 				}else{
-					Run(args[0], args[1], args[2], int.Parse(args[3]), args[4]);
+					Run(args[0], args[1], int.Parse(args[2]), args[3], args[4]);
 				}
 				
 			}
@@ -39,7 +41,7 @@ namespace WindBot
 			}
 		}
 
-		private static void Run(String username, String deck, String serverIP, int serverPort,String room)
+		private static void Run(String username, String serverIP, int serverPort,String room, String deck)
 		{
 			Rand = new Random();
 			Api.Init();

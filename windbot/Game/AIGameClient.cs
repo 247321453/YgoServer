@@ -51,7 +51,8 @@ namespace WindBot.Game
 
 			Deck deck = Deck.Load(Deck_);
 			if(deck == null) {
-				return;
+				Logger.WriteLine("read deck fail.");
+				Connection.Close();
 			}
 
 			packet.Write((byte)CtosMessage.UpdateDeck);
