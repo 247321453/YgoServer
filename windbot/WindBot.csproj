@@ -24,30 +24,31 @@
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;__MonoCS__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;__MonoCS__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <StartAction>Project</StartAction>
     <StartArguments>AI ai_deck01 127.0.0.1 8911 hello</StartArguments>
     <StartWorkingDirectory>..\release\</StartWorkingDirectory>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <StartAction>Project</StartAction>
-    <StartArguments>AI ai_deck01 127.0.0.1 8911 T#hello</StartArguments>
+    <StartArguments>[AI]$kenan123 127.0.0.1 8911 T#hello ai_deck01 </StartArguments>
     <StartWorkingDirectory>..\release\</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
@@ -56,6 +57,9 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Data.Sqlite">
+      <HintPath>..\lib\Mono.Data.Sqlite.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -98,19 +102,37 @@
     <Compile Include="Network\GameServerPacket.cs" />
     <Compile Include="Game\Room.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Ocgcore\Card.cs" />
+    <Compile Include="Ocgcore\Enums\CardAttribute.cs" />
+    <Compile Include="Ocgcore\Enums\CardLocation.cs" />
+    <Compile Include="Ocgcore\Enums\CardPosition.cs" />
+    <Compile Include="Ocgcore\Enums\CardRace.cs" />
+    <Compile Include="Ocgcore\Enums\CardType.cs" />
+    <Compile Include="Ocgcore\Enums\Query.cs" />
+    <Compile Include="Ocgcore\Managers\CardsManager.cs" />
+    <Compile Include="Ocgcore\Managers\PathManager.cs" />
+    <Compile Include="Ocgcore\Network\CtosMessage.cs" />
+    <Compile Include="Ocgcore\Network\DuelPhase.cs" />
+    <Compile Include="Ocgcore\Network\GameMessage.cs" />
+    <Compile Include="Ocgcore\Network\GameState.cs" />
+    <Compile Include="Ocgcore\Network\PlayerChange.cs" />
+    <Compile Include="Ocgcore\Network\PlayerState.cs" />
+    <Compile Include="Ocgcore\Network\PlayerType.cs" />
+    <Compile Include="Ocgcore\Network\StocMessage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="sqlite3.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
+    <Folder Include="Ocgcore" />
+    <Folder Include="Ocgcore\Enums" />
+    <Folder Include="Ocgcore\Managers" />
+    <Folder Include="Ocgcore\Network" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OcgWrapper\OcgWrapper.csproj">
-      <Project>{7788970E-2325-4B42-A5A7-BB0EE496FCE5}</Project>
-      <Name>OcgWrapper</Name>
-    </ProjectReference>
+    <None Include="..\lib\sqlite3.dll">
+      <Link>sqlite3.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

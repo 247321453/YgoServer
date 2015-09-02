@@ -9,7 +9,15 @@
 using System;
 using System.Text;
 using System.IO;
+#if __MonoCS__
+using Mono.Data.Sqlite;
+using SQLiteConnection = Mono.Data.Sqlite.SqliteConnection;
+using SQLiteCommand = Mono.Data.Sqlite.SqliteCommand;
+using SQLiteDataReader = Mono.Data.Sqlite.SqliteDataReader;
+using SQLiteTransaction = Mono.Data.Sqlite.SqliteTransaction;
+#else
 using System.Data.SQLite;
+#endif
 
 namespace OcgWrapper
 {

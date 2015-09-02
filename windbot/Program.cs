@@ -6,6 +6,7 @@ using WindBot.Game.Data;
 using System.IO;
 using System.Diagnostics;
 using OcgWrapper;
+using OcgWrapper.Managers;
 
 namespace WindBot
 {
@@ -18,10 +19,11 @@ namespace WindBot
 		public static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-			if(args.Length < 4)
+			if(args.Length < 3)
 			{
 				Console.Out.WriteLine("String username, String serverIP, int serverPort,String room,String deck");
 				//  args=new String[] {"AI", ""};
+				Console.ReadKey();
 				return;
 			}
 			try
@@ -33,18 +35,19 @@ namespace WindBot
 				}else{
 					Run(args[0], args[1], int.Parse(args[2]), args[3], args[4]);
 				}
-				
 			}
 			catch (Exception ex)
 			{
 				Console.Error.WriteLine("Error: " + ex);
+				Console.ReadKey();
 			}
 		}
 
 		private static void Run(String username, String serverIP, int serverPort,String room, String deck)
 		{
 			Rand = new Random();
-			Api.Init();
+			PathManager.Init(".", "script", "cards.cdb");
+			CardsManager.Init();
 			DecksManager.Init();
 
 			// Start two clients and connect them to the same room. Which deck is gonna win?

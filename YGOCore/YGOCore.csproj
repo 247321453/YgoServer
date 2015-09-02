@@ -14,53 +14,84 @@
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;__MonoCS__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;__MonoCS__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <StartAction>Project</StartAction>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <StartAction>Project</StartAction>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Data.Sqlite">
+      <HintPath>..\lib\Mono.Data.Sqlite.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Runtime.Serialization">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Runtime.Serialization.Json" />
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Data.Sqlite" Condition=" '$(OS)' == 'Unix' " />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ocgcore\Api.cs" />
+    <Compile Include="Ocgcore\Card.cs" />
+    <Compile Include="Ocgcore\Duel.cs" />
+    <Compile Include="Ocgcore\Enums\CardAttribute.cs" />
+    <Compile Include="Ocgcore\Enums\CardLocation.cs" />
+    <Compile Include="Ocgcore\Enums\CardPosition.cs" />
+    <Compile Include="Ocgcore\Enums\CardRace.cs" />
+    <Compile Include="Ocgcore\Enums\CardType.cs" />
+    <Compile Include="Ocgcore\Enums\Query.cs" />
+    <Compile Include="Ocgcore\Helpers\MtRandom.cs" />
+    <Compile Include="Ocgcore\Managers\CardsManager.cs" />
+    <Compile Include="Ocgcore\Managers\PathManager.cs" />
+    <Compile Include="Ocgcore\Network\CtosMessage.cs" />
+    <Compile Include="Ocgcore\Network\DuelPhase.cs" />
+    <Compile Include="Ocgcore\Network\GameMessage.cs" />
+    <Compile Include="Ocgcore\Network\GameState.cs" />
+    <Compile Include="Ocgcore\Network\PlayerChange.cs" />
+    <Compile Include="Ocgcore\Network\PlayerState.cs" />
+    <Compile Include="Ocgcore\Network\PlayerType.cs" />
+    <Compile Include="Ocgcore\Network\StocMessage.cs" />
+    <Compile Include="Ocgcore\SQLiteTool.cs" />
+    <Compile Include="Ocgcore\WinInfo.cs" />
     <Compile Include="GameManager.cs" />
     <Compile Include="Game\Banlist.cs" />
     <Compile Include="Game\BanlistManager.cs" />
@@ -106,15 +137,22 @@
     <Compile Include="SevenZip\ICoder.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OcgWrapper\OcgWrapper.csproj">
-      <Project>{7788970E-2325-4B42-A5A7-BB0EE496FCE5}</Project>
-      <Name>OcgWrapper</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
+    <Folder Include="Ocgcore\Enums" />
+    <Folder Include="Ocgcore\Helpers" />
+    <Folder Include="Ocgcore\Managers" />
+    <Folder Include="Ocgcore\Network" />
     <Folder Include="Plugin" />
+    <Folder Include="Ocgcore" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\lib\ocgcore.dll">
+      <Link>ocgcore.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\lib\sqlite3.dll">
+      <Link>sqlite3.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
