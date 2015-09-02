@@ -70,28 +70,72 @@
     <Reference Include="Mono.Data.Sqlite" Condition=" '$(OS)' == 'Unix' " />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Ocgcore\Api.cs" />
-    <Compile Include="Ocgcore\Card.cs" />
-    <Compile Include="Ocgcore\Duel.cs" />
-    <Compile Include="Ocgcore\Enums\CardAttribute.cs" />
-    <Compile Include="Ocgcore\Enums\CardLocation.cs" />
-    <Compile Include="Ocgcore\Enums\CardPosition.cs" />
-    <Compile Include="Ocgcore\Enums\CardRace.cs" />
-    <Compile Include="Ocgcore\Enums\CardType.cs" />
-    <Compile Include="Ocgcore\Enums\Query.cs" />
-    <Compile Include="Ocgcore\Helpers\MtRandom.cs" />
-    <Compile Include="Ocgcore\Managers\CardsManager.cs" />
-    <Compile Include="Ocgcore\Managers\PathManager.cs" />
-    <Compile Include="Ocgcore\Network\CtosMessage.cs" />
-    <Compile Include="Ocgcore\Network\DuelPhase.cs" />
-    <Compile Include="Ocgcore\Network\GameMessage.cs" />
-    <Compile Include="Ocgcore\Network\GameState.cs" />
-    <Compile Include="Ocgcore\Network\PlayerChange.cs" />
-    <Compile Include="Ocgcore\Network\PlayerState.cs" />
-    <Compile Include="Ocgcore\Network\PlayerType.cs" />
-    <Compile Include="Ocgcore\Network\StocMessage.cs" />
-    <Compile Include="Ocgcore\SQLiteTool.cs" />
-    <Compile Include="Ocgcore\WinInfo.cs" />
+    <Compile Include="..\lib\Ocgcore\Api.cs">
+      <Link>Ocgcore\Api.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Card.cs">
+      <Link>Ocgcore\Card.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Duel.cs">
+      <Link>Ocgcore\Duel.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Enums\CardAttribute.cs">
+      <Link>Ocgcore\Enums\CardAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Enums\CardLocation.cs">
+      <Link>Ocgcore\Enums\CardLocation.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Enums\CardPosition.cs">
+      <Link>Ocgcore\Enums\CardPosition.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Enums\CardRace.cs">
+      <Link>Ocgcore\Enums\CardRace.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Enums\CardType.cs">
+      <Link>Ocgcore\Enums\CardType.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Enums\Query.cs">
+      <Link>Ocgcore\Enums\Query.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Helpers\MtRandom.cs">
+      <Link>Ocgcore\MtRandom.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Managers\CardsManager.cs">
+      <Link>Ocgcore\CardsManager.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Managers\PathManager.cs">
+      <Link>Ocgcore\PathManager.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\CtosMessage.cs">
+      <Link>Ocgcore\Network\CtosMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\DuelPhase.cs">
+      <Link>Ocgcore\Network\DuelPhase.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\GameMessage.cs">
+      <Link>Ocgcore\Network\GameMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\GameState.cs">
+      <Link>Ocgcore\Network\GameState.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\PlayerChange.cs">
+      <Link>Ocgcore\Network\PlayerChange.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\PlayerState.cs">
+      <Link>Ocgcore\Network\PlayerState.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\PlayerType.cs">
+      <Link>Ocgcore\Network\PlayerType.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\StocMessage.cs">
+      <Link>Ocgcore\Network\StocMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\SQLiteTool.cs">
+      <Link>Ocgcore\SQLiteTool.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\WinInfo.cs">
+      <Link>Ocgcore\WinInfo.cs</Link>
+    </Compile>
     <Compile Include="GameManager.cs" />
     <Compile Include="Game\Banlist.cs" />
     <Compile Include="Game\BanlistManager.cs" />
@@ -138,8 +182,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Ocgcore\Enums" />
-    <Folder Include="Ocgcore\Helpers" />
-    <Folder Include="Ocgcore\Managers" />
     <Folder Include="Ocgcore\Network" />
     <Folder Include="Plugin" />
     <Folder Include="Ocgcore" />
