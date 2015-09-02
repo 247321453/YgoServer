@@ -51,6 +51,14 @@
     <Compile Include="ClinetForm.Designer.cs">
       <DependentUpon>ClinetForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="CreateRoomForm.cs" />
+    <Compile Include="CreateRoomForm.Designer.cs">
+      <DependentUpon>CreateRoomForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoginForm.cs" />
+    <Compile Include="LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="NotificationIcon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol.cs" />
