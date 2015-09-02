@@ -8,6 +8,7 @@
  */
 using System;
 using System.Diagnostics;
+using System.Security.Principal;
 
 namespace YGOClient
 {
@@ -16,6 +17,12 @@ namespace YGOClient
 	/// </summary>
 	public class Protocol
 	{
+		public static bool IsAdministrator()
+		{
+			WindowsIdentity identity = WindowsIdentity.GetCurrent();
+			WindowsPrincipal principal = new WindowsPrincipal(identity);
+			return principal.IsInRole(WindowsBuiltInRole.Administrator);
+		}
 		/// <summary>
 		/// 注册启动项到注册表
 		/// </summary>
@@ -29,7 +36,7 @@ namespace YGOClient
 			var commandKey = openKey.CreateSubKey("command");
 			surekamKey.SetValue("URL Protocol", "");
 			//这里可执行文件取当前程序全路径，可根据需要修改
-			var exePath = Process.GetCurrentProcess().MainModule.FileName;
+			var exePath = System.Windows.Forms.Application.ExecutablePath;
 			commandKey.SetValue("", "\"" + exePath + "\"" + " \"%1\"");
 		}
 		/// <summary>
