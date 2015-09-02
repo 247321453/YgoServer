@@ -22,15 +22,6 @@ namespace WindBot.Game.AI
 		private static List<DeckInstance> _list;
 		private static Random _rand;
 
-		public static string GetRandomDeck(){
-			if(_decks==null||_list.Count==0){
-				return "";
-			}
-			Random random=new Random(Environment.TickCount);
-			int i=random.Next(_list.Count);
-			return _list[i].Deck;
-		}
-		
 		public static void Init()
 		{
 			_decks = new Dictionary<string, DeckInstance>();
@@ -49,6 +40,7 @@ namespace WindBot.Game.AI
 					{
 						DeckAttribute deck = (DeckAttribute)attribute;
 						_decks.Add(deck.Name, new DeckInstance(deck.File, type));
+						Console.WriteLine(""+type);
 					}
 				}
 			}

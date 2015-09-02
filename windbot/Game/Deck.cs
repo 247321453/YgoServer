@@ -9,6 +9,7 @@ namespace WindBot.Game.Data {
         public IList<Card> Cards { get; private set; }
         public IList<Card> ExtraCards { get; private set; }
         public IList<Card> SideCards { get; private set; }
+        static Random random=new Random(Environment.TickCount);
 
         public Deck() {
             Cards = new List<Card>();
@@ -36,14 +37,22 @@ namespace WindBot.Game.Data {
 
         public static Deck Load(string name) {
         	if(string.IsNullOrEmpty(name)){
-        		name=DecksManager.GetRandomDeck();
+        		DirectoryInfo dir=new DirectoryInfo("Decks/");
+        		FileInfo[] files=dir.GetFiles("*.ydk");
+        		if(files.Length>0){
+        			int index=random.Next(files.Length);
+        			name=files[index].Name;
+        		}
         	}
         	if(string.IsNullOrEmpty(name)){
         		return null;
         	}
+        	if(!name.EndsWith(".ydk")){
+        		name+=".ydk";
+        	}
             StreamReader reader = null;
             try {
-                reader = new StreamReader(new FileStream("Decks/" + name + ".ydk", FileMode.Open, FileAccess.Read));
+                reader = new StreamReader(new FileStream("Decks/" + name, FileMode.Open, FileAccess.Read));
 
                 Deck deck = new Deck();
                 bool side = false;

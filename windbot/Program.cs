@@ -18,7 +18,8 @@ namespace WindBot
 
 		public static void Main(string[] args)
 		{
-			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+			DecksManager.Init();
+			Console.ReadKey();
 			if(args.Length < 3)
 			{
 				Console.Out.WriteLine("String username, String serverIP, int serverPort,String room,String deck");
@@ -59,14 +60,6 @@ namespace WindBot
 				Thread.Sleep(1);
 			}
 			//Thread.Sleep(3000);
-		}
-		private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
-		{
-			Exception exception = e.ExceptionObject as Exception ?? new Exception();
-
-			File.WriteAllText("crash_" + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt", exception.ToString());
-
-			Process.GetCurrentProcess().Kill();
 		}
 	}
 }
