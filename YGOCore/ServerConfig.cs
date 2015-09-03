@@ -11,6 +11,7 @@ namespace YGOCore
 		public int ServerPort { get; private set; }
 		
 		//	public string ApiIp{get;private set;}
+		public bool ApiIsLocal{get; private set;}
 		/// <summary>
 		/// api端口
 		/// </summary>
@@ -34,7 +35,7 @@ namespace YGOCore
 		/// <summary>
 		/// log
 		/// </summary>
-		public bool Log { get; private set; }
+		public bool ErrorLog { get; private set; }
 		/// <summary>
 		/// 控制台日志
 		/// </summary>
@@ -93,7 +94,10 @@ namespace YGOCore
 		/// 服务端名字
 		/// </summary>
 		public string ServerName{get;private set;}
-		
+		/// <summary>
+		/// 服务端描述
+		/// </summary>
+		public string ServerDesc{get;private set;}
 		/// <summary>
 		/// 公告文本
 		/// </summary>
@@ -101,6 +105,7 @@ namespace YGOCore
 		
 		public int MaxAICount{get;private set;}
 		
+		public bool AIisHide{get;private set;}
 		public string AIPass{get;private set;}
 		
 		public ServerConfig()
@@ -115,7 +120,7 @@ namespace YGOCore
 			replayFolder="replay";
 			CardCDB = "cards.cdb";
 			BanlistFile = "lflist.conf";
-			Log = true;
+			ErrorLog = true;
 			//RepeatLogin=true;
 			ConsoleLog = true;
 			HandShuffle = false;
@@ -126,10 +131,13 @@ namespace YGOCore
 			RecordWin=false;
 			PrivateChat=false;
 			//SaveRecordTime=1;//
+			ServerDesc="Server is Testing.";
 			ServerMsgs="server_msg.txt";
 			MaxAICount=10;
 			AIPass="3ab51053212386455461483e66c65425";//kenan123
 			LoginUrl="http://127.0.0.1/login.php";
+			AIisHide=false;
+			ApiIsLocal=true;
 		}
 
 		public bool Load(string file = "config.txt")
@@ -209,7 +217,7 @@ namespace YGOCore
 					PrivateChat=Convert.ToBoolean(value);
 					break;
 				case "errorlog":
-					Log = Convert.ToBoolean(value);
+					ErrorLog = Convert.ToBoolean(value);
 					break;
 //				case "repeatlogin":
 //					RepeatLogin = Convert.ToBoolean(value);
@@ -244,14 +252,17 @@ namespace YGOCore
 				case "recordwin":
 					RecordWin=(value.ToLower()=="true"||value=="1");
 					break;
-//				case "saverecordtime":
-//					SaveRecordTime=Convert.ToInt32(value, 1);
-//					if(SaveRecordTime<=0){
-//						SaveRecordTime=1;
-//					}
-//					break;
+				case "aiishide":
+					AIisHide=(value.ToLower()=="true"||value=="1");
+					break;
 				case "loginurl":
 					LoginUrl=value;
+					break;
+				case "serverdesc":
+					ServerDesc=value;
+					break;
+				case "apiislocal":
+					ApiIsLocal=(value.ToLower()=="true"||value=="1");
 					break;
 				default:
 					return false;

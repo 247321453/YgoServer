@@ -25,6 +25,7 @@ namespace YGOCore.Plugin
 			this.server=server;
 			json=new string[4];
 			lastTime=new int[4];
+			isLocal=Program.Config.ApiIsLocal;
 			Logger.WriteLine("Room List = http://{your ip}:"+port+"/room.json");
 		}
 		

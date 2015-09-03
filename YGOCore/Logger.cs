@@ -35,7 +35,7 @@ namespace YGOCore
 
 		private static void WriteError(string text)
 		{
-			if (Program.Config.Log)
+			if (Program.Config.ErrorLog)
 			{
 				try
 				{

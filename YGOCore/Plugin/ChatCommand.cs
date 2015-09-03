@@ -39,6 +39,7 @@ namespace YGOCore
 			Logger.WriteLine("│", false);
 			Logger.WriteLine("│Client version 0x" + config.ClientVersion.ToString("x") + " or new, MaxRooms = "+config.MaxRoomCount, false);
 			Logger.WriteLine("│NeedAtuh="+config.isNeedAuth+", AutoReplay="+config.AutoReplay+", RecordWin="+config.RecordWin+", PrivateChat="+config.PrivateChat, false);
+			Logger.WriteLine("│"+config.ServerDesc,false);
 			Logger.WriteLine("└───────────────────────────────────",false);
 		}
 		public static bool onChat(GameConfig config,Player player,string msg)
@@ -102,10 +103,14 @@ namespace YGOCore
 			ai.StartInfo.FileName = "ai";
 			//设定程式执行参数
 			ai.StartInfo.Arguments =
-				" [AI]$"+Program.Config.AIPass
+				" [AI]Robot$"+Program.Config.AIPass
 				+" 127.0.0.1 "
 				+Program.Config.ServerPort
 				+ " "+room;
+			ai.EnableRaisingEvents=true;
+			if(Program.Config.AIisHide){
+				ai.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
+			}
 			ai.Exited+=new EventHandler(ai_Exited);
 			ai.Start();
 			return true;
@@ -113,8 +118,8 @@ namespace YGOCore
 
 		static void ai_Exited(object sender, EventArgs e)
 		{
-			Logger.WriteLine("AI exit game. count="+AICount);
 			AICount--;
+			Logger.WriteLine("AI exit game. count="+AICount);
 		}
 		
 		public static void onCommand(Server server,string cmd){

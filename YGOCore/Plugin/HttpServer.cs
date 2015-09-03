@@ -77,7 +77,7 @@ namespace Bend.Util {
 		}
 
 		public void readHeaders() {
-		//	Console.WriteLine("readHeaders()");
+			//	Console.WriteLine("readHeaders()");
 			String line;
 			while ((line = inputStream.ReadLine()) != null) {
 				if (line.Equals("")) {
@@ -151,21 +151,26 @@ namespace Bend.Util {
 	}
 
 	public abstract class HttpServer {
-
+		protected bool isLocal=false;
 		protected int port;
 		TcpListener listener;
 		protected bool is_active = true;
 		
 		public HttpServer(int port) {
 			this.port = port;
-			listener = new TcpListener(IPAddress.Any, port);
 		}
 
 		public void listen() {
 			try{
+				if(isLocal){
+					listener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
+				}else{
+					listener = new TcpListener(IPAddress.Any, port);
+				}
 				listener.Start();
 			}catch(Exception ex){
 				Console.WriteLine(ex);
+				return;
 			}
 			while (is_active) {
 				TcpClient s = listener.AcceptTcpClient();

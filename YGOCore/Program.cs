@@ -25,11 +25,19 @@ namespace YGOCore
 			if(Config.HandShuffle){
 				Logger.WriteLine("Warning: Hand shuffle requires a custom ocgcore to work.");
 			}
-			int coreport = 0;
+			int coreport = Config.ServerPort;
 
-			if (args.Length > 0)
+			if (args.Length > 0){
 				int.TryParse(args[0], out coreport);
-
+				if(coreport==0){
+					coreport=Config.ServerPort;
+				}else{
+					Config.setValue("serverport", ""+coreport);
+					if(coreport<=9999){
+						Config.setValue("apiport", ""+(10000+coreport));
+					}
+				}
+			}
 			Random = new Random();
 			
 			Server server = new Server();
