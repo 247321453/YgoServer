@@ -42,7 +42,7 @@ namespace YGOCore
 		/// 房间列表
 		/// </summary>
 		/// <returns></returns>
-		public static List<RoomInfo> getRoomInfos(bool hasLock=true,bool hasStart=true){
+		public static List<RoomInfo> getRoomInfos(bool Lock=true,bool Start=true){
 			List<RoomInfo> rooms=new List<RoomInfo>();
 			GameRoom[] grooms;
 			//MutexRooms.WaitOne();
@@ -51,6 +51,17 @@ namespace YGOCore
 			//MutexRooms.ReleaseMutex();
 			foreach(GameRoom room in grooms){
 				if(room!=null&&room.Game!=null){
+					if(!Start){
+						//仅等待的房间
+						if(room.Game.State !=GameState.Lobby){
+							continue;
+						}
+					}
+					if(!Lock){
+						if(room.Game.Config.HasPassword()){
+							continue;
+						}
+					}
 					RoomInfo info=new RoomInfo(room.Game);
 					rooms.Add(info);
 				}
