@@ -1,6 +1,7 @@
 using System.IO;
 using System;
 using System.Globalization;
+
 namespace YGOCore
 {
 	public class ServerConfig

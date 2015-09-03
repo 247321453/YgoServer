@@ -1,0 +1,7 @@
+F:\git\ygoserver\YGOClient2\obj\Release\YGOClient2.csprojResolveAssemblyReference.cache
+F:\git\ygoserver\YGOClient2\obj\Release\YGOClient.NotificationIcon.resources
+F:\git\ygoserver\YGOClient2\obj\Release\YGOClient2.csproj.GenerateResource.Cache
+F:\git\ygoserver\release\YGOClient2.exe
+F:\git\ygoserver\YGOClient2\obj\Release\YGOClient2.exe
+F:\git\ygoserver\YGOClient2\obj\Release\YGOClient.RoomForm.resources
+F:\git\ygoserver\YGOClient2\obj\Release\YGOClient.UserForm.resources

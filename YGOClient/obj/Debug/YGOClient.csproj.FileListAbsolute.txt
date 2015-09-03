@@ -1,12 +1,9 @@
-D:\code\ygoserver\YGOClient\bin\Debug\YGOClient.exe
-D:\code\ygoserver\YGOClient\bin\Debug\YGOClient.pdb
-D:\code\ygoserver\YGOClient\obj\Debug\YGOClient.exe
-D:\code\ygoserver\YGOClient\obj\Debug\YGOClient.pdb
 F:\git\ygoserver\YGOClient\bin\Debug\YGOClient.exe
 F:\git\ygoserver\YGOClient\bin\Debug\YGOClient.pdb
 F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.csprojResolveAssemblyReference.cache
+F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.MyNotifyIcon.resources
+F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.RoomForm.resources
+F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.UserForm.resources
+F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.csproj.GenerateResource.Cache
 F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.exe
 F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.pdb
-D:\code\ygoserver\YGOClient\bin\Debug\install.bat
-D:\code\ygoserver\YGOClient\obj\Debug\YGOClient.csprojResolveAssemblyReference.cache
-F:\git\ygoserver\YGOClient\bin\Debug\install.bat

@@ -20,6 +20,7 @@ namespace YGOClient
 	/// </summary>
 	public class RoomTool
 	{
+		public static string PRO="ccygo";
 		/// <summary>
 		/// ccygo://127.0.0.1:8911/hello$123/username
 		/// </summary>
@@ -28,9 +29,9 @@ namespace YGOClient
 			if(cmd==null){
 				return;
 			}
-			int index=(Program.PRO+"://").Length+1;
+			int index=(PRO+"://").Length+1;
 			if(index<cmd.Length){
-				string room =cmd.Substring((Program.PRO+"://").Length+1);
+				string room =cmd.Substring((PRO+"://").Length+1);
 				Start(room);
 			}else{
 				MessageBox.Show("error");

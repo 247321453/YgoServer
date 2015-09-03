@@ -7,15 +7,12 @@
  * 要改变这种模板请点击 工具|选项|代码编写|编辑标准头文件
  */
 using System;
-using System.Net;
+using System.Globalization;
 using System.IO;
-using System.Text;
-using System.Runtime.Serialization;
+using System.Net;
 using System.Runtime.Serialization.Json;
 using System.Security.Cryptography;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Globalization;
+using System.Text;
 
 namespace YGOCore
 {
@@ -273,6 +270,72 @@ namespace YGOCore
 			{
 				new DataContractJsonSerializer(jsonObject.GetType()).WriteObject(ms, jsonObject);
 				return Encoding.UTF8.GetString(ms.ToArray());
+			}
+		}
+		#endregion
+		
+		#region des
+		public static string Encrypt(string sourceString, string key, string iv)
+		{
+			try
+			{
+				byte[] btKey = Encoding.UTF8.GetBytes(key);
+				
+				byte[] btIV = Encoding.UTF8.GetBytes(iv);
+				
+				DESCryptoServiceProvider des = new DESCryptoServiceProvider();
+				
+				using (MemoryStream ms = new MemoryStream())
+				{
+					byte[] inData = Encoding.UTF8.GetBytes(sourceString);
+					try
+					{
+						using (CryptoStream cs = new CryptoStream(ms, des.CreateEncryptor(btKey, btIV), CryptoStreamMode.Write))
+						{
+							cs.Write(inData, 0, inData.Length);
+							
+							cs.FlushFinalBlock();
+						}
+						
+						return Convert.ToBase64String(ms.ToArray());
+					}
+					catch
+					{
+						return sourceString;
+					}
+				}
+			}
+			catch { }
+			
+			return "DES加密出错";
+		}
+
+		public static string Decrypt(string encryptedString, string key, string iv)
+		{
+			byte[] btKey = Encoding.UTF8.GetBytes(key);
+			
+			byte[] btIV = Encoding.UTF8.GetBytes(iv);
+			
+			DESCryptoServiceProvider des = new DESCryptoServiceProvider();
+			
+			using (MemoryStream ms = new MemoryStream())
+			{
+				byte[] inData = Convert.FromBase64String(encryptedString);
+				try
+				{
+					using (CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(btKey, btIV), CryptoStreamMode.Write))
+					{
+						cs.Write(inData, 0, inData.Length);
+						
+						cs.FlushFinalBlock();
+					}
+					
+					return Encoding.UTF8.GetString(ms.ToArray());
+				}
+				catch
+				{
+					return encryptedString;
+				}
 			}
 		}
 		#endregion

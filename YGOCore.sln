@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YGOServer", "YGOCore\YGOSer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindBot", "windbot\WindBot.csproj", "{3E7FAF67-A27D-4A61-B161-93AD4414183E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YGOClient", "YGOClient\YGOClient.csproj", "{FD926170-4809-4FEE-9BAD-3869A54E2C57}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YGOClient", "YGOClient\YGOClient.csproj", "{E7112A43-C35C-433E-9776-5AF5F38DC35A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,18 +40,18 @@ Global
 		{3E7FAF67-A27D-4A61-B161-93AD4414183E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{3E7FAF67-A27D-4A61-B161-93AD4414183E}.Release|x86.Build.0 = Release|Any CPU
 		{3E7FAF67-A27D-4A61-B161-93AD4414183E}.Release|x86.ActiveCfg = Release|Any CPU
-		{FD926170-4809-4FEE-9BAD-3869A54E2C57}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD926170-4809-4FEE-9BAD-3869A54E2C57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD926170-4809-4FEE-9BAD-3869A54E2C57}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{FD926170-4809-4FEE-9BAD-3869A54E2C57}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{FD926170-4809-4FEE-9BAD-3869A54E2C57}.Debug|x86.Build.0 = Debug|Any CPU
-		{FD926170-4809-4FEE-9BAD-3869A54E2C57}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FD926170-4809-4FEE-9BAD-3869A54E2C57}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD926170-4809-4FEE-9BAD-3869A54E2C57}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD926170-4809-4FEE-9BAD-3869A54E2C57}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{FD926170-4809-4FEE-9BAD-3869A54E2C57}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{FD926170-4809-4FEE-9BAD-3869A54E2C57}.Release|x86.Build.0 = Release|Any CPU
-		{FD926170-4809-4FEE-9BAD-3869A54E2C57}.Release|x86.ActiveCfg = Release|Any CPU
+		{E7112A43-C35C-433E-9776-5AF5F38DC35A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7112A43-C35C-433E-9776-5AF5F38DC35A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7112A43-C35C-433E-9776-5AF5F38DC35A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E7112A43-C35C-433E-9776-5AF5F38DC35A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E7112A43-C35C-433E-9776-5AF5F38DC35A}.Debug|x86.Build.0 = Debug|Any CPU
+		{E7112A43-C35C-433E-9776-5AF5F38DC35A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E7112A43-C35C-433E-9776-5AF5F38DC35A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7112A43-C35C-433E-9776-5AF5F38DC35A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7112A43-C35C-433E-9776-5AF5F38DC35A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E7112A43-C35C-433E-9776-5AF5F38DC35A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E7112A43-C35C-433E-9776-5AF5F38DC35A}.Release|x86.Build.0 = Release|Any CPU
+		{E7112A43-C35C-433E-9776-5AF5F38DC35A}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
