@@ -37,10 +37,10 @@ namespace YGOClient
 		private MenuItem[] InitializeMenu()
 		{
 			MenuItem[] menu = new MenuItem[] {
-				new MenuItem("Show", menuShowClick),
-				new MenuItem("Change User", menuChangeUserClick),
-				new MenuItem("About", menuAboutClick),
-				new MenuItem("Exit", menuExitClick)
+				new MenuItem("房间列表", menuShowClick),
+				new MenuItem("用户信息", menuChangeUserClick),
+				new MenuItem("论坛", menuAboutClick),
+				new MenuItem("退出", menuExitClick)
 			};
 			return menu;
 		}
@@ -108,7 +108,9 @@ namespace YGOClient
 		
 		private void menuAboutClick(object sender, EventArgs e)
 		{
-			MessageBox.Show("About This Application");
+			try{
+				System.Diagnostics.Process.Start("http://bbs.ygobbs.com/");
+			}catch(Exception){}
 		}
 		
 		private void menuExitClick(object sender, EventArgs e)

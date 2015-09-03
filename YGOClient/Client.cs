@@ -85,6 +85,7 @@ namespace YGOClient
 			}
 			m_room.Text = ""+m_user.Name;
 			m_room.Show();
+			m_room.Activate();
 		}
 		
 		public void Close(){
