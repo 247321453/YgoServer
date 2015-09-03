@@ -15,9 +15,12 @@ namespace WindBot
 		public const short ProVersion = 0x1336;
 
 		public static Random Rand;
+		public static bool Replay{get;private set;}
 
 		public static void Main(string[] args)
 		{
+			//暂时不用开启
+			Replay=false;
 			if(args.Length < 3)
 			{
 				Console.Out.WriteLine("String username, String serverIP, int serverPort,String room,String deck");

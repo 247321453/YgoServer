@@ -43,28 +43,37 @@ namespace Bend.Util {
 
 		public void process(object obj=null) {
 			// bs = new BufferedStream(s.GetStream());
-			inputStream = new StreamReader(socket.GetStream());
-			outputStream = new StreamWriter(new BufferedStream(socket.GetStream()));
 			try {
+				inputStream = new StreamReader(socket.GetStream());
+				outputStream = new StreamWriter(new BufferedStream(socket.GetStream()));
 				parseRequest();
 				readHeaders();
-				if (http_method.Equals("GET")) {
+				if(http_method==null){
+					return;
+				}
+				if (http_method.ToLower()=="get") {
 					handleGETRequest();
-				} else if (http_method.Equals("POST")) {
+				} else if (http_method.ToLower() == "post") {
 					handlePOSTRequest();
+				} else{
+					handleGETRequest();
 				}
 			} catch (Exception e) {
 				Console.WriteLine("Exception: " + e.ToString());
 				writeFailure();
+			}finally{
+				outputStream.Flush();
+				// bs.Flush(); // flush any remaining output
+				inputStream = null; outputStream = null; // bs = null;
+				socket.Close();
 			}
-			outputStream.Flush();
-			// bs.Flush(); // flush any remaining output
-			inputStream = null; outputStream = null; // bs = null;
-			socket.Close();
 		}
 
 		public void parseRequest() {
 			String request = inputStream.ReadLine();
+			if(request==null){
+				return;
+			}
 			string[] tokens = request.Split(' ');
 			if (tokens.Length != 3) {
 				throw new Exception("invalid http request line");
@@ -138,7 +147,12 @@ namespace Bend.Util {
 
 		public void writeSuccess() {
 			outputStream.Write("HTTP/1.0 200 OK\n");
-			outputStream.Write("Content-Type: text/html\n");
+			outputStream.Write("Content-Type: text/html;charset=utf-8\n");
+			if(srv.isLocal){
+				outputStream.Write("Access-Control-Allow-Origin: * \n");
+				outputStream.Write("Access-Control-Allow-Methods: * \n");
+				outputStream.Write("Access-Control-Allow-Headers: x-requested-with,content-type \n");
+			}
 			outputStream.Write("Connection: close\n");
 			outputStream.Write("\n");
 		}
@@ -151,7 +165,7 @@ namespace Bend.Util {
 	}
 
 	public abstract class HttpServer {
-		protected bool isLocal=false;
+		public bool isLocal=false;
 		protected int port;
 		TcpListener listener;
 		protected bool is_active = true;

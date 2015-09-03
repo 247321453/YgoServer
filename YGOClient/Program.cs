@@ -15,11 +15,11 @@ namespace YGOClient
 				switch(args[0]){
 					case "install":
 						Protocol.Reg(PRO);
-						MessageBox.Show("install ok");
+						//MessageBox.Show("install ok");
 						break;
 					case "uninstall":
 						Protocol.UnReg(PRO);
-						MessageBox.Show("uninstall ok");
+						//MessageBox.Show("uninstall ok");
 						break;
 					default:
 						if(args[0].StartsWith(PRO)){

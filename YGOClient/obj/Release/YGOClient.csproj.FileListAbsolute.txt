@@ -1,8 +1,9 @@
 F:\git\ygoserver\YGOClient\bin\Release\YGOClient.exe
-F:\git\ygoserver\YGOClient\obj\Release\YGOClient.csprojResolveAssemblyReference.cache
 F:\git\ygoserver\YGOClient\obj\Release\YGOClient.exe
 D:\code\ygoserver\YGOClient\bin\Release\YGOClient.exe
 D:\code\ygoserver\YGOClient\obj\Release\YGOClient.exe
 D:\code\ygoserver\YGOClient\bin\Release\install.bat
 D:\code\ygoserver\YGOClient\obj\Release\YGOClient.csprojResolveAssemblyReference.cache
 F:\git\ygoserver\YGOClient\bin\Release\install.bat
+F:\git\ygoserver\release\install.bat
+F:\git\ygoserver\release\YGOClient.exe

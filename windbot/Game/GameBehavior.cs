@@ -201,14 +201,17 @@ namespace WindBot.Game
 
 		private void OnReplay(GameServerPacket packet)
 		{
+			if(!Program.Replay){
+				return;
+			}
 			byte[] replay = packet.ReadToEnd();
 
-			const string directory = "Replays";
+			const string directory = "replay";
 			if (!Directory.Exists(directory))
 				Directory.CreateDirectory(directory);
 
 			string otherName = _room.Names[0] == Game.Username ? _room.Names[1] : _room.Names[0];
-			string file = DateTime.Now.ToString("yyyy-MM-dd.HH-mm.") + otherName + ".yrp";
+			string file ="AI_"+ DateTime.Now.ToString("yyyy-MM-dd.HH-mm.") + otherName + ".yrp";
 			string fullname = Path.Combine(directory, file);
 
 			if (Regex.IsMatch(file, @"^[\w\-. ]+$")){
