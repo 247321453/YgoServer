@@ -46,6 +46,10 @@ namespace YGOCore.Plugin
 		
 		public override void handleGETRequest(HttpProcessor p) {
 			//Console.WriteLine("request: {0}", p.http_url);
+			if(p.http_url==null){
+				p.writeFailure();
+				return;
+			}
 			int index=p.http_url.IndexOf("?");
 			string url=p.http_url;
 			string arg="";
@@ -55,7 +59,7 @@ namespace YGOCore.Plugin
 					arg=p.http_url.Substring(index+1);
 				}
 			}
-			if(url.EndsWith("/room.json")||url.EndsWith("/room")){
+			if(url=="/"||url.EndsWith("/room.json")||url.EndsWith("/room")){
 				p.writeSuccess();
 				p.outputStream.Write(GetContent(url, arg));
 			}else{
@@ -65,7 +69,10 @@ namespace YGOCore.Plugin
 		
 		public override void handlePOSTRequest(HttpProcessor p, StreamReader inputData) {
 			//Console.WriteLine("POST request: {0}", p.http_url);
-			if(p.http_url.EndsWith("/room.json")||p.http_url.EndsWith("/room")){
+			if(p.http_url==null){
+				p.writeFailure();
+			}
+			else if(p.http_url=="/"||p.http_url.EndsWith("/room.json")||p.http_url.EndsWith("/room")){
 				string data = inputData.ReadToEnd();
 				p.outputStream.Write(GetContent(p.http_url, data));
 			}else{
