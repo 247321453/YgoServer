@@ -239,8 +239,12 @@ namespace YGOCore.Game
 				SendToAll(change);
 				player.Disconnect();
 			}
-			else
+			else{
+				if(IsEnd){
+					return;
+				}
 				Surrender(player, 4, true);
+			}
 		}
 
 		public void MoveToDuelist(Player player)
@@ -644,6 +648,10 @@ namespace YGOCore.Game
 				yrpName=yrpName+" "+getGameTagName()+".yrp";
 			}
 			try{
+				if(IsEnd){
+					return;
+				}
+			//	Logger.WriteLine("onWin:"+team);
 				Server.onWin(m_room.Game.Config.Name, m_room.Game.Config.Mode, team, reason, yrpName, Players[0].Name,Players[1].Name,
 				             IsTag?Players[2].Name:"",IsTag?Players[3].Name:"",force);
 			}catch(Exception e){
@@ -906,7 +914,7 @@ namespace YGOCore.Game
 			}
 			else{
 				if(State == GameState.Side){
-					Logger.WriteLine("side is lose");
+					//Logger.WriteLine("side is lose");
 					Surrender((m_room.m_clients[0]!=null&&m_room.m_clients[0].IsConnected)?Players[1]:Players[0],  4,true);
 				}
 				State = GameState.End;
@@ -1423,6 +1431,59 @@ namespace YGOCore.Game
 				default:
 					break;
 			}
+		}
+		
+		public RoomInfo GetRoomInfo(){
+			return GetRoomInfo(this);
+		}
+		
+		public static RoomInfo GetRoomInfo(Game game){
+			if(game!=null&&game.Config!=null){
+				RoomInfo info=new RoomInfo();
+				info.RoomName=game.Config.Name;
+				int i=info.RoomName.LastIndexOf("$");
+				if(i>=0){
+					info.RoomName=info.RoomName.Substring(0, i);
+					info.NeedPass =true;
+				}else{
+					info.NeedPass =false;
+				}
+				info.StartLP=game.Config.StartLp;
+				info.Warring=game.Config.EnablePriority|game.Config.NoCheckDeck|game.Config.NoShuffleDeck;
+				info.Rule=game.Config.Rule;
+				info.Mode=game.Config.Mode;
+				info.Lflist=game.Config.LfList;
+				info.IsStart= (game.State!=GameState.Lobby);
+				if(game.Players!=null){
+					int len=game.Players.Length;
+					Player[] pls=new Player[len];
+					info.players=new string[len];
+					game.Players.CopyTo(pls, 0);
+					for(i=0;i<len;i++){
+						if(pls[i]!=null){
+							info.players[i]=pls[i].Name;
+							info.Count++;
+						}else{
+							info.players[i]="";
+						}
+					}
+				}
+				if(game.Observers!=null){
+					Player[] pls=game.Observers.ToArray();
+					int len=pls.Length;
+					info.observers=new string[len];
+					for(i=0;i<len;i++){
+						if(pls[i]!=null){
+							info.observers[i]=pls[i].Name;
+						}else{
+							info.observers[i]="";
+						}
+					}
+					info.Count+=len;
+				}
+				return info;
+			}
+			return null;
 		}
 	}
 }

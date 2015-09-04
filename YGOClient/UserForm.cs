@@ -11,6 +11,7 @@ using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 using YGOCore;
+using System.Xml;
 
 namespace YGOClient
 {
@@ -31,16 +32,7 @@ namespace YGOClient
 		{
 			InitializeComponent();
 			this.NeedUser=needuser;
-			string file= Tool.Combine(Application.StartupPath, "ygopro.exe");
-			if(File.Exists(file)){
-				tb_gamepath.Text=file;
-			}else{
-				file= Tool.Combine(Application.StartupPath, "ygopro_vs.exe");
-				if(File.Exists(file)){
-					tb_gamepath.Text=file;
-				}
-			}
-			m_dir=Tool.Combine(Application.StartupPath, "user");
+			m_dir=User.DIR;
 			loadUsers();
 		}
 		
@@ -60,15 +52,38 @@ namespace YGOClient
 			cb_username.Items.Clear();
 			if(Directory.Exists(m_dir)){
 				DirectoryInfo dir=new DirectoryInfo(m_dir);
-				FileInfo[] files=dir.GetFiles("*.dat");
+				FileInfo[] files=dir.GetFiles("*"+User.EX);
 				foreach(FileInfo info in files){
 					string name=info.Name;
-					name=name.Substring(0, name.Length-4);
+					name=name.Substring(0, name.Length-5);
 					cb_username.Items.Add(name);
 				}
 			}
 			if(cb_username.Items.Count>0){
+				string name=ConfigManager.readString(User.TAG);
 				cb_username.SelectedIndex=0;
+				int index=0;
+				foreach(object o in cb_username.Items){
+					if(o.ToString() == name){
+						cb_username.SelectedIndex = index;
+						break;
+					}
+					index++;
+				}
+			}else{
+				cb_username.Text="";
+				tb_password.Text="";
+				tb_args.Text="";
+				chkb_record.Checked= false;
+				string file= Tool.Combine(Application.StartupPath, "ygopro.exe");
+				if(File.Exists(file)){
+					tb_gamepath.Text=file;
+				}else{
+					file= Tool.Combine(Application.StartupPath, "ygopro_vs.exe");
+					if(File.Exists(file)){
+						tb_gamepath.Text=file;
+					}
+				}
 			}
 		}
 		#endregion
@@ -112,13 +127,6 @@ namespace YGOClient
 				}
 				User.Delete(cb_username.Text);
 				loadUsers();
-				if(cb_username.Items.Count == 0){
-					cb_username.SelectedIndex=0;
-					cb_username.Text="";
-					tb_password.Text="";
-					tb_args.Text="";
-					chkb_record.Checked= false;
-				}
 			}
 		}
 		
@@ -128,6 +136,7 @@ namespace YGOClient
 		void Btn_okClick(object sender, EventArgs e)
 		{
 			ClickOK=true;
+			ConfigManager.Save(User.TAG, cb_username.Text);
 		}
 		
 		void Cb_usernameSelectedIndexChanged(object sender, EventArgs e)
@@ -137,10 +146,10 @@ namespace YGOClient
 				string name=(index>=0)?cb_username.Items[index].ToString():"";
 				User user=User.Load(name);
 				if(user!=null){
-					cb_username.Text=user.Name;
-					tb_password.Text=user.Password;
-					tb_gamepath.Text=user.GamePath;
-					tb_args.Text=user.GameArgs;
+					cb_username.Text=""+user.Name;
+					tb_password.Text=""+user.Password;
+					tb_gamepath.Text=""+user.GamePath;
+					tb_args.Text=""+user.GameArgs;
 					chkb_record.Checked=user.RePassword;
 				}else{
 					//MessageBox.Show("加载失败");

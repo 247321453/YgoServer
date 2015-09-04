@@ -18,6 +18,7 @@ namespace YGOClient
 	[DataContract(Name="User")]
 	public class User
 	{
+		public static string TAG ="user";
 		[DataMember(Order = 0, Name="Name")]
 		public string Name{get;private set;}
 		[DataMember(Order = 1, Name="Password")]
@@ -36,6 +37,8 @@ namespace YGOClient
 		
 		//	private static string KEY="IBM855";
 		
+		public static string DIR=Tool.Combine(Application.StartupPath, "data");
+		public static string EX=".user";
 		private static string key="caicai00";
 		private static string key2="00caicai";
 		
@@ -75,11 +78,10 @@ namespace YGOClient
 			}
 			string json=Tool.ToJson(this);
 
-			string dir=Tool.Combine(Application.StartupPath, "user");
-			if(!Directory.Exists(dir)){
-				Directory.CreateDirectory(dir);
+			if(!Directory.Exists(DIR)){
+				Directory.CreateDirectory(DIR);
 			}
-			string file=Tool.Combine(dir, Name+".dat");
+			string file=Tool.Combine(DIR, Name+EX);
 			File.WriteAllText(file, json);
 			Password=oldpass;
 		}
@@ -88,11 +90,10 @@ namespace YGOClient
 				return null;
 			}
 			User user=null;
-			string dir=Tool.Combine(Application.StartupPath, "user");
-			if(!Name.EndsWith(".dat")){
-				Name+=".dat";
+			if(!Name.EndsWith(EX)){
+				Name+=EX;
 			}
-			string file=Tool.Combine(dir, Name);
+			string file=Tool.Combine(DIR, Name);
 			if(File.Exists(file)){
 				try{
 					string json=File.ReadAllText(file);
@@ -103,14 +104,12 @@ namespace YGOClient
 				}catch(Exception){
 				}
 			}else{
-				MessageBox.Show("file:"+file);
 			}
 			return user;
 		}
 		
 		public static void Delete(string Name){
-			string dir=Tool.Combine(Application.StartupPath, "user");
-			string file=Tool.Combine(dir, Name+".dat");
+			string file=Tool.Combine(DIR, Name+EX);
 			if(File.Exists(file)){
 				File.Delete(file);
 			}

@@ -1,0 +1,10 @@
+F:\git\ygoserver\release\YGOClient.exe
+F:\git\ygoserver\YGOClient\obj\Release\YGOClient.csprojResolveAssemblyReference.cache
+F:\git\ygoserver\YGOClient\obj\Release\YGOClient.MyNotifyIcon.resources
+F:\git\ygoserver\YGOClient\obj\Release\YGOClient.RoomForm.resources
+F:\git\ygoserver\YGOClient\obj\Release\YGOClient.UserForm.resources
+F:\git\ygoserver\YGOClient\obj\Release\YGOClient.csproj.GenerateResource.Cache
+F:\git\ygoserver\YGOClient\obj\Release\YGOClient.exe
+F:\git\ygoserver\release\YGOClient.exe.config
+F:\git\ygoserver\YGOClient\obj\Release\YGOClient.CreateRoomForm.resources
+F:\git\ygoserver\YGOClient\obj\Release\YGOClient.InputDialog.resources

@@ -96,6 +96,7 @@ namespace YGOClient
 			// 
 			// btn_game
 			// 
+			this.btn_game.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.btn_game.Location = new System.Drawing.Point(240, 104);
 			this.btn_game.Name = "btn_game";
 			this.btn_game.Size = new System.Drawing.Size(75, 23);
@@ -143,6 +144,8 @@ namespace YGOClient
 			// 
 			// btn_delete
 			// 
+			this.btn_delete.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.btn_delete.ForeColor = System.Drawing.Color.DarkRed;
 			this.btn_delete.Location = new System.Drawing.Point(240, 24);
 			this.btn_delete.Name = "btn_delete";
 			this.btn_delete.Size = new System.Drawing.Size(75, 23);
@@ -165,6 +168,7 @@ namespace YGOClient
 			// 
 			this.btn_ok.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.btn_ok.Enabled = false;
+			this.btn_ok.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.btn_ok.Location = new System.Drawing.Point(104, 176);
 			this.btn_ok.Name = "btn_ok";
 			this.btn_ok.Size = new System.Drawing.Size(120, 40);

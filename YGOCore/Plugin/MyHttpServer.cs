@@ -88,6 +88,8 @@ namespace YGOCore.Plugin
 			}
 			if(arg.Contains("start=false")){
 				hasStart=false;
+			}else{
+				hasStart=true;
 			}
 			//Console.WriteLine("request: {0} hasLock={1}  hasStart={2}", url, hasLock, hasStart);
 			int now=Environment.TickCount;

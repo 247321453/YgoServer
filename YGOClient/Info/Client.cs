@@ -13,7 +13,7 @@ namespace YGOClient
 {
 	public sealed class Client
 	{
-		private User m_user;
+		public User m_user;
 		private RoomForm m_room;
 		private NotifyIcon m_notifyIcon;
 		public bool isClose{get;set;}

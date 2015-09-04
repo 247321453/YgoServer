@@ -62,8 +62,10 @@ namespace YGOCore
 							continue;
 						}
 					}
-					RoomInfo info=new RoomInfo(room.Game);
-					rooms.Add(info);
+					RoomInfo info=room.Game.GetRoomInfo();
+					if(info!=null){
+						rooms.Add(info);
+					}
 				}
 			}
 			return rooms;

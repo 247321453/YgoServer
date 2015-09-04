@@ -36,6 +36,7 @@ namespace OcgWrapper
 		public string player1;
 		public string player2="";
 		public string player3="";
+		public string date="";
 		public bool force=false;
 		
 		public WinInfo(string room,int win,int reason,string replay,
@@ -52,6 +53,7 @@ namespace OcgWrapper
 			this.player2=player2;
 			this.player3=player3;
 			this.force=force;
+			this.date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 		}
 		private static string reText(string txt){
 			if(txt==null){
@@ -60,7 +62,7 @@ namespace OcgWrapper
 			return txt.Replace("'","''");
 		}
 		public string getSQL(){
-			string sql="INSERT INTO wins(room,win,reason,replay,player0,player1,player2,player3,force) VALUES("
+			string sql="INSERT INTO wins(room,win,reason,replay,player0,player1,player2,player3,force,endtime) VALUES("
 				+"'"+reText(room)+"',"
 				+win+","
 				+reason+","
@@ -69,7 +71,8 @@ namespace OcgWrapper
 				+"'"+reText(player1)+"',"
 				+"'"+reText(player2)+"',"
 				+"'"+reText(player3)+"',"
-				+(force?"1":"0")
+				+(force?"1":"0")+","
+				+"'"+date+"'"
 				+");";
 			return sql;
 		}

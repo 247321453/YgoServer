@@ -88,8 +88,8 @@ namespace YGOCore
 				}
 				return htmlContent;
 			}
-			catch{
-				
+			catch(Exception ex){
+				Console.WriteLine(ex.ToString());
 			}
 			return "";
 		}

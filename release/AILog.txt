@@ -35,3 +35,50 @@
 [13:04:45] Decks initialized, 2 found.
 [13:04:45] use deck is AI_OldSchool
 [13:08:42] Server is close
+[13:52:20] [AI]Robot$kenan123 join 127.0.0.1:8911 mckyp use 
+[13:52:20] Decks initialized, 2 found.
+[13:52:20] use deck is AI_Horus
+[13:52:30] Server is close
+[13:53:02] [AI]Robot$kenan123 join 127.0.0.1:8911 Y5wPU use 
+[13:53:03] Decks initialized, 2 found.
+[13:53:03] use deck is AI_Horus
+[13:53:14] Server is close
+[21:11:37] [AI]Robot$kenan123 join 127.0.0.1:8911 ISZOQ use 
+[21:11:37] Decks initialized, 2 found.
+[21:11:37] use deck is Horus
+[21:11:49] Duel started: [AI]Robot versus 菜菜
+[21:11:49] OnStart
+[21:13:37] Duel finished against [AI]Robot, result: Win
+[21:13:37] OnDuelEnd
+[21:17:21] [AI]Robot$kenan123 join 127.0.0.1:8911 lKvqJ use 
+[21:17:21] Decks initialized, 2 found.
+[21:17:21] use deck is AI_OldSchool
+[21:17:24] Duel started: 菜菜 versus [AI]Robot
+[21:17:24] OnStart
+[21:19:31] Duel finished against 菜菜, result: Lose
+[21:19:31] OnDuelEnd
+[21:19:57] [AI]Robot$kenan123 join 127.0.0.1:8911 M#i7fLb use 
+[21:19:57] Decks initialized, 2 found.
+[21:19:57] use deck is AI_OldSchool
+[21:20:00] Duel started: 菜菜 versus [AI]Robot
+[21:20:00] OnStart
+[21:22:57] Duel finished against 菜菜, result: Lose
+[21:22:57] onChangeSide
+[21:23:02] Duel started: 菜菜 versus [AI]Robot
+[21:23:02] OnStart
+[21:25:22] Duel finished against 菜菜, result: Lose
+[21:25:22] OnDuelEnd
+[21:28:48] [AI]Robot$kenan123 join 127.0.0.1:8911 9W7bp use 
+[21:28:48] Decks initialized, 2 found.
+[21:28:48] use deck is Horus
+[21:28:54] Duel started: 菜菜 versus [AI]Robot
+[21:28:54] OnStart
+[21:30:08] Duel finished against 菜菜, result: Win
+[21:30:08] OnDuelEnd
+[21:32:08] [AI]Robot$kenan123 join 127.0.0.1:8911 XU4Zl use 
+[21:32:08] Decks initialized, 2 found.
+[21:32:08] use deck is AI_Horus
+[21:32:10] Duel started: 菜菜 versus [AI]Robot
+[21:32:10] OnStart
+[21:33:02] Duel finished against 菜菜, result: Lose
+[21:33:02] OnDuelEnd

@@ -146,21 +146,21 @@ namespace Bend.Util {
 		}
 
 		public void writeSuccess() {
-			outputStream.Write("HTTP/1.0 200 OK\n");
-			outputStream.Write("Content-Type: text/html;charset=utf-8\n");
+			outputStream.Write("HTTP/1.0 200 OK\r\n");
+			outputStream.Write("Content-Type: text/html;charset=utf-8\r\n");
 			if(srv.isLocal){
-				outputStream.Write("Access-Control-Allow-Origin: * \n");
-				outputStream.Write("Access-Control-Allow-Methods: * \n");
-				outputStream.Write("Access-Control-Allow-Headers: x-requested-with,content-type \n");
+				outputStream.Write("Access-Control-Allow-Origin: * \r\n");
+				outputStream.Write("Access-Control-Allow-Methods: * \r\n");
+				outputStream.Write("Access-Control-Allow-Headers: x-requested-with,content-type \r\n");
 			}
-			outputStream.Write("Connection: close\n");
-			outputStream.Write("\n");
+			outputStream.Write("Connection: close\r\n");
+			outputStream.Write("\r\n");
 		}
 
 		public void writeFailure() {
-			outputStream.Write("HTTP/1.0 404 File not found\n");
-			outputStream.Write("Connection: close\n");
-			outputStream.Write("\n");
+			outputStream.Write("HTTP/1.0 404 File not found\r\n");
+			outputStream.Write("Connection: close\r\n");
+			outputStream.Write("\r\n");
 		}
 	}
 

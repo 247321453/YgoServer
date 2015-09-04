@@ -7,3 +7,6 @@ F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.UserForm.resources
 F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.csproj.GenerateResource.Cache
 F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.exe
 F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.pdb
+F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.CreateRoomForm.resources
+F:\git\ygoserver\YGOClient\obj\Debug\YGOClient.InputDialog.resources
+F:\git\ygoserver\YGOClient\bin\Debug\YGOClient.exe.config

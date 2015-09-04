@@ -35,14 +35,14 @@ namespace YGOCore
 			m_mutexClients=new Mutex();
 			//int time=Program.Config.SaveRecordTime<=0?1*60*1000:Program.Config.SaveRecordTime*60*1000;
 			//每30秒记录游戏结果记录
-			WinSaveTimer = new System.Timers.Timer(30*1000);
+			WinSaveTimer = new System.Timers.Timer(10*1000);
 			WinSaveTimer.AutoReset=true;
 			WinSaveTimer.Enabled=true;
 			WinSaveTimer.Elapsed+=new System.Timers.ElapsedEventHandler(WinSaveTimer_Elapsed);
 			ApiServer=new MyHttpServer(this, Program.Config.ApiPort);
 		}
 		
-		public string getRoomJson(bool hasLock=true,bool hasStart=true){
+		public string getRoomJson(bool hasLock=true,bool hasStart=false){
 			List<RoomInfo> list=GameManager.getRoomInfos(hasLock, hasStart);
 			return Tool.ToJson(list);
 //			string json="[";

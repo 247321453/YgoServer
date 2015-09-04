@@ -1,0 +1,205 @@
+﻿/*
+ * 由SharpDevelop创建。
+ * 用户： Hasee
+ * 日期: 2015/9/4
+ * 时间: 13:54
+ * 
+ * 要改变这种模板请点击 工具|选项|代码编写|编辑标准头文件
+ */
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using YGOCore.Game;
+using YGOClient;
+
+namespace System.Windows.Forms
+{
+	public interface OnRoomClick{
+		void onClick(Control c, RoomInfo info);
+	}
+	public class RoomBlock : FlowLayoutPanel
+	{
+		RoomInfo m_room;
+		OnRoomClick m_listener;
+		public RoomBlock():base(){
+			Init(null);
+		}
+		public RoomBlock(RoomInfo room):base(){
+			this.m_room=room;
+			Init(room);
+		}
+		public RoomBlock SetListener(OnRoomClick listener){
+			this.m_listener=listener;
+			return this;
+		}
+		
+		private void Init(RoomInfo room){
+			this.Size=new Size(186, 200);
+			if(room!=null){
+				this.SuspendLayout();
+				Label label = new Label();
+				
+				label.TextAlign = ContentAlignment.MiddleCenter;
+				label.Size = new Size(182, 30);
+				//label.Location = new Point(3,3);
+				label.ForeColor = Color.White;
+
+				if(room.Warring){
+					label.BackColor=Color.FromArgb(0xee, 0xd6, 60, 0);
+					label.Text = "[有坑]"+room.RoomName;
+				}else{
+					if(room.IsStart){
+						label.BackColor=Color.FromArgb(0xdd, 0, 0x68, 0x8b);
+						label.Text = room.RoomName;
+					}else{
+						label.BackColor=Color.FromArgb(0xdd, 0, 0x64, 0);
+						label.Text = room.RoomName;
+					}
+				}
+				this.Controls.Add(label);
+				
+				Label label2 = new Label();
+				label2.Text = "禁限卡表："+(room.Lflist==0?"OCG":"TCG");
+				label2.TextAlign = ContentAlignment.MiddleLeft;
+				label2.Padding = new Padding(8, 2, 2, 2);
+				label2.Size = new Size(182, 26);
+				this.Controls.Add(label2);
+				
+				Label label3 = new Label();
+				label3.Text = "允许卡片："+(room.Rule==0?"OCG":(room.Rule==1?"TCG":"OCG&TCG"));
+				label3.TextAlign = ContentAlignment.MiddleLeft;
+				label3.Padding = new Padding(8, 2, 2, 2);
+				label3.Size = new Size(182, 26);
+				this.Controls.Add(label3);
+				
+				Label label4 = new Label();
+				label4.Text = "决斗模式："+(room.Mode==0?"单局模式":(room.Rule==1?"比赛模式":"双打模式"));
+				label4.TextAlign = ContentAlignment.MiddleLeft;
+				label4.Padding = new Padding(8, 2, 2, 2);
+				label4.Size = new Size(182, 26);
+				this.Controls.Add(label4);
+				
+				Label label5 = new Label();
+				label5.Text = "玩家1："+((room.players!=null && room.players.Length>0)?room.players[0]:"--");
+				label5.TextAlign = ContentAlignment.MiddleLeft;
+				label5.Padding = new Padding(8, 2, 2, 2);
+				label5.Size = new Size(182, 26);
+				this.Controls.Add(label5);
+				
+				if(room.Mode==2){
+					Label label7 = new Label();
+					label7.Text = "玩家2："+((room.players!=null && room.players.Length>2)?room.players[2]:"--");
+					label7.TextAlign = ContentAlignment.MiddleLeft;
+					label7.Padding = new Padding(8, 2, 2, 2);
+					label7.Size = new Size(182, 26);
+					this.Controls.Add(label7);
+				}else{
+					Label label6 = new Label();
+					label6.Text = "玩家2："+((room.players!=null && room.players.Length>1)?room.players[1]:"--");
+					label6.TextAlign = ContentAlignment.MiddleLeft;
+					label6.Padding = new Padding(8, 2, 2, 2);
+					label6.Size = new Size(182, 26);
+					this.Controls.Add(label6);
+					
+				}
+				
+				Button join=new Button();
+				join.FlatStyle = FlatStyle.Popup;
+				join.Size=new Size(180, 32);
+				if(room.NeedPass){
+					join.Text="输入密码";
+					join.ForeColor =Color.DarkRed;
+				}else{
+					join.Text="加入房间";
+				}
+				join.Click += new EventHandler(join_Click);
+				join.BackColor= SystemColors.Control;
+				this.Controls.Add(join);
+				this.ResumeLayout(true);
+			}
+			this.BackColor = Color.White;
+		}
+
+		void join_Click(object sender, EventArgs e)
+		{
+			if(m_listener!=null){
+				m_listener.onClick(this, m_room);
+			}
+		}
+	}
+	public class RoomGrid : FlowLayoutPanel,OnRoomClick
+	{
+		#region member
+		Client m_client;
+		Server m_server;
+		public RoomGrid():base()
+		{
+		}
+		public void SetParent(Client client, Server server){
+			this.m_client=client;
+			this.m_server=server;
+		}
+		#endregion
+		
+		#region click
+		public void onClick(Control c, RoomInfo info){
+			if(m_server==null||m_client==null||m_client.m_user==null||info==null){
+				MessageBox.Show("错误：信息为空。");
+				return;
+			}
+			string pass="";
+			if(info.NeedPass){
+				using(InputDialog input=new InputDialog("请输入密码", true)){
+					if(input.ShowDialog()==DialogResult.OK){
+						pass +="$"+input.InputText;
+					}else{
+						return;
+					}
+				}
+			}
+			if(info!=null){
+				RoomTool.Start(m_server, m_client.m_user, info.RoomName+pass);
+			}
+		}
+		#endregion
+		
+		#region rooms list
+		public void SetRooms(RoomInfo[] rooms){
+			if(rooms==null){
+				rooms=new RoomInfo[0];
+			}
+
+			this.SuspendLayout();
+			this.Controls.Clear();
+			int i=0;
+			//MessageBox.Show("共有"+rooms.Length+"房间");
+			foreach(RoomInfo room in rooms){
+				i++;
+				if (!this.InvokeRequired)
+				{
+					AddRoom(room, i==rooms.Length);
+				}
+				else
+				{
+					BeginInvoke(new Action(()=>{
+					                       	AddRoom(room, i==rooms.Length);
+					                       })
+					           );
+				}
+			}
+			if(rooms.Length==0){
+				this.ResumeLayout(false);
+			}
+		}
+		
+		public void AddRoom(RoomInfo room, bool isLast){
+			RoomBlock block=new RoomBlock(room);
+			block.SetListener(this);
+			this.Controls.Add(block);
+			if(isLast){
+				this.ResumeLayout(false);
+			}
+		}
+		#endregion
+	}
+}

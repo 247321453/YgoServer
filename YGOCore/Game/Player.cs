@@ -282,21 +282,15 @@ namespace YGOCore.Game
 			if(room.Game!=null && room.Game.Config!=null){
 				//TODO: tips
 				if(room.Game.Config.NoCheckDeck){
-					ServerMessage("Warning: this room is no check deck.");
+					ServerMessage("Deck will not be checked in this room.");
 				}
 				
 				if(room.Game.Config.NoShuffleDeck){
-					ServerMessage("Warning: this room is no shuffle deck.");
+					ServerMessage("Deck will not be shuffled in this room.");
 				}
 				
 				if(room.Game.Config.EnablePriority){
-					ServerMessage("Warning: this room is enable priority.");
-				}
-				if(room.Game.Config.Rule!=2){
-					ServerMessage("Warning: this room is "+(room.Game.Config.Rule==1?"TCG":"OCG")+" rule .");
-				}
-				if(room.Game.Config.LfList!=0){
-					ServerMessage("Warning: this room's banlist is TCG");
+					ServerMessage("This room enabled priority.");
 				}
 			}
 			Game = room.Game;

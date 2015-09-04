@@ -38,7 +38,7 @@ namespace YGOClient
 			}
 		}
 		
-		public static void Start(string cmd)
+		public static void Start(string cmd, string extras="",string gameexe="")
 		{
 			string[] names=cmd.Split('/');
 			string server=names[0];
@@ -46,6 +46,24 @@ namespace YGOClient
 			string name=names.Length>2?names[2]:null;
 			string ip=server.Split(':')[0];
 			string port=server.IndexOf(':')>0?server.Split(':')[1]:"7911";
+			Start(ip, port, name, room, extras, gameexe);
+		}
+		
+		public static void Start(Server server,User user,string room){
+			if(server==null||user==null){
+				return;
+			}
+			if(room==null){
+				room="";
+			}
+			if(server.NeedAuth){
+				Start(server.IP, ""+server.Port, user.Name+"$"+user.Password,room, user.GameArgs, user.GamePath);
+			}else{
+				Start(server.IP, ""+server.Port, user.Name, room, user.GameArgs, user.GamePath);
+			}
+			
+		}
+		private static void Start(string ip, string port, string name, string room, string extras="", string gameexe=""){
 			Dictionary<string, string> args=new Dictionary<string, string>();
 			if(!string.IsNullOrEmpty(name)){
 				args.Add("nickname", name);
@@ -53,26 +71,41 @@ namespace YGOClient
 			args.Add("lastip", ip);
 			args.Add("lastport", port);
 			args.Add("roompass", room);
-			Write(args);
-			RunGame("-r");
+			string file=string.IsNullOrEmpty(gameexe)? Combine(Application.StartupPath, "system.conf")
+				:Combine(Path.GetDirectoryName(gameexe), "system.conf");
+			Write(file, args);
+			RunGame(gameexe, extras+" -j");
 		}
 		
-		private static void RunGame(string arg=" "){
-			string file= Combine(Application.StartupPath, "ygopro.exe");
+		public static void RunGame(string file, string arg=" "){
+			if(!string.IsNullOrEmpty(file)){
+				if(File.Exists(file)){
+					Run(file, arg);
+					return;
+				}
+			}
+			file= Combine(Application.StartupPath, "ygopro.exe");
 			if(File.Exists(file)){
-				Process.Start(file, arg);
+				Run(file, arg);
 				return;
 			}
 			file= Combine(Application.StartupPath, "ygopro_vs.exe");
 			if(File.Exists(file)){
-				Process.Start(file, arg);
+				Run(file, arg);
 				return;
 			}
 			MessageBox.Show("no find ygopro.exe");
 		}
 		
-		private static void Write(Dictionary<string, string> args){
-			string file= Combine(Application.StartupPath, "system.conf");
+		private static void Run(string file, string arg=""){
+			Process p =new Process();
+			p.StartInfo.FileName = file;
+			p.StartInfo.WorkingDirectory = Path.GetDirectoryName(file);
+			p.StartInfo.Arguments = arg;
+			p.Start();
+		}
+		
+		public static void Write(string file, Dictionary<string, string> args){
 			if(File.Exists(file)){
 				string[] lines=File.ReadAllLines(file);
 				for(int i=0;i<lines.Length;i++){
