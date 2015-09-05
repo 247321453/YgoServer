@@ -25,6 +25,7 @@ namespace YGOCore.Game
 		public Deck Deck { get; private set; }
 		public PlayerState State { get; set; }
 		private GameClient m_client;
+		public int UID {get;private set;}
 
 		public Player(GameClient client)
 		{
@@ -161,7 +162,8 @@ namespace YGOCore.Game
 					LobbyError("You need a password.");
 					return false;
 				}else{
-					if(!Server.onLogin(_names[0],_names[1])){
+					UID=Server.onLogin(_names[0],_names[1]);
+					if(UID<0){
 						//LobbyError("Auth Fail");
 						return false;
 					}
@@ -300,9 +302,14 @@ namespace YGOCore.Game
 		private void OnChat(GameClientPacket packet)
 		{
 			string msg = packet.ReadUnicode(256);
-			if(ChatCommand.onChat(Game.Config, this, msg)){
-				if(Game!=null)
-					Game.Chat(this, msg);
+			if(Game==null){
+				return;
+			}
+			if(Game.Config==null){
+				Game.Chat(this, msg);
+			}
+			else if(ChatCommand.onChat(Game.Config, this, msg)){
+				Game.Chat(this, msg);
 			}
 		}
 

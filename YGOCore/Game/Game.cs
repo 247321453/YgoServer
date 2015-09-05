@@ -640,7 +640,7 @@ namespace YGOCore.Game
 
 		public void RecordWin(int team, int reason, bool force = false)
 		{
-			if(!Program.Config.RecordWin){
+			if(!Program.Config.RecordWin || IsEnd){
 				return;
 			}
 			//TODO Record user win here
@@ -648,12 +648,12 @@ namespace YGOCore.Game
 				yrpName=yrpName+" "+getGameTagName()+".yrp";
 			}
 			try{
-				if(IsEnd){
-					return;
-				}
+				string[] names=new string[]{Players[0].Name,Players[1].Name,
+				             IsTag?Players[2].Name:"",IsTag?Players[3].Name:""};
+				int[] uids=new int[]{Players[0].UID, Players[1].UID, IsTag?Players[2].UID:0, IsTag?Players[3].UID:0};
 			//	Logger.WriteLine("onWin:"+team);
-				Server.onWin(m_room.Game.Config.Name, m_room.Game.Config.Mode, team, reason, yrpName, Players[0].Name,Players[1].Name,
-				             IsTag?Players[2].Name:"",IsTag?Players[3].Name:"",force);
+				Server.onWin(m_room.Game.Config.Name, m_room.Game.Config.Mode, team, reason, yrpName,
+			             names, uids,force);
 			}catch(Exception e){
 				Logger.WriteError(e);
 			}

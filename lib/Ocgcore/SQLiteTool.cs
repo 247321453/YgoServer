@@ -9,6 +9,7 @@
 using System;
 using System.Text;
 using System.IO;
+using System.Collections.Generic;
 #if __MonoCS__
 using Mono.Data.Sqlite;
 using SQLiteConnection = Mono.Data.Sqlite.SqliteConnection;
@@ -27,7 +28,7 @@ namespace OcgWrapper
 	public class SQLiteTool
 	{
 
-		public static void Init(string dbpath, string sql){
+		public static void Create(string dbpath, params string[] sql){
 			if(!File.Exists(dbpath)){
 				try{
 					SQLiteConnection.CreateFile(dbpath);
@@ -38,7 +39,30 @@ namespace OcgWrapper
 			}
 			// CREATE TABLE wins(id INTEGER PRIMARY KEY AUTOINCREMENT,[IDCardNo] VARCHAR (50),endtime TimeStamp NOT NULL DEFAULT CURRENT_TIMESTAMP);
 		}
-	
+		
+		
+		public static List<string> GetColumns(string db, string table){
+			List<string> cols=new List<string>();
+			if(!File.Exists(db)){
+				return cols;
+			}
+			using(SQLiteConnection connection = new SQLiteConnection("Data Source=" + db)){
+				connection.Open();
+				using(SQLiteCommand command = new SQLiteCommand("PRAGMA table_info("+table+")", connection)){
+					using(SQLiteDataReader reader = command.ExecuteReader()){
+						while (reader.Read())
+						{
+							string name = reader.GetString(1);
+							cols.Add(name);
+						}
+						reader.Close();
+					}
+				}
+				connection.Close();
+			}
+			return cols;
+		}
+		
 		#region 执行sql语句
 		/// <summary>
 		/// 执行sql语句
@@ -75,7 +99,9 @@ namespace OcgWrapper
 						}
 						finally
 						{
-							trans.Commit();
+							try{
+								trans.Commit();
+							}catch{	}
 						}
 					}
 					con.Close();

@@ -97,7 +97,7 @@ namespace YGOCore
 				BanlistManager.Init(Program.Config.BanlistFile);
 				//DecksManager.Init();
 				MsgSystem.Init(Program.Config.ServerMsgs);
-				SQLiteTool.Init(Program.Config.WinDbName, WinInfo.SQL_Table);
+				WinInfo.Init(Program.Config.WinDbName);
 				try{
 					Directory.CreateDirectory(Program.Config.replayFolder);
 				}catch(IOException){
@@ -192,35 +192,33 @@ namespace YGOCore
 			m_mutexClients.ReleaseMutex();
 		}
 		
-		public static bool onLogin(string name,string pass){
-			
+		public static int onLogin(string name,string pass){
+			int uid=-1;
 			//Logger.WriteLine(name+"$"+pass+" is login");
 			try{
 				string dpass=Tool.GetMd5(pass);
 				if(name.StartsWith("[AI]")){
-					return dpass==Tool.GetMd5(Program.Config.AIPass);
+					return (dpass==Tool.GetMd5(Program.Config.AIPass))?1:-1;
 				}else{
 					string result=Tool.PostHtmlContentByUrl(Program.Config.LoginUrl,
 					                                        "username="+name.Replace("&","")+"&password="+dpass,
 					                                        10*1000
 					                                       );
-					if(result.IndexOf("-")<0){
-						return true;
-					}
+					uid=int.Parse(result.Trim().Replace("\"",""));
 				}
 			}catch(Exception){
 				
 			}
-			return false;
+			return uid;
 		}
 		
 		
 		public static void onLogout(string name){
 			
 		}
-		public static void onWin(string room,int mode, int win,int reason,string replay,string pl0,string pl1,string pl2,string pl3,bool force){
+		public static void onWin(string room,int mode, int win,int reason,string replay,string[] names, int[] uids,bool force){
 			MutexWinInfo.WaitOne();
-			WinInfos.Add(new WinInfo(room, win, reason,replay, pl0,pl1,pl2,pl3,force));
+			WinInfos.Add(new WinInfo(room, win, reason,replay, names, uids, force));
 			MutexWinInfo.ReleaseMutex();
 		}
 		
