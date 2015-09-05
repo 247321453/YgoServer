@@ -45,6 +45,7 @@ namespace YGOCore
 		public static bool onChat(GameConfig config,Player player,string msg)
 		{
 			if(!string.IsNullOrEmpty(msg)){
+				msg = msg.Trim();
 				if(msg=="/ai"){
 					if(config!=null && AddAI(config.Name)){
 						player.ServerMessage("Add AI success.");
