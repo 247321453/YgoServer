@@ -60,13 +60,17 @@ namespace YGOCore.Game
 			m_closePending = true;
 		}
 
+		public void HandleGameAsync(object obj){
+			HandleGame();
+		}
 		public void HandleGame()
 		{
 			foreach (GameClient user in m_clients)
 				user.Tick();
 
-			Game.TimeTick();
-
+			try{
+				Game.TimeTick();
+			}catch{}
 			if (m_closePending && m_clients.Count == 0)
 				Close();
 		}

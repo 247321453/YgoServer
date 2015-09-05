@@ -54,6 +54,11 @@ namespace YGOCore
 		/// </summary>
 		public int ClientVersion { get; private set; }
 		
+		/// <summary>
+		/// 异步模式
+		/// </summary>
+		public bool AsyncMode{get;private set;}
+		
 //		/// <summary>
 //		/// 允许重复登陆
 //		/// </summary>
@@ -264,6 +269,9 @@ namespace YGOCore
 					break;
 				case "apiislocal":
 					ApiIsLocal=(value.ToLower()=="true"||value=="1");
+					break;
+				case "asyncmode":
+					AsyncMode= (value.ToLower()=="true"||value=="1");
 					break;
 				default:
 					return false;

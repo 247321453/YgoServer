@@ -179,8 +179,13 @@ namespace YGOCore
 			//MutexRooms.WaitOne();
 			foreach (var room in m_rooms)
 			{
-				if (room.Value.IsOpen)
-					room.Value.HandleGame();
+				if (room.Value.IsOpen){
+					if(Program.Config.AsyncMode){
+						ThreadPool.QueueUserWorkItem(new WaitCallback(room.Value.HandleGameAsync));
+					}else{
+						room.Value.HandleGame();
+					}
+				}
 				else{
 					toRemove.Add(room.Key);
 				}
@@ -210,7 +215,7 @@ namespace YGOCore
 			if(name.IndexOf("$")<0){
 				return true;
 			}
-	//		int index=name.LastIndexOf("#");
+			//		int index=name.LastIndexOf("#");
 			string namepass=name;
 //			if(index>0 && (index+1) < name.Length){
 //				namepass=name.Substring(index+1);

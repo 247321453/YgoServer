@@ -7,3 +7,4 @@ F:\git\ygoserver\YGOClient\obj\Release\YGOClient.exe
 F:\git\ygoserver\release\YGOClient.exe.config
 F:\git\ygoserver\YGOClient\obj\Release\YGOClient.CreateRoomForm.resources
 F:\git\ygoserver\YGOClient\obj\Release\YGOClient.InputDialog.resources
+F:\git\ygoserver\YGOClient\obj\Release\YGOClient.csprojResolveAssemblyReference.cache

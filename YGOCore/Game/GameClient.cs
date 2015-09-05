@@ -136,15 +136,17 @@ namespace YGOCore.Game
 
 		private void NetworkSend()
 		{
-			while (m_sendQueue.Count > 0)
-			{
-				byte[] raw = m_sendQueue.Dequeue();
-				MemoryStream stream = new MemoryStream(raw.Length + 2);
-				BinaryWriter writer = new BinaryWriter(stream);
-				writer.Write((ushort)raw.Length);
-				writer.Write(raw);
-				m_client.Client.Send(stream.ToArray());
-			}
+			try{
+				while (m_sendQueue.Count > 0)
+				{
+					byte[] raw = m_sendQueue.Dequeue();
+					MemoryStream stream = new MemoryStream(raw.Length + 2);
+					BinaryWriter writer = new BinaryWriter(stream);
+					writer.Write((ushort)raw.Length);
+					writer.Write(raw);
+					m_client.Client.Send(stream.ToArray());
+				}
+			}catch{}
 		}
 
 		private void NetworkParse()
