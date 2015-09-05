@@ -15,7 +15,7 @@ namespace YGOCore
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
 			Config = new ServerConfig();
-			bool loaded = args.Length > 1 ? Config.Load(args[1]): Config.Load();
+			bool loaded = args.Length > 0 ? Config.Load(args[0]): Config.Load();
 
 			ChatCommand.WriteHead(Config);
 			if(loaded)
@@ -26,18 +26,18 @@ namespace YGOCore
 				Logger.WriteLine("Warning: Hand shuffle requires a custom ocgcore to work.");
 			}
 			int coreport = Config.ServerPort;
-
-			if (args.Length > 0){
-				int.TryParse(args[0], out coreport);
-				if(coreport==0){
-					coreport=Config.ServerPort;
-				}else{
-					Config.setValue("serverport", ""+coreport);
-					if(coreport<=9999){
-						Config.setValue("apiport", ""+(10000+coreport));
-					}
-				}
-			}
+//
+//			if (args.Length > 0){
+//				int.TryParse(args[0], out coreport);
+//				if(coreport==0){
+//					coreport=Config.ServerPort;
+//				}else{
+//					Config.setValue("serverport", ""+coreport);
+//					if(coreport<=9999){
+//						Config.setValue("apiport", ""+(10000+coreport));
+//					}
+//				}
+//			}
 			Random = new Random();
 			
 			Server server = new Server();

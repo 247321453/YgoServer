@@ -20,6 +20,7 @@ namespace OcgWrapper
 			+"id INTEGER PRIMARY KEY AUTOINCREMENT,"
 			+"room TEXT,"
 			+"win INTEGER,"
+			+"mode INTEGER,"
 			+"reason INTEGER,"
 			+"replay TEXT,"
 			+"player0 TEXT,"
@@ -35,6 +36,7 @@ namespace OcgWrapper
 			+");";
 		public string room;
 		public int win;
+		public int mode;
 		public int reason;
 		public string replay;
 		public string[] players;
@@ -53,6 +55,8 @@ namespace OcgWrapper
 				SQLiteTool.Command(file, "ALTER TABLE wins ADD COLUMN uid2 INTEGER NOT NULL DEFAULT 0;");
 			if(!cols.Contains("uid3"))
 				SQLiteTool.Command(file, "ALTER TABLE wins ADD COLUMN uid3 INTEGER NOT NULL DEFAULT 0;");
+			if(!cols.Contains("mode"))
+				SQLiteTool.Command(file, "ALTER TABLE wins ADD COLUMN mode INTEGER NOT NULL DEFAULT 0;");
 		}
 		
 		public WinInfo(string room,int win,int reason,string replay,
@@ -75,13 +79,14 @@ namespace OcgWrapper
 			return txt.Replace("'","''");
 		}
 		public string getSQL(){
-			string sql="INSERT INTO wins(room,win,reason,replay,"
+			string sql="INSERT INTO wins(room,win,mode,reason,replay,"
 				+"player0,player1,player2,player3,"
 				+"uid0,uid1,uid2,uid3,"
 				+"force,endtime)"
 				+" VALUES("
 				+"'"+reText(room)+"',"
 				+win+","
+				+mode+","
 				+reason+","
 				+"'"+reText(replay)+"',"
 				+"'"+reText(players[0])+"',"
