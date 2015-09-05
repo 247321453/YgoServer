@@ -45,16 +45,22 @@ namespace System.Windows.Forms
 				label.ForeColor = Color.White;
 
 				if(room.Warring){
-					label.BackColor=Color.FromArgb(0xee, 0xd6, 60, 0);
+					label.BackColor=Color.FromArgb(0xee, 0xdd, 0, 0);
 					label.Text = "[有坑]"+room.RoomName;
 				}else{
-					if(room.IsStart){
-						label.BackColor=Color.FromArgb(0xdd, 0, 0x68, 0x8b);
+					if(room.NeedPass){
+						//label.BackColor=Color.FromArgb(0xdd, 0, 0x68, 0x8b);
+						label.BackColor=Color.FromArgb(0xee, 0xee, 0xad, 0x0e);
 						label.Text = room.RoomName;
 					}else{
 						label.BackColor=Color.FromArgb(0xdd, 0, 0x64, 0);
 						label.Text = room.RoomName;
 					}
+				}
+				if(room.IsStart){
+					label.Text+=" 【决斗中】";
+				}else{
+					label.Text+=" 【等待中】";
 				}
 				this.Controls.Add(label);
 				
@@ -73,7 +79,7 @@ namespace System.Windows.Forms
 				this.Controls.Add(label3);
 				
 				Label label4 = new Label();
-				label4.Text = "决斗模式："+(room.Mode==0?"单局模式":(room.Rule==1?"比赛模式":"双打模式"));
+				label4.Text = "决斗模式："+(room.Mode==2?"双打模式":(room.Mode==1?"比赛模式":"单局模式"));
 				label4.TextAlign = ContentAlignment.MiddleLeft;
 				label4.Padding = new Padding(8, 2, 2, 2);
 				label4.Size = new Size(182, 26);
@@ -109,6 +115,7 @@ namespace System.Windows.Forms
 				if(room.NeedPass){
 					join.Text="输入密码";
 					join.ForeColor =Color.DarkRed;
+					join.BackColor = Color.Gray;
 				}else{
 					join.Text="加入房间";
 				}
@@ -168,36 +175,39 @@ namespace System.Windows.Forms
 			if(rooms==null){
 				rooms=new RoomInfo[0];
 			}
-
+			if (!this.InvokeRequired)
+			{
+				AddRooms(rooms);
+			}
+			else
+			{
+				BeginInvoke(new Action(()=>{
+				                       AddRooms(rooms);
+				                       })
+				           );
+			}
+		}
+		
+		
+		private void AddRooms(RoomInfo[] rooms){
 			this.SuspendLayout();
 			this.Controls.Clear();
 			int i=0;
 			//MessageBox.Show("共有"+rooms.Length+"房间");
 			foreach(RoomInfo room in rooms){
 				i++;
-				if (!this.InvokeRequired)
-				{
-					AddRoom(room, i==rooms.Length);
-				}
-				else
-				{
-					BeginInvoke(new Action(()=>{
-					                       	AddRoom(room, i==rooms.Length);
-					                       })
-					           );
-				}
+				AddRoom(room, i==rooms.Length);
 			}
 			if(rooms.Length==0){
 				this.ResumeLayout(false);
 			}
 		}
-		
 		public void AddRoom(RoomInfo room, bool isLast){
 			RoomBlock block=new RoomBlock(room);
 			block.SetListener(this);
 			this.Controls.Add(block);
 			if(isLast){
-				this.ResumeLayout(false);
+				this.ResumeLayout(true);
 			}
 		}
 		#endregion

@@ -1,5 +1,4 @@
 F:\git\ygoserver\release\YGOClient.exe
-F:\git\ygoserver\YGOClient\obj\Release\YGOClient.csprojResolveAssemblyReference.cache
 F:\git\ygoserver\YGOClient\obj\Release\YGOClient.MyNotifyIcon.resources
 F:\git\ygoserver\YGOClient\obj\Release\YGOClient.RoomForm.resources
 F:\git\ygoserver\YGOClient\obj\Release\YGOClient.UserForm.resources

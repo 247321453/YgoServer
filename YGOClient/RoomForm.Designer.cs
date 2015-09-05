@@ -39,6 +39,8 @@ namespace YGOClient
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RoomForm));
 			this.cb_server = new System.Windows.Forms.ComboBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.chk_wait = new System.Windows.Forms.CheckBox();
+			this.chk_nopass = new System.Windows.Forms.CheckBox();
 			this.btn_replay = new System.Windows.Forms.Button();
 			this.btn_deck = new System.Windows.Forms.Button();
 			this.cb_auth = new System.Windows.Forms.CheckBox();
@@ -65,6 +67,8 @@ namespace YGOClient
 			// 
 			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 									| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Controls.Add(this.chk_wait);
+			this.groupBox1.Controls.Add(this.chk_nopass);
 			this.groupBox1.Controls.Add(this.btn_replay);
 			this.groupBox1.Controls.Add(this.btn_deck);
 			this.groupBox1.Controls.Add(this.cb_auth);
@@ -75,10 +79,32 @@ namespace YGOClient
 			this.groupBox1.Controls.Add(this.cb_server);
 			this.groupBox1.Location = new System.Drawing.Point(8, 8);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(782, 66);
+			this.groupBox1.Size = new System.Drawing.Size(868, 66);
 			this.groupBox1.TabIndex = 3;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "服务器信息";
+			// 
+			// chk_wait
+			// 
+			this.chk_wait.AutoSize = true;
+			this.chk_wait.Checked = true;
+			this.chk_wait.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chk_wait.Location = new System.Drawing.Point(778, 43);
+			this.chk_wait.Name = "chk_wait";
+			this.chk_wait.Size = new System.Drawing.Size(60, 16);
+			this.chk_wait.TabIndex = 10;
+			this.chk_wait.Text = "等待中";
+			this.chk_wait.UseVisualStyleBackColor = true;
+			// 
+			// chk_nopass
+			// 
+			this.chk_nopass.AutoSize = true;
+			this.chk_nopass.Location = new System.Drawing.Point(778, 21);
+			this.chk_nopass.Name = "chk_nopass";
+			this.chk_nopass.Size = new System.Drawing.Size(60, 16);
+			this.chk_nopass.TabIndex = 10;
+			this.chk_nopass.Text = "无密码";
+			this.chk_nopass.UseVisualStyleBackColor = true;
 			// 
 			// btn_replay
 			// 
@@ -172,7 +198,7 @@ namespace YGOClient
 			this.groupBox2.Controls.Add(this.fp_rooms);
 			this.groupBox2.Location = new System.Drawing.Point(8, 81);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(782, 476);
+			this.groupBox2.Size = new System.Drawing.Size(868, 478);
 			this.groupBox2.TabIndex = 4;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "房间列表";
@@ -186,7 +212,7 @@ namespace YGOClient
 			this.fp_rooms.BackColor = System.Drawing.SystemColors.Control;
 			this.fp_rooms.Location = new System.Drawing.Point(6, 20);
 			this.fp_rooms.Name = "fp_rooms";
-			this.fp_rooms.Size = new System.Drawing.Size(768, 446);
+			this.fp_rooms.Size = new System.Drawing.Size(854, 448);
 			this.fp_rooms.TabIndex = 0;
 			// 
 			// RoomForm
@@ -194,7 +220,7 @@ namespace YGOClient
 			this.AcceptButton = this.btn_refresh;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(802, 562);
+			this.ClientSize = new System.Drawing.Size(888, 564);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.DoubleBuffered = true;
@@ -209,6 +235,8 @@ namespace YGOClient
 			this.groupBox2.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.CheckBox chk_nopass;
+		private System.Windows.Forms.CheckBox chk_wait;
 		private System.Windows.Forms.Button btn_replay;
 		private System.Windows.Forms.Button btn_deck;
 		private System.Windows.Forms.Button button1;

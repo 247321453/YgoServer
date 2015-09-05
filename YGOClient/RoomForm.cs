@@ -53,40 +53,49 @@ namespace YGOClient
 		#region refresh room
 		void Btn_refreshClick(object sender, EventArgs e)
 		{
-			if(m_server == null){
+			if(m_server == null || m_server.RoomUrl==null){
 				return;
 			}
 			int now=Environment.TickCount;
 			int sp=now-m_lasttime;
-			if(sp<3*1000){
-				MessageBox.Show(string.Format("请不要刷新太快, 请{0:N1}秒后再刷新",((3000-sp)/1000.0f)));
+			if(sp<2000){
+				MessageBox.Show(string.Format("请不要刷新太快, 请{0:N1}秒后再刷新",((2000-sp)/1000.0f)));
 				return;
 			}
 			m_lasttime = now;
 			btn_refresh.Enabled=false;
-			Thread thread=new Thread(new ThreadStart(RefreshRooms));
-			thread.IsBackground=true;
-			thread.Start();
-		}
-		
-		
-		private void RefreshRooms(){
 			string url=m_server.RoomUrl;
-			if(url!=null){
+			if(chk_wait.Checked){
 				if(url.IndexOf("?")>=0){
 					url += "&start=false";
 				}else{
 					url += "?start=false";
 				}
 			}
-			string json = Tool.GetHtmlContentByUrl(url);
-			try{
-				List<RoomInfo> list=new List<RoomInfo>();
-				list=Tool.Parse<List<RoomInfo>>(json);
-				fp_rooms.SetRooms(list.ToArray());
+			if(chk_nopass.Checked){
+				if(url.IndexOf("?")>=0){
+					url += "&lock=false";
+				}else{
+					url += "?lock=false";
+				}
 			}
-			catch{
-				fp_rooms.SetRooms(null);
+			Thread thread=new Thread(new ParameterizedThreadStart(RefreshRooms));
+			thread.IsBackground=true;
+			thread.Start(url);
+		}
+		
+		
+		private void RefreshRooms(object url){
+			if(url!=null){
+				string json = Tool.GetHtmlContentByUrl(url.ToString());
+				try{
+					List<RoomInfo> list=new List<RoomInfo>();
+					list=Tool.Parse<List<RoomInfo>>(json);
+					fp_rooms.SetRooms(list.ToArray());
+				}
+				catch{
+					fp_rooms.SetRooms(null);
+				}
 			}
 			btn_refresh.BeginInvoke(new Action(()=>
 			                                   {
@@ -109,6 +118,8 @@ namespace YGOClient
 					m_server=srv;
 					fp_rooms.SetParent(m_client, m_server);
 					ConfigManager.Save(Server.TAG, name);
+					fp_rooms.SetRooms(null);
+					m_lasttime=Environment.TickCount-2000;
 				}else{
 					//MessageBox.Show("加载失败");
 				}

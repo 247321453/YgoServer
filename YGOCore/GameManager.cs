@@ -210,11 +210,11 @@ namespace YGOCore
 			if(name.IndexOf("$")<0){
 				return true;
 			}
-			int index=name.LastIndexOf("#");
+	//		int index=name.LastIndexOf("#");
 			string namepass=name;
-			if(index>0 || (index+1) < name.Length){
-				namepass=name.Substring(index+1);
-			}
+//			if(index>0 && (index+1) < name.Length){
+//				namepass=name.Substring(index+1);
+//			}
 			string[] _names=namepass.Split('$');;
 			if(_names.Length==1){
 				return GameExists(_names[0]);
@@ -225,8 +225,8 @@ namespace YGOCore
 				m_rooms.Keys.CopyTo(rooms, 0);
 				//MutexRooms.ReleaseMutex();
 				foreach(string key in rooms){
+					//Logger.WriteLine(key+"=="+namepass);
 					if(key.StartsWith(_names[0]+"$")){
-						//Logger.WriteLine("check pass");
 						return key==namepass;
 					}
 				}

@@ -649,11 +649,11 @@ namespace YGOCore.Game
 			}
 			try{
 				string[] names=new string[]{Players[0].Name,Players[1].Name,
-				             IsTag?Players[2].Name:"",IsTag?Players[3].Name:""};
+					IsTag?Players[2].Name:"",IsTag?Players[3].Name:""};
 				int[] uids=new int[]{Players[0].UID, Players[1].UID, IsTag?Players[2].UID:0, IsTag?Players[3].UID:0};
-			//	Logger.WriteLine("onWin:"+team);
+				//	Logger.WriteLine("onWin:"+team);
 				Server.onWin(m_room.Game.Config.Name, m_room.Game.Config.Mode, team, reason, yrpName,
-			             names, uids,force);
+				             names, uids,force);
 			}catch(Exception e){
 				Logger.WriteError(e);
 			}
@@ -915,7 +915,16 @@ namespace YGOCore.Game
 			else{
 				if(State == GameState.Side){
 					//Logger.WriteLine("side is lose");
-					Surrender((m_room.m_clients[0]!=null&&m_room.m_clients[0].IsConnected)?Players[1]:Players[0],  4,true);
+					Player pl= null;
+					try{
+						if(m_room.m_clients.Count>0){
+							pl = (m_room.m_clients[0]!=null&&m_room.m_clients[0].IsConnected)?Players[1]:Players[0];
+						}
+					}catch{}
+					
+					if(pl!=null){
+						Surrender(pl,  4,true);
+					}
 				}
 				State = GameState.End;
 				End();
