@@ -62,10 +62,12 @@ namespace Bend.Util {
 				Console.WriteLine("Exception: " + e.ToString());
 				writeFailure();
 			}finally{
-				outputStream.Flush();
+				try{
+					outputStream.Flush();
+					socket.Close();
+				}catch{}
 				// bs.Flush(); // flush any remaining output
 				inputStream = null; outputStream = null; // bs = null;
-				socket.Close();
 			}
 		}
 
@@ -146,21 +148,28 @@ namespace Bend.Util {
 		}
 
 		public void writeSuccess() {
-			outputStream.Write("HTTP/1.0 200 OK\r\n");
-			outputStream.Write("Content-Type: text/html;charset=utf-8\r\n");
-			if(srv.isLocal){
-				outputStream.Write("Access-Control-Allow-Origin: * \r\n");
-				outputStream.Write("Access-Control-Allow-Methods: * \r\n");
-				outputStream.Write("Access-Control-Allow-Headers: x-requested-with,content-type \r\n");
-			}
-			outputStream.Write("Connection: close\r\n");
-			outputStream.Write("\r\n");
+			try{
+				outputStream.Write("HTTP/1.0 200 OK\r\n");
+				outputStream.Write("Content-Type: text/html;charset=utf-8\r\n");
+				if(srv.isLocal){
+					outputStream.Write("Access-Control-Allow-Origin: * \r\n");
+					outputStream.Write("Access-Control-Allow-Methods: * \r\n");
+					outputStream.Write("Access-Control-Allow-Headers: x-requested-with,content-type \r\n");
+				}
+				outputStream.Write("Connection: close\r\n");
+				outputStream.Write("\r\n");
+			}catch{}
 		}
 
 		public void writeFailure() {
-			outputStream.Write("HTTP/1.0 404 File not found\r\n");
-			outputStream.Write("Connection: close\r\n");
-			outputStream.Write("\r\n");
+			if(outputStream==null){
+				return;
+			}
+			try{
+				outputStream.Write("HTTP/1.0 404 File not found\r\n");
+				outputStream.Write("Connection: close\r\n");
+				outputStream.Write("\r\n");
+			}catch{}
 		}
 	}
 

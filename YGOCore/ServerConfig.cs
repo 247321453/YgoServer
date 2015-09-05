@@ -144,6 +144,7 @@ namespace YGOCore
 			LoginUrl="http://127.0.0.1/login.php";
 			AIisHide=false;
 			ApiIsLocal=true;
+			AsyncMode=false;
 		}
 
 		public bool Load(string file = "config.txt")
