@@ -22,6 +22,7 @@ autoreplay=true
 replayfolder=replay
 ###记录游戏结果
 recordwin=true
+windbname=win1.db
 ###允许打乱手牌
 handshuffle=true
 ###允许私聊，@玩家名 内容
