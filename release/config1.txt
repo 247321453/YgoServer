@@ -2,19 +2,19 @@
 #客户端版本1033.6
 clientversion=1336
 #####################
-servername=菜菜服务器
-serverdesc=提供30只野生AI，房间数50，支持@名字 私聊
+servername=菜菜服务器1
+serverdesc=提供50只野生AI，房间数200，支持@名字 私聊
 ###服务器断开
-serverport=8910
+serverport=8911
 ###房间列表端口
-apiport=18910
+apiport=18911
 ###房间列表禁本地访问，用于网站
 apiislocal=true
 ##############
 ###需要登录认证，AI任何时候都需要密码
 needauth=true
 ###最大房间数
-maxroom=50
+maxroom=200
 ###控制台输出
 consolelog=true
 ###自动录像
@@ -31,7 +31,7 @@ servermsgs=server_msg.txt
 ###登录验证，POST 传参， username，password
 loginurl=http://www.ygobbs.com/index.php?ctrl=api
 ###AI最大数
-maxai=30
+maxai=50
 ###AI界面隐藏
 aiishide=true
 ###AI登录密码

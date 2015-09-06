@@ -2,8 +2,8 @@
 #客户端版本1033.6
 clientversion=1336
 #####################
-servername=菜菜服务器
-serverdesc=提供50只野生AI，房间数100，支持@名字 私聊
+servername=菜菜服务器2
+serverdesc=无AI，房间数200，支持@名字 私聊
 ###服务器断开
 serverport=8912
 ###房间列表端口
