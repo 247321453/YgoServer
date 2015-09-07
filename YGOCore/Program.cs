@@ -43,7 +43,7 @@ namespace YGOCore
 			Server server = new Server();
 			if (!server.Start(coreport))
 				Thread.Sleep(5000);
-			ThreadPool.SetMaxThreads(256, 128);
+			ThreadPool.SetMaxThreads(128, 256);
 			Thread inputThread=new Thread(new ParameterizedThreadStart(Command));
 			inputThread.IsBackground=true;
 			inputThread.Start(server);

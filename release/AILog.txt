@@ -82,3 +82,7 @@
 [21:32:10] OnStart
 [21:33:02] Duel finished against 菜菜, result: Lose
 [21:33:02] OnDuelEnd
+[21:13:00] [AI]Robot$kenan123 join 127.0.0.1:8911 smYlO use 
+[21:13:00] Decks initialized, 2 found.
+[21:13:00] use deck is Horus
+[21:14:18] Server is close

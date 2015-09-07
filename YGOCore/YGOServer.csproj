@@ -161,6 +161,7 @@
     <Compile Include="Game\ReplayHeader.cs" />
     <Compile Include="Game\RoomInfo.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Messages.cs" />
     <Compile Include="Plugin\ChatCommand.cs" />
     <Compile Include="Plugin\HttpServer.cs" />
     <Compile Include="Plugin\MyHttpServer.cs" />

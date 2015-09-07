@@ -1,4 +1,5 @@
 ﻿using OcgWrapper.Enums;
+using System.Text;
 
 namespace YGOCore.Game
 {
@@ -144,7 +145,7 @@ namespace YGOCore.Game
 			Name = packet.ReadUnicode(20);
 
 			if (string.IsNullOrEmpty(Name)){
-				LobbyError("Username Required");
+				LobbyError(Messages.ERR_NO_NAME);
 			}
 			IsAuthentified = CheckAuth();
 			if(IsAuthentified){
@@ -159,12 +160,17 @@ namespace YGOCore.Game
 			if(Program.Config.isNeedAuth || namepassword.StartsWith("[AI]")){
 				string[] _names=namepassword.Split('$');
 				if(_names.Length==1){
-					LobbyError("You need a password.");
+					ServerMessage(Messages.ERR_NO_PASS);
 					return false;
 				}else{
 					UID=Server.onLogin(_names[0],_names[1]);
 					if(UID<0){
 						//LobbyError("Auth Fail");
+						if(Encoding.Default.GetBytes(namepassword).Length>=20){
+							ServerMessage(Messages.ERR_NAME_PASSWORD_LONG);
+						}else{
+							ServerMessage(Messages.ERR_NAME_PASSWORD);
+						}
 						return false;
 					}
 				}
@@ -182,7 +188,7 @@ namespace YGOCore.Game
 
 			if (room == null)
 			{
-				LobbyError("Server Full");
+				LobbyError(Messages.MSG_FULL);
 				return;
 			}
 
@@ -190,7 +196,7 @@ namespace YGOCore.Game
 			Game.AddPlayer(this);
 			//IsAuthentified = CheckAuth();
 			if(!IsAuthentified){
-				LobbyError("Auth fail");
+				LobbyError(Messages.ERR_AUTH_FAIL);
 			}
 		}
 
@@ -201,11 +207,11 @@ namespace YGOCore.Game
 			int version = packet.ReadInt16();
 			if (version < Program.Config.ClientVersion)
 			{
-				LobbyError("Version too low");
+				LobbyError(Messages.ERR_LOW_VERSION);
 				return;
 			}
 			else if (version > Program.Config.ClientVersion)
-				ServerMessage("Warning: client version is higher than servers.");
+				ServerMessage(Messages.MSG_HIGH_VERSION);
 			
 
 			packet.ReadInt32();//gameid
@@ -217,11 +223,11 @@ namespace YGOCore.Game
 			
 			//IsAuthentified = CheckAuth();
 			if(!IsAuthentified){
-				LobbyError("Auth fail");
+				LobbyError(Messages.ERR_AUTH_FAIL);
 				return;
 			}
 			if(!GameManager.CheckPassword(joinCommand)){
-				LobbyError("Password Error");
+				LobbyError(Messages.ERR_PASSWORD);
 				return;
 			}
 			if(string.IsNullOrEmpty(joinCommand) ||joinCommand.ToLower()=="random"){
@@ -273,26 +279,26 @@ namespace YGOCore.Game
 
 			if (room == null)
 			{
-				LobbyError("Server Busy");
+				LobbyError(Messages.MSG_FULL);
 				return;
 			}
 			if (!room.IsOpen)
 			{
-				LobbyError("Game Finished");
+				LobbyError(Messages.MSG_GAMEOVER);
 				return;
 			}
 			if(room.Game!=null && room.Game.Config!=null){
 				//TODO: tips
 				if(room.Game.Config.NoCheckDeck){
-					ServerMessage("Deck will not be checked in this room.");
+					ServerMessage(Messages.MSG_NOCHECKDECK);
 				}
 				
 				if(room.Game.Config.NoShuffleDeck){
-					ServerMessage("Deck will not be shuffled in this room.");
+					ServerMessage(Messages.MSG_NOSHUFFLEDECK);
 				}
 				
 				if(room.Game.Config.EnablePriority){
-					ServerMessage("This room enabled priority.");
+					ServerMessage(Messages.MSG_ENABLE_PROIORITY);
 				}
 			}
 			Game = room.Game;

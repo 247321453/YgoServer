@@ -19,6 +19,7 @@ namespace YGOCore.Game
 		private bool m_disconnected;
 		private bool m_closePending;
 		private int m_receivedLen;
+		public long logintime{get;private set;}
 
 		public GameClient(TcpClient client)
 		{
@@ -29,6 +30,7 @@ namespace YGOCore.Game
 			m_recvQueue = new Queue<GameClientPacket>();
 			m_sendQueue = new Queue<byte[]>();
 			m_receivedLen = -1;
+			logintime =DateTime.Now.Ticks;
 		}
 
 		public void Close()
@@ -45,8 +47,8 @@ namespace YGOCore.Game
 		{
 			return Game != null;
 		}
-
-		public void JoinGame(GameRoom room)
+		
+		public void SetRoom(GameRoom room)
 		{
 			if (m_room == null)
 			{
@@ -148,6 +150,12 @@ namespace YGOCore.Game
 				}
 			}catch{}
 		}
+		
+//		public bool IsTimeOut(){
+//			long t = (DateTime.Now.Ticks-logintime)/10000;
+//			long all = ((long)Program.Config.Timeout * 1000);
+//			return  t >= all;
+//		}
 
 		private void NetworkParse()
 		{

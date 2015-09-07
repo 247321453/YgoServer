@@ -47,15 +47,18 @@ namespace YGOCore
 			if(!string.IsNullOrEmpty(msg)){
 				msg = msg.Trim();
 				if(msg=="/ai"){
-					if(config!=null && AddAI(config.Name)){
-						player.ServerMessage("Add AI success.");
+					if(Program.Config.MaxAICount==0){
+						player.ServerMessage(Messages.MSG_NO_AI);
+					}
+					else if(config!=null && AddAI(config.Name)){
+						player.ServerMessage(Messages.MSG_ADD_AI);
 					}else{
-						player.ServerMessage("no free AI.");
+						player.ServerMessage(Messages.MSG_NO_FREE_AI);
 					}
 					return false;
 				}
 				if(msg.StartsWith("@") && !Program.Config.PrivateChat){
-					player.ServerMessage("Can not private chat.");
+					player.ServerMessage(Messages.MSG_BAN_PCHAT);
 					return false;
 				}
 				if(msg.StartsWith("@server ")){
@@ -75,7 +78,7 @@ namespace YGOCore
 							string name=msg.Substring(1, i-1);
 							string cxt=msg.Substring(i+1);
 							if(!GameManager.SendErrorMessage(player.Name+": "+cxt, name)){
-								player.ServerMessage("send fail.");
+								player.ServerMessage(Messages.MSG_SEND_FAIL);
 							}else{
 								return false;
 							}

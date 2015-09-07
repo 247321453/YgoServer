@@ -158,7 +158,7 @@ namespace YGOCore
 				Thread.Sleep(1);
 			}
 		}
-
+		
 		public void Process()
 		{
 			//在游戏的，则以房间为单位
@@ -170,7 +170,6 @@ namespace YGOCore
 			//	m_clients.Add(new GameClient(m_listener.AcceptTcpClient()));
 
 			//不在游戏房间的玩家
-			List<GameClient> toRemove = new List<GameClient>();
 			List<GameClient> _clients= new List<GameClient>();
 			m_mutexClients.WaitOne();
 			_clients.AddRange(m_clients);
@@ -179,17 +178,13 @@ namespace YGOCore
 			{
 				client.Tick();
 				if (!client.IsConnected || client.InGame()){
-					//断开，或者在游戏
-					toRemove.Add(client);
+					//断开，或者在游戏,一定时间内没有加入房间
+				//	Logger.WriteLine("player logout");
+					m_mutexClients.WaitOne();
+					m_clients.Remove(client);
+					m_mutexClients.ReleaseMutex();
 				}
 			}
-			m_mutexClients.WaitOne();
-			while (toRemove.Count > 0)
-			{
-				m_clients.Remove(toRemove[0]);
-				toRemove.RemoveAt(0);
-			}
-			m_mutexClients.ReleaseMutex();
 		}
 		
 		public static int onLogin(string name,string pass){
@@ -233,10 +228,10 @@ namespace YGOCore
 			}
 			isClosing=true;
 			//TODO 延时关闭
-			GameManager.SendWarringMessage("Server will close after 5 minute.");
-			GameManager.SendErrorMessage("Server will close after 5 minute.");
+			GameManager.SendWarringMessage(Messages.MSG_CLOSE);
+			GameManager.SendErrorMessage(Messages.MSG_CLOSE);
 			if(CloseTimer==null){
-				CloseTimer = new System.Timers.Timer(5*60*1000);
+				CloseTimer = new System.Timers.Timer(3*60*1000);
 				CloseTimer.AutoReset=false;
 				CloseTimer.Enabled=true;
 				CloseTimer.Elapsed+=new System.Timers.ElapsedEventHandler(CloseTimer_Elapsed);

@@ -114,6 +114,8 @@ namespace YGOCore
 		public bool AIisHide{get;private set;}
 		public string AIPass{get;private set;}
 		
+		//public int Timeout{get;private set;}
+		
 		public ServerConfig()
 		{
 			ClientVersion = 0x1335;
@@ -145,6 +147,7 @@ namespace YGOCore
 			AIisHide=false;
 			ApiIsLocal=true;
 			AsyncMode=false;
+		//	Timeout = 20;
 		}
 
 		public bool Load(string file = "config.txt")
@@ -274,6 +277,9 @@ namespace YGOCore
 				case "asyncmode":
 					AsyncMode= (value.ToLower()=="true"||value=="1");
 					break;
+//				case "timeout":
+//					Timeout = Convert.ToInt32(value, 20);
+//					break;
 				default:
 					return false;
 			}
