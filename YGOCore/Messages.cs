@@ -29,6 +29,9 @@ namespace YGOCore
 		public const string MSG_ENABLE_PROIORITY="该房间启动使用效果优先权，非正常设置";
 		public const string ERR_NAME_PASSWORD="用户名或者密码错误";
 		public const string ERR_NAME_PASSWORD_LONG="名字和密码的长度过长，请修改密码。";
+		public const string MSG_SIDE="请在120秒内换好side";
+		public const string MSG_TIP_TIME="你还有 {0} 秒";
+		public const string MSG_READY="{0} 准备好";
 		
 		public const string ERR_NO_NAME="名字不能为空";
 		public const string ERR_NO_PASS="密码不能为空";
