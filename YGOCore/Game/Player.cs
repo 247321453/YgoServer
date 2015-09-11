@@ -370,7 +370,7 @@ namespace YGOCore.Game
 				}
 				Deck = deck;
 				Game.IsReady[Type] = true;
-				Game.ServerMessage(Name + " is ready.");
+				Game.ServerMessage(string.Format(Messages.MSG_READY, Name));
 				Send(new GameServerPacket(StocMessage.DuelStart));
 				Game.MatchSide();
 			}

@@ -906,7 +906,7 @@ namespace YGOCore.Game
 			{
 				IsReady[0] = false;
 				IsReady[1] = false;
-				ServerMessage("You have 120 seconds to side!");
+				ServerMessage(Messages.MSG_SIDE);
 				SideTimer = DateTime.UtcNow;
 				State = GameState.Side;
 				SendToPlayers(new GameServerPacket(StocMessage.ChangeSide));
@@ -1010,7 +1010,7 @@ namespace YGOCore.Game
 				{
 					if (m_lasttick != currentTick)
 					{
-						ServerMessage("You have " + currentTick + " seconds left.");
+						ServerMessage(string.Format(Messages.MSG_TIP_TIME, currentTick));
 						m_lasttick = currentTick;
 					}
 				}
@@ -1043,7 +1043,7 @@ namespace YGOCore.Game
 					{
 						if (m_lasttick != currentTick)
 						{
-							ServerMessage("You have " + currentTick + " seconds left.");
+							ServerMessage(string.Format(Messages.MSG_TIP_TIME, currentTick));
 							m_lasttick = currentTick;
 						}
 					}
@@ -1067,7 +1067,7 @@ namespace YGOCore.Game
 				{
 					if (m_lasttick != currentTick)
 					{
-						ServerMessage("You have " + currentTick + " seconds left.");
+						ServerMessage(string.Format(Messages.MSG_TIP_TIME, currentTick));
 						m_lasttick = currentTick;
 					}
 				}
