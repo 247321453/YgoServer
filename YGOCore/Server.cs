@@ -55,7 +55,7 @@ namespace YGOCore
 			return Tool.ToJson(list);
 		}
 		public int getRoomCount(){
-			return GameManager.getRoomInfos().Count;
+			return GameManager.getRoomInfos(true, true).Count;
 		}
 		
 		public int getPlayerCount(){

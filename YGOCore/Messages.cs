@@ -30,8 +30,10 @@ namespace YGOCore
 		public const string ERR_NAME_PASSWORD="用户名或者密码错误";
 		public const string ERR_NAME_PASSWORD_LONG="名字和密码的长度过长，请修改密码。";
 		public const string MSG_SIDE="请在120秒内换好side";
+		public const string MSG_DISCONECT="玩家 {0} 掉线，请等待{1}秒，超时则算结束决斗";
 		public const string MSG_TIP_TIME="你还有 {0} 秒";
 		public const string MSG_READY="{0} 准备好";
+		public const string MSG_WATCH_SIDE="正在更换side";
 		public const string MSG_PLAYER_BAN="你的帐号无法登陆本服务器";
 		public const string ERR_NO_NAME="名字不能为空";
 		public const string ERR_NO_PASS="密码不能为空";

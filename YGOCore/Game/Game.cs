@@ -22,6 +22,7 @@ namespace YGOCore.Game
 		public int CurrentPlayer { get; set; }
 		public int[] LifePoints { get; set; }
 
+		
 		public Player[] Players { get; private set; }
 		public Player[] CurPlayers { get; private set; }
 		public bool[] IsReady { get; private set; }
@@ -40,6 +41,7 @@ namespace YGOCore.Game
 		private int[] m_timelimit;
 		private int[] m_bonustime;
 		private DateTime? m_time;
+		
 
 		private int[] m_matchResult;
 		private int m_duelCount;
@@ -47,6 +49,15 @@ namespace YGOCore.Game
 		private bool m_swapped;
 		private string yrpName;
 		private bool IsEnd = false;
+		//断线重连
+		private bool IsPause = false;
+		public string[] PlayerNames{get;private set;}
+		private bool AutoEndTrun;
+		
+		/// <summary>
+		/// 是否允许断线重连
+		/// </summary>
+		private bool CanPause = false;
 		
 		public Game(GameRoom room, GameConfig config)
 		{
@@ -57,12 +68,14 @@ namespace YGOCore.Game
 			CurrentPlayer = 0;
 			LifePoints = new int[2];
 			Players = new Player[IsTag ? 4 : 2];
+			PlayerNames = new string[IsTag ? 4 : 2];
 			CurPlayers = new Player[2];
 			IsReady = new bool[IsTag ? 4 : 2];
 			m_handResult = new int[2];
 			m_timelimit = new int[2];
 			m_bonustime = new int[2];
 			m_matchResult = new int[3];
+			AutoEndTrun = Program.Config.AutoEndTurn;
 			Observers = new List<Player>();
 			if (config.LfList >= 0 && config.LfList < BanlistManager.Banlists.Count)
 				Banlist = BanlistManager.Banlists[config.LfList];
@@ -77,6 +90,7 @@ namespace YGOCore.Game
 			IsMatch = Config.Mode == 1;
 			IsTag = Config.Mode == 2;
 			Players = new Player[IsTag ? 4 : 2];
+			PlayerNames = new string[IsTag ? 4 : 2];
 			IsReady = new bool[IsTag ? 4 : 2];
 			if (Config.LfList >= 0 && Config.LfList < BanlistManager.Banlists.Count)
 				Banlist = BanlistManager.Banlists[Config.LfList];
@@ -137,17 +151,23 @@ namespace YGOCore.Game
 
 		public void SendToTeam(GameServerPacket packet, int team)
 		{
-			if (!IsTag)
-				Players[team].Send(packet);
+			if (!IsTag){
+				if(Players[team]!=null)
+					Players[team].Send(packet);
+			}
 			else if (team == 0)
 			{
-				Players[0].Send(packet);
-				Players[1].Send(packet);
+				if(Players[0]!=null)
+					Players[0].Send(packet);
+				if(Players[1]!=null)
+					Players[1].Send(packet);
 			}
 			else
 			{
-				Players[2].Send(packet);
-				Players[3].Send(packet);
+				if(Players[2]!=null)
+					Players[2].Send(packet);
+				if(Players[3]!=null)
+					Players[3].Send(packet);
 			}
 		}
 
@@ -155,15 +175,43 @@ namespace YGOCore.Game
 		{
 			if (State != GameState.Lobby)
 			{
-				player.Type = (int)PlayerType.Observer;
 				if (State == GameState.End)
 					return;
+				//断线重连
+				if(CanPause && IsPause){
+					for(int i=0;i<PlayerNames.Length;i++){
+						if(PlayerNames[i] == player.Name){
+							if(Players[i] == null){
+								//重新加入游戏
+								player.Type = i;
+								Players[i] = player;
+								AutoEndTrun = Program.Config.AutoEndTurn;
+								GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
+								enter.Write(player.Name, 20);
+								enter.Write((byte)i);
+								SendToAll(enter);
+								SendJoinGame(player);
+								player.SendTypeChange();
+								//player.Send(new GameServerPacket(StocMessage.DuelStart));
+								InitNewSpectator(player, i);
+								IsPause = false;
+								return;
+							}
+							break;
+						}
+					}
+				}
+				player.Type = (int)PlayerType.Observer;
 				SendJoinGame(player);
 				player.SendTypeChange();
 				player.Send(new GameServerPacket(StocMessage.DuelStart));
 				Observers.Add(player);
-				if (State == GameState.Duel)
+				if (State == GameState.Duel){
+					//中途观战
 					InitNewSpectator(player);
+				}else if(State == GameState.Side){
+					player.ServerMessage(Messages.MSG_WATCH_SIDE);
+				}
 				return;
 			}
 
@@ -177,7 +225,7 @@ namespace YGOCore.Game
 				enter.Write(player.Name, 20);
 				enter.Write((byte)pos);
 				SendToAll(enter);
-
+				PlayerNames[pos] = player.Name;
 				Players[pos] = player;
 				IsReady[pos] = false;
 				player.Type = pos;
@@ -253,6 +301,25 @@ namespace YGOCore.Game
 				player.Disconnect();
 			}
 			else{
+				if(CanPause){
+					if(State == GameState.Duel){
+						//断线重连
+						string name = player.Name;
+						int pos = player.Type;
+						if(pos != (int)PlayerType.Observer){
+							PlayerNames[pos] = name;
+							Players[pos] = null;
+							IsPause = true;
+							AutoEndTrun = false;
+							SendToAll(GameManager.getMessage(string.Format(Messages.MSG_DISCONECT
+							                                               , name, Config.GameTimer),PlayerType.Red));
+							return;
+						}
+					}else if(State == GameState.Side){
+						//断线重连
+						IsPause = true;
+					}
+				}
 				if(IsEnd){
 					return;
 				}
@@ -279,7 +346,7 @@ namespace YGOCore.Game
 				GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
 				change.Write((byte)((player.Type << 4) + pos));
 				SendToAll(change);
-
+				PlayerNames[pos] = player.Name;
 				Players[player.Type] = null;
 				Players[pos] = player;
 				player.Type = pos;
@@ -288,6 +355,7 @@ namespace YGOCore.Game
 			else
 			{
 				Observers.Remove(player);
+				PlayerNames[pos] = player.Name;
 				Players[pos] = player;
 				player.Type = pos;
 
@@ -992,7 +1060,7 @@ namespace YGOCore.Game
 						if (m_analyser.LastMessage == GameMessage.SelectIdleCmd ||
 						    m_analyser.LastMessage == GameMessage.SelectBattleCmd)
 						{
-							if (Program.Config.AutoEndTurn)
+							if (AutoEndTrun)
 							{
 								if (Players[m_lastresponse].TurnSkip == 2)
 								{
@@ -1232,6 +1300,7 @@ namespace YGOCore.Game
 		{
 			for (int i = 0; i < Players.Length; i++)
 			{
+
 				GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
 				int id = i;
 				if (m_swapped)
@@ -1246,13 +1315,13 @@ namespace YGOCore.Game
 					else
 						id = 1 - i;
 				}
-				enter.Write(Players[id].Name, 20);
+				enter.Write(PlayerNames[id], 20);
 				enter.Write((byte)i);
 				player.Send(enter);
 			}
 		}
 
-		private void InitNewSpectator(Player player)
+		private void InitNewSpectator(Player player, int pos=-1)
 		{
 			int deck1 = m_duel.QueryFieldCount(0, CardLocation.Deck);
 			int deck2 = m_duel.QueryFieldCount(1, CardLocation.Deck);
@@ -1261,7 +1330,11 @@ namespace YGOCore.Game
 			int hand2 = m_duel.QueryFieldCount(1, CardLocation.Hand);
 
 			GameServerPacket packet = new GameServerPacket(GameMessage.Start);
-			packet.Write((byte)(m_swapped ? 0x11 : 0x10));
+			if(pos < 0){
+				packet.Write((byte)(m_swapped ? 0x11 : 0x10));
+			}else{
+				packet.Write((byte)pos);
+			}
 			packet.Write(LifePoints[0]);
 			packet.Write(LifePoints[1]);
 			packet.Write((short)(deck1 + hand1));
@@ -1284,15 +1357,18 @@ namespace YGOCore.Game
 				draw.Write(0);
 			player.Send(draw);
 
-			GameServerPacket turn = new GameServerPacket(GameMessage.NewTurn);
-			turn.Write((byte)0);
-			player.Send(turn);
-			if (CurrentPlayer == 1)
-			{
-				turn = new GameServerPacket(GameMessage.NewTurn);
-				turn.Write((byte)0);
+			//回合数
+			for(int i=0;i<TurnCount;i++){
+				GameServerPacket turn = new GameServerPacket(GameMessage.NewTurn);
+				turn.Write((byte)(i%2));
 				player.Send(turn);
 			}
+//			if (CurrentPlayer == 1)
+//			{
+//				GameServerPacket turn = new GameServerPacket(GameMessage.NewTurn);
+//				turn.Write((byte)0);
+//				player.Send(turn);
+//			}
 
 			InitSpectatorLocation(player, CardLocation.MonsterZone);
 			InitSpectatorLocation(player, CardLocation.SpellZone);

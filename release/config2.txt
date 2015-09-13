@@ -37,3 +37,7 @@ maxai=0
 aiishide=true
 ###AI登录密码
 aipassword=kenan123
+###################帐号管理
+##### 0 不禁止；1 禁止列表帐号；2 只允许列表帐号
+bannamemode=0
+bannamelist=namelist.txt

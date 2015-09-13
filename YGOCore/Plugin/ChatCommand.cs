@@ -151,7 +151,7 @@ namespace YGOCore
 				WriteHead(Program.Config);
 			}else if(cmd=="roomlist"){
 				Console.WriteLine(">>count:"+server.getRoomCount());
-				string json=server.getRoomJson();
+				string json=server.getRoomJson(true, true);
 				Console.WriteLine(json);
 				File.WriteAllText("room.json", json);
 			}else if(cmd.StartsWith("say ")){

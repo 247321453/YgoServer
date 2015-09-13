@@ -258,19 +258,23 @@ namespace YGOCore
 		#region json
 		public static T Parse<T>(string jsonString)
 		{
+			T t=default(T);
 			using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonString)))
 			{
-				return (T)new DataContractJsonSerializer(typeof(T)).ReadObject(ms);
+				t=(T)new DataContractJsonSerializer(typeof(T)).ReadObject(ms);
 			}
+			return t;
 		}
 
 		public static string ToJson(object jsonObject)
 		{
+			string json="";
 			using (var ms = new MemoryStream())
 			{
 				new DataContractJsonSerializer(jsonObject.GetType()).WriteObject(ms, jsonObject);
-				return Encoding.UTF8.GetString(ms.ToArray());
+				json = Encoding.UTF8.GetString(ms.ToArray());
 			}
+			return json;
 		}
 		#endregion
 		
