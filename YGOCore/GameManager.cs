@@ -124,13 +124,14 @@ namespace YGOCore
 			//MutexRooms.ReleaseMutex();
 			return room;
 		}
-		public static bool SendWarringMessage(string finalmsg, string name=null){
-			return SendMessage(finalmsg, PlayerType.Yellow, name);
+		public static List<string> SendWarringMessage(string finalmsg, string name=null){
+			return SendMessage(getMessage(finalmsg, PlayerType.Yellow), name);
 		}
-		public static bool SendErrorMessage(string finalmsg, string name=null){
-			return SendMessage(finalmsg, PlayerType.Red, name);
+		public static List<string> SendErrorMessage(string finalmsg, string name=null){
+			return SendMessage(getMessage(finalmsg, PlayerType.Red), name);
 		}
-		private static bool SendMessage(string finalmsg,PlayerType type, string name=null){
+		public static List<string> SendMessage(GameServerPacket msg, string name=null){
+			List<string> playernames=new List<string>();
 			GameRoom[] rooms;
 			//MutexRooms.WaitOne();
 			rooms = new GameRoom[m_rooms.Count];
@@ -140,21 +141,19 @@ namespace YGOCore
 			{
 				if (room.IsOpen){
 					try{
-						GameServerPacket msg=getMessage(finalmsg,type);
 						if(string.IsNullOrEmpty(name)){
-							room.Game.SendToAll(msg);
-							return true;
+							playernames.AddRange(room.Game.SendToAll(msg).ToArray());
 						}else{
 							foreach(Player pl in room.Game.Players){
 								if(pl!=null && pl.Name==name){
+									playernames.Add(pl.Name);
 									pl.Send(msg);
-									return true;
 								}
 							}
 							foreach(Player pl in room.Game.Observers){
 								if(pl!=null && pl.Name==name){
+									playernames.Add(pl.Name);
 									pl.Send(msg);
-									return true;
 								}
 							}
 						}
@@ -163,7 +162,7 @@ namespace YGOCore
 					}
 				}
 			}
-			return false;
+			return playernames;
 		}
 		
 		public static GameServerPacket getMessage(string finalmsg,PlayerType type=PlayerType.Yellow){

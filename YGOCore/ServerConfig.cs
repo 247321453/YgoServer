@@ -91,10 +91,8 @@ namespace YGOCore
 		/// </summary>
 		public string LoginUrl{get;private set;}
 		
-		/// <summary>
-		/// Ë½ÁÄ
-		/// </summary>
-		public bool PrivateChat{get;private set;}
+		// Ë½ÁÄ
+//		public bool PrivateChat{get;private set;}
 		
 		/// <summary>
 		/// ·þÎñ¶ËÃû×Ö
@@ -137,7 +135,7 @@ namespace YGOCore
 			MaxRoomCount=200;
 			WinDbName="wins.db";
 			RecordWin=false;
-			PrivateChat=false;
+			//PrivateChat=false;
 			//SaveRecordTime=1;//
 			ServerDesc="Server is Testing.";
 			ServerMsgs="server_msg.txt";
@@ -223,9 +221,9 @@ namespace YGOCore
 				case "banlist":
 					BanlistFile = value;
 					break;
-				case "privatechat":
-					PrivateChat=Convert.ToBoolean(value);
-					break;
+//				case "privatechat":
+//					PrivateChat=Convert.ToBoolean(value);
+//					break;
 				case "errorlog":
 					ErrorLog = Convert.ToBoolean(value);
 					break;

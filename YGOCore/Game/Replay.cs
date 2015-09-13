@@ -77,13 +77,11 @@ namespace YGOCore.Game
 			m_data = ms.ToArray();
 			
 			if(Program.Config.AutoReplay){
-				Thread thread=new Thread(new ThreadStart(saveYrp));
-				thread.IsBackground=true;
-				thread.Start();
+				ThreadPool.QueueUserWorkItem(new WaitCallback(saveYrp));
 			}
 		}
 		
-		private void saveYrp(){
+		private void saveYrp(object obj){
 			string file=Tool.Combine(Program.Config.replayFolder, fileName);
 			if(!File.Exists(file)){
 				try{

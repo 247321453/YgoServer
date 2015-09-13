@@ -38,7 +38,7 @@ namespace YGOCore
 			Logger.WriteLine("│    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|    Build: " + Version, false);
 			Logger.WriteLine("│", false);
 			Logger.WriteLine("│Client version 0x" + config.ClientVersion.ToString("x") + " or new, MaxRooms = "+config.MaxRoomCount, false);
-			Logger.WriteLine("│NeedAtuh="+config.isNeedAuth+", AutoReplay="+config.AutoReplay+", RecordWin="+config.RecordWin+", PrivateChat="+config.PrivateChat, false);
+			Logger.WriteLine("│NeedAtuh="+config.isNeedAuth+", AutoReplay="+config.AutoReplay+", RecordWin="+config.RecordWin, false);
 			Logger.WriteLine("│"+config.ServerDesc,false);
 			Logger.WriteLine("└───────────────────────────────────",false);
 		}
@@ -57,36 +57,36 @@ namespace YGOCore
 					}
 					return false;
 				}
-				if(msg.StartsWith("@") && !Program.Config.PrivateChat){
-					player.ServerMessage(Messages.MSG_BAN_PCHAT);
-					return false;
-				}
-				if(msg.StartsWith("@server ")){
-					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@server ",""), ConsoleColor.Yellow);
-					return false;
-				}else if(msg.StartsWith("@system ")){
-					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@system ",""), ConsoleColor.Yellow);
-					return false;
-				}else if(msg.StartsWith("@@ ")){
-					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@@ ",""), ConsoleColor.Yellow);
-					return false;
-				}else if(msg.StartsWith("@")){
-					//私聊
-					int i=msg.IndexOf(' ');
-					if(i>0){
-						try{
-							string name=msg.Substring(1, i-1);
-							string cxt=msg.Substring(i+1);
-							if(!GameManager.SendErrorMessage(player.Name+": "+cxt, name)){
-								player.ServerMessage(Messages.MSG_SEND_FAIL);
-							}else{
-								return false;
-							}
-						}catch(Exception){
-							
-						}
-					}
-				}
+//				if(msg.StartsWith("@") && !Program.Config.PrivateChat){
+//					player.ServerMessage(Messages.MSG_BAN_PCHAT);
+//					return false;
+//				}
+//				if(msg.StartsWith("@server ")){
+//					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@server ",""), ConsoleColor.Yellow);
+//					return false;
+//				}else if(msg.StartsWith("@system ")){
+//					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@system ",""), ConsoleColor.Yellow);
+//					return false;
+//				}else if(msg.StartsWith("@@ ")){
+//					Logger.WriteLineWithColor(player.Name+":"+msg.Replace("@@ ",""), ConsoleColor.Yellow);
+//					return false;
+//				}else if(msg.StartsWith("@")){
+//					//私聊
+//					int i=msg.IndexOf(' ');
+//					if(i>0){
+//						try{
+//							string name=msg.Substring(1, i-1);
+//							string cxt=msg.Substring(i+1);
+//							if(GameManager.SendErrorMessage(player.Name+": "+cxt, name).Count==0){
+//								player.ServerMessage(Messages.MSG_SEND_FAIL);
+//							}else{
+//								return false;
+//							}
+//						}catch(Exception){
+//							
+//						}
+//					}
+//				}
 			}
 			return true;
 		}
@@ -145,15 +145,34 @@ namespace YGOCore
 				File.WriteAllText("room.json", json);
 			}else if(cmd.StartsWith("say ")){
 				try{
-					GameManager.SendWarringMessage("[Server] "+cmd.Substring("say ".Length));
+					int count=server.Say(GameManager.getMessage("[Server] "+cmd.Substring("say ".Length), 
+					                                            PlayerType.Yellow)).Count;
+					Console.WriteLine(">>count:"+count);
 				}catch{
 					
 				}
 			}else if(cmd.StartsWith("warring ")){
 				try{
-					GameManager.SendErrorMessage("[Server] "+cmd.Substring("warring ".Length));
+					int count =server.Say(GameManager.getMessage("[Server] "+cmd.Substring("warring ".Length), 
+					                                         PlayerType.Red)).Count;
+					Console.WriteLine(">>count:"+count);
 				}catch{
 					
+				}
+			}else if(cmd.StartsWith("to ")){
+				string[] names=cmd.Split(' ');
+				if(names.Length>=2){
+					try{
+						if(server.Say(GameManager.getMessage("[Server] "+cmd.Substring(("to "+names[1]).Length+1)
+						                                     , PlayerType.Yellow)
+						             ,names[1]).Count>0){
+							Console.WriteLine(">>send to "+names[1]);
+						}else{
+							Console.WriteLine(">>send fail. no find "+names[1]);
+						}
+					}catch{
+						
+					}
 				}
 			}else if(cmd.StartsWith("config ")){
 				string[] args=cmd.Split(' ');
@@ -164,22 +183,10 @@ namespace YGOCore
 				}
 			}else if(cmd=="load config"){
 				Program.Config.Load();
+				MsgSystem.Init(Program.Config.ServerMsgs);
 			}else if(cmd=="banlist"){
 				if(BanlistManager.Banlists!=null && BanlistManager.Banlists.Count>0){
 					Console.WriteLine(">>Banlist = "+BanlistManager.Banlists[0].Name);
-				}
-			}else if(cmd.StartsWith("to ")){
-				string[] names=cmd.Split(' ');
-				if(names.Length>=2){
-					try{
-						if(GameManager.SendErrorMessage("[Server] "+cmd.Substring(("to "+names[1]).Length+1), names[1])){
-							Console.WriteLine(">>send to "+names[1]);
-						}else{
-							Console.WriteLine(">>send fail. no find "+names[1]);
-						}
-					}catch{
-						
-					}
 				}
 			}else if(cmd=="close"){
 				Console.WriteLine(">>Server will close after 5 minute.");

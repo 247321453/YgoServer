@@ -85,10 +85,12 @@ namespace YGOCore.Game
 
 		}
 
-		public void SendToAll(GameServerPacket packet)
+		public List<string> SendToAll(GameServerPacket packet)
 		{
-			SendToPlayers(packet);
-			SendToObservers(packet);
+			List<string> names=new List<string>();
+			names.AddRange(SendToPlayers(packet).ToArray());
+			names.AddRange(SendToObservers(packet).ToArray());
+			return names;
 		}
 
 		public void SendToAllBut(GameServerPacket packet, Player except)
@@ -109,17 +111,28 @@ namespace YGOCore.Game
 				SendToAll(packet);
 		}
 
-		public void SendToPlayers(GameServerPacket packet)
+		public List<string> SendToPlayers(GameServerPacket packet)
 		{
-			foreach (Player player in Players)
-				if (player != null)
+			List<string> names=new List<string>();
+			foreach (Player player in Players){
+				if (player != null){
 					player.Send(packet);
+					names.Add(player.Name);
+				}
+			}
+			return names;
 		}
 
-		public void SendToObservers(GameServerPacket packet)
+		public List<string> SendToObservers(GameServerPacket packet)
 		{
-			foreach (Player player in Observers)
-				player.Send(packet);
+			List<string> names=new List<string>();
+			foreach (Player player in Observers){
+				if (player != null){
+					player.Send(packet);
+					names.Add(player.Name);
+				}
+			}
+			return names;
 		}
 
 		public void SendToTeam(GameServerPacket packet, int team)
@@ -597,7 +610,7 @@ namespace YGOCore.Game
 			LifePoints[1] = Config.StartLp;
 			Process();
 		}
-		
+
 		private string getGameTagName(){
 			string filename="";
 			try{
@@ -1441,11 +1454,11 @@ namespace YGOCore.Game
 					break;
 			}
 		}
-		
+
 		public RoomInfo GetRoomInfo(){
 			return GetRoomInfo(this);
 		}
-		
+
 		public static RoomInfo GetRoomInfo(Game game){
 			if(game!=null&&game.Config!=null){
 				RoomInfo info=new RoomInfo();

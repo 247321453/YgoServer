@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using YGOCore.Game;
 using OcgWrapper;
+using OcgWrapper.Enums;
 using YGOCore.Plugin;
 
 namespace YGOCore
@@ -27,33 +28,30 @@ namespace YGOCore
 		/// </summary>
 		private System.Timers.Timer WinSaveTimer;
 		private System.Timers.Timer CloseTimer;
+		private System.Timers.Timer ServerMsgTimer;
 		private MyHttpServer ApiServer;
-		
+		delegate void ThreadDelagate(object obj);
 		public Server()
 		{
 			m_clients = new List<GameClient>();
 			m_mutexClients=new Mutex();
 			//int time=Program.Config.SaveRecordTime<=0?1*60*1000:Program.Config.SaveRecordTime*60*1000;
 			//每30秒记录游戏结果记录
-			WinSaveTimer = new System.Timers.Timer(10*1000);
+			WinSaveTimer = new System.Timers.Timer(15*1000);
 			WinSaveTimer.AutoReset=true;
 			WinSaveTimer.Enabled=true;
 			WinSaveTimer.Elapsed+=new System.Timers.ElapsedEventHandler(WinSaveTimer_Elapsed);
+			ServerMsgTimer= new System.Timers.Timer(15*60*1000);
+			ServerMsgTimer.AutoReset=true;
+			ServerMsgTimer.Enabled=true;
+			ServerMsgTimer.Elapsed+=new System.Timers.ElapsedEventHandler(ServerMsgTimer_Elapsed);
+			
 			ApiServer=new MyHttpServer(this, Program.Config.ApiPort);
 		}
 		
 		public string getRoomJson(bool hasLock=true,bool hasStart=false){
 			List<RoomInfo> list=GameManager.getRoomInfos(hasLock, hasStart);
 			return Tool.ToJson(list);
-//			string json="[";
-//			foreach(RoomInfo info in list){
-//				json+=info.toJson()+",";
-//			}
-//			if(list.Count>0){
-//				json=json.Substring(0,json.Length-1);
-//			}
-//			json+="]";
-//			return json;
 		}
 		public int getRoomCount(){
 			return GameManager.getRoomInfos().Count;
@@ -67,7 +65,19 @@ namespace YGOCore
 			}
 			return count;
 		}
-		
+		private void ServerMsgTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+		{
+			if(MsgSystem.Msgs == null || MsgSystem.Msgs.Count<=1){
+				return;
+			}
+			ThreadPool.QueueUserWorkItem(new WaitCallback(
+				delegate(object o)
+				{
+					Say(GameManager.getMessage(MsgSystem.getNextMessage(), PlayerType.Yellow));
+				}
+			));
+			
+		}
 		private void WinSaveTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
 			if(!Program.Config.RecordWin){
@@ -84,9 +94,19 @@ namespace YGOCore
 				for(int i=0;i<count;i++){
 					sqls[i]=tmpList[i].getSQL();
 				}
-				SQLiteTool.Command(Program.Config.WinDbName, sqls);
-				Logger.WriteLine("save wins record:"+tmpList.Count);
+				ThreadPool.QueueUserWorkItem(new WaitCallback(
+					delegate(object obj)
+					{
+						//string[] sqls = (string[])obj;
+						SQLiteTool.Command(Program.Config.WinDbName, sqls);
+						Logger.WriteLine("save wins record:"+sqls.Length);
+					}
+				));
 			}
+		}
+		
+		private void saveWininfos(object obj){
+
 		}
 
 		public bool Start(int port = 0)
@@ -179,7 +199,7 @@ namespace YGOCore
 				client.Tick();
 				if (!client.IsConnected || client.InGame()){
 					//断开，或者在游戏,一定时间内没有加入房间
-				//	Logger.WriteLine("player logout");
+					//	Logger.WriteLine("player logout");
 					m_mutexClients.WaitOne();
 					m_clients.Remove(client);
 					m_mutexClients.ReleaseMutex();
@@ -207,6 +227,31 @@ namespace YGOCore
 			return uid;
 		}
 		
+		public List<string> Say(GameServerPacket msg, string name=null){
+			if(msg==null){
+				return new List<string>();
+			}
+			List<string> names=GameManager.SendMessage(msg, name);
+			List<GameClient> _clients= new List<GameClient>();
+			m_mutexClients.WaitOne();
+			_clients.AddRange(m_clients);
+			m_mutexClients.ReleaseMutex();
+			foreach (GameClient client in _clients)
+			{
+				if(client!=null && client.Player!=null){
+					if(!names.Contains(client.Player.Name)){
+						if(!string.IsNullOrEmpty(name)){
+							if(client.Player.Name != name){
+								continue;
+							}
+						}
+						names.Add(client.Player.Name);
+						client.Player.Send(msg);
+					}
+				}
+			}
+			return names;
+		}
 		
 		public static void onLogout(string name){
 			

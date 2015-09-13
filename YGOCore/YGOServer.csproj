@@ -165,7 +165,7 @@
     <Compile Include="Plugin\ChatCommand.cs" />
     <Compile Include="Plugin\HttpServer.cs" />
     <Compile Include="Plugin\MyHttpServer.cs" />
-    <Compile Include="Plugin\ServerMessage.cs" />
+    <Compile Include="Plugin\MsgSystem.cs" />
     <Compile Include="Plugin\Tool.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
