@@ -12,6 +12,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Diagnostics;
+using System.Threading;
 using OcgWrapper.Enums;
 
 namespace YGOCore
@@ -21,7 +22,8 @@ namespace YGOCore
 	/// </summary>
 	public class ChatCommand
 	{
-		static int AICount=0;
+		delegate void ThreadDelagate();
+		static List<Process> AIs=new List<Process>();
 		
 		public static void WriteHead(ServerConfig config){
 			if(config==null){
@@ -83,7 +85,7 @@ namespace YGOCore
 //								return false;
 //							}
 //						}catch(Exception){
-//							
+//
 //						}
 //					}
 //				}
@@ -99,10 +101,9 @@ namespace YGOCore
 		/// <param name="deck"></param>
 		/// <returns></returns>
 		private static bool AddAI(string room){
-			if(AICount>=Program.Config.MaxAICount){
+			if(AIs.Count>=Program.Config.MaxAICount){
 				return false;
 			}
-			AICount++;
 			Process ai=new Process();
 			ai.StartInfo.FileName = "ai";
 			//设定程式执行参数
@@ -117,13 +118,21 @@ namespace YGOCore
 			}
 			ai.Exited+=new EventHandler(ai_Exited);
 			ai.Start();
+			AIs.Add(ai);
 			return true;
 		}
 
 		static void ai_Exited(object sender, EventArgs e)
 		{
-			AICount--;
-			Logger.WriteLine("AI exit game. count="+AICount);
+			if(sender is Process){
+				Process p = sender as Process;
+				p.Close();
+				AIs.Remove(p);
+				Logger.WriteLine("close ai");
+			}else{
+				Logger.WriteLine("close ai:"+sender.GetType().ToString());
+			}
+			Logger.WriteLine("AI exit game. count="+AIs.Count);
 		}
 		
 		public static void onCommand(Server server,string cmd){
@@ -145,7 +154,7 @@ namespace YGOCore
 				File.WriteAllText("room.json", json);
 			}else if(cmd.StartsWith("say ")){
 				try{
-					int count=server.Say(GameManager.getMessage("[Server] "+cmd.Substring("say ".Length), 
+					int count=server.Say(GameManager.getMessage("[Server] "+cmd.Substring("say ".Length),
 					                                            PlayerType.Yellow)).Count;
 					Console.WriteLine(">>count:"+count);
 				}catch{
@@ -153,8 +162,8 @@ namespace YGOCore
 				}
 			}else if(cmd.StartsWith("warring ")){
 				try{
-					int count =server.Say(GameManager.getMessage("[Server] "+cmd.Substring("warring ".Length), 
-					                                         PlayerType.Red)).Count;
+					int count =server.Say(GameManager.getMessage("[Server] "+cmd.Substring("warring ".Length),
+					                                             PlayerType.Red)).Count;
 					Console.WriteLine(">>count:"+count);
 				}catch{
 					
@@ -165,7 +174,7 @@ namespace YGOCore
 					try{
 						if(server.Say(GameManager.getMessage("[Server] "+cmd.Substring(("to "+names[1]).Length+1)
 						                                     , PlayerType.Yellow)
-						             ,names[1]).Count>0){
+						              ,names[1]).Count>0){
 							Console.WriteLine(">>send to "+names[1]);
 						}else{
 							Console.WriteLine(">>send fail. no find "+names[1]);
@@ -202,13 +211,16 @@ namespace YGOCore
 						_rname=room.Game.Config.Name;
 					}
 					if(AddAI(_rname)){
-						Console.WriteLine("Add AI success:"+_rname);
+						Console.WriteLine("Add AI success:"+_rname+" "
+						                  +(Program.Config.MaxAICount-AIs.Count)+"/"+Program.Config.MaxAICount);
 					}else{
 						Console.WriteLine("Add AI fail, max="+Program.Config.MaxAICount);
 					}
 				}catch(Exception){
 					
 				}
+			}else if(cmd=="ai count"){
+				Console.WriteLine(">>count " +AIs.Count+"/"+Program.Config.MaxAICount);
 			}else if(cmd=="help"){
 				Console.WriteLine(">>");
 				Console.WriteLine("roomcount		room count");

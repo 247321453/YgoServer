@@ -86,3 +86,61 @@
 [21:13:00] Decks initialized, 2 found.
 [21:13:00] use deck is Horus
 [21:14:18] Server is close
+[09:45:05] [AI]Robot$kenan123 join 127.0.0.1:8910 jCB9G use 
+[09:45:05] Decks initialized, 2 found.
+[09:45:05] use deck is Horus
+[09:47:15] [AI]Robot$kenan123 join 127.0.0.1:8910 ufTNX use 
+[09:47:15] Decks initialized, 2 found.
+[09:47:15] use deck is AI_OldSchool
+[09:47:50] [AI]Robot$kenan123 join 127.0.0.1:8910 WcccB use 
+[09:47:50] Decks initialized, 2 found.
+[09:47:50] use deck is Horus
+[09:47:53] Server is close
+[09:48:18] [AI]Robot$kenan123 join 127.0.0.1:8910 gFRTL use 
+[09:48:18] Decks initialized, 2 found.
+[09:48:18] use deck is AI_Horus
+[09:48:21] Server is close
+[09:49:16] [AI]Robot$kenan123 join 127.0.0.1:8910 K1q1f use 
+[09:49:16] Decks initialized, 2 found.
+[09:49:16] use deck is AI_Horus
+[09:49:19] Server is close
+[09:54:33] [AI]Robot$kenan123 join 127.0.0.1:8910 bVO5T use 
+[09:54:33] Decks initialized, 2 found.
+[09:54:33] use deck is AI_Horus
+[10:00:21] [AI]Robot$kenan123 join 127.0.0.1:8910 jO9mi use 
+[10:00:21] Decks initialized, 2 found.
+[10:00:21] use deck is AI_Horus
+[10:00:41] [AI]Robot$kenan123 join 127.0.0.1:8910 YWCVX use 
+[10:00:41] Decks initialized, 2 found.
+[10:00:41] use deck is Horus
+[10:02:56] [AI]Robot$kenan123 join 127.0.0.1:8910 zj8GL use 
+[10:02:56] Decks initialized, 2 found.
+[10:02:56] use deck is AI_Horus
+[10:04:15] [AI]Robot$kenan123 join 127.0.0.1:8910 Cd3AK use 
+[10:04:15] Decks initialized, 2 found.
+[10:04:15] use deck is AI_OldSchool
+[10:04:38] [AI]Robot$kenan123 join 127.0.0.1:8910 IBwGy use 
+[10:04:38] Decks initialized, 2 found.
+[10:04:38] use deck is Horus
+[10:09:08] [AI]Robot$kenan123 join 127.0.0.1:8910 CLZWJ use 
+[10:09:08] Decks initialized, 2 found.
+[10:09:08] use deck is Horus
+[10:09:34] [AI]Robot$kenan123 join 127.0.0.1:8910 q6pyY use 
+[10:09:35] Decks initialized, 2 found.
+[10:09:35] use deck is Horus
+[10:10:36] [AI]Robot$kenan123 join 127.0.0.1:8910 cEfwP use 
+[10:10:36] Decks initialized, 2 found.
+[10:10:36] use deck is Horus
+[10:11:43] [AI]Robot$kenan123 join 127.0.0.1:8910 Is/Te use 
+[10:11:43] Decks initialized, 2 found.
+[10:11:43] use deck is Horus
+[10:12:34] [AI]Robot$kenan123 join 127.0.0.1:8910 fJbWe use 
+[10:12:34] Decks initialized, 2 found.
+[10:12:34] use deck is AI_OldSchool
+[10:15:05] [AI]Robot$kenan123 join 127.0.0.1:8910 tNhgL use 
+[10:15:05] Decks initialized, 2 found.
+[10:15:05] use deck is AI_OldSchool
+[10:15:11] Duel started: 菜菜 versus [AI]Robot
+[10:15:11] OnStart
+[10:20:26] Duel finished against 菜菜, result: Lose
+[10:20:26] OnDuelEnd

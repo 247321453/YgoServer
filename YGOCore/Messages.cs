@@ -26,7 +26,7 @@ namespace YGOCore
 		public const string MSG_BAN_PCHAT="私聊已经禁止";
 		public const string MSG_NOCHECKDECK="该房间不检查卡组，可以使用禁卡";
 		public const string MSG_NOSHUFFLEDECK ="该房间卡组不洗牌，小心作弊";
-		public const string MSG_ENABLE_PROIORITY="该房间启动使用效果优先权，非正常设置";
+		public const string MSG_ENABLE_PROIORITY="该房间使用旧规则（先手抽卡，单场地），非正常设置";
 		public const string ERR_NAME_PASSWORD="用户名或者密码错误";
 		public const string ERR_NAME_PASSWORD_LONG="名字和密码的长度过长，请修改密码。";
 		public const string MSG_SIDE="请在120秒内换好side";

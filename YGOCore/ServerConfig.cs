@@ -42,7 +42,7 @@ namespace YGOCore
 		/// </summary>
 		public bool ConsoleLog { get; private set; }
 		/// <summary>
-		/// 
+		///  ÷∂Øœ¥ ÷≈∆
 		/// </summary>
 		public bool HandShuffle { get; private set; }
 		/// <summary>
