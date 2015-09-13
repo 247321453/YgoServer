@@ -18,6 +18,7 @@ namespace YGOCore
 		private TcpListener m_listener;
 		private List<GameClient> m_clients;
 		private Mutex m_mutexClients;
+		private static List<string> banNames=new List<string>();
 		
 		private static List<WinInfo> WinInfos=new List<WinInfo>();
 		private static Mutex MutexWinInfo=new Mutex();
@@ -105,10 +106,26 @@ namespace YGOCore
 			}
 		}
 		
-		private void saveWininfos(object obj){
-
+		public void Reload(){
+			Program.Config.Load();
+			Api.Init(Program.Config.Path, Program.Config.ScriptFolder, Program.Config.CardCDB);
+			BanlistManager.Init(Program.Config.BanlistFile);
+			MsgSystem.Init(Program.Config.File_ServerMsgs);
+			WinInfo.Init(Program.Config.WinDbName);
+			banNames.Clear();
+			if(File.Exists(Program.Config.File_BanAccont)){
+				string[] lines = File.ReadAllLines(Program.Config.File_BanAccont);
+				foreach(string line in lines){
+					if(string.IsNullOrEmpty(line)||line.StartsWith("#")){
+						continue;
+					}
+					string name=line.Trim();
+					if(!banNames.Contains(name)){
+						banNames.Add(name);
+					}
+				}
+			}
 		}
-
 		public bool Start(int port = 0)
 		{
 			try
@@ -116,8 +133,20 @@ namespace YGOCore
 				Api.Init(Program.Config.Path, Program.Config.ScriptFolder, Program.Config.CardCDB);
 				BanlistManager.Init(Program.Config.BanlistFile);
 				//DecksManager.Init();
-				MsgSystem.Init(Program.Config.ServerMsgs);
+				MsgSystem.Init(Program.Config.File_ServerMsgs);
 				WinInfo.Init(Program.Config.WinDbName);
+				if(File.Exists(Program.Config.File_BanAccont)){
+					string[] lines = File.ReadAllLines(Program.Config.File_BanAccont);
+					foreach(string line in lines){
+						if(string.IsNullOrEmpty(line)||line.StartsWith("#")){
+							continue;
+						}
+						string name=line.Trim();
+						if(!banNames.Contains(name)){
+							banNames.Add(name);
+						}
+					}
+				}
 				try{
 					Directory.CreateDirectory(Program.Config.replayFolder);
 				}catch(IOException){
@@ -160,6 +189,26 @@ namespace YGOCore
 
 				foreach (GameClient client in m_clients)
 					client.Close();
+			}
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns>false=被禁止</returns>
+		public static bool CheckPlayerBan(string name){
+			if(string.IsNullOrEmpty(name)){
+				return false;
+			}
+			name = name.Split('$')[0];
+			if(Program.Config.BanMode==0){
+				return true;
+			}
+			else if(Program.Config.BanMode==1){
+				return !banNames.Contains(name);
+			}
+			else{
+				return banNames.Contains(name);
 			}
 		}
 		

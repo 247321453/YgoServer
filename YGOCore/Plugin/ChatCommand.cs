@@ -40,7 +40,9 @@ namespace YGOCore
 			Logger.WriteLine("│    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|    Build: " + Version, false);
 			Logger.WriteLine("│", false);
 			Logger.WriteLine("│Client version 0x" + config.ClientVersion.ToString("x") + " or new, MaxRooms = "+config.MaxRoomCount, false);
-			Logger.WriteLine("│NeedAtuh="+config.isNeedAuth+", AutoReplay="+config.AutoReplay+", RecordWin="+config.RecordWin, false);
+			Logger.WriteLine("│NeedAtuh="+config.isNeedAuth+", AutoReplay="+config.AutoReplay
+			                 +", RecordWin="+config.RecordWin
+			                 +", BanMode="+config.BanMode, false);
 			Logger.WriteLine("│"+config.ServerDesc,false);
 			Logger.WriteLine("└───────────────────────────────────",false);
 		}
@@ -190,9 +192,9 @@ namespace YGOCore
 						Console.WriteLine(">>"+args[1]+"="+ args[2]);
 					}
 				}
-			}else if(cmd=="load config"){
-				Program.Config.Load();
-				MsgSystem.Init(Program.Config.ServerMsgs);
+			}else if(cmd=="reload"){
+				server.Reload();
+				Console.WriteLine(">>reload ok");
 			}else if(cmd=="banlist"){
 				if(BanlistManager.Banlists!=null && BanlistManager.Banlists.Count>0){
 					Console.WriteLine(">>Banlist = "+BanlistManager.Banlists[0].Name);

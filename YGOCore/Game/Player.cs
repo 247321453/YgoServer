@@ -157,6 +157,10 @@ namespace YGOCore.Game
 			if(namepassword==null){
 				return true;
 			}
+			if(!Server.CheckPlayerBan(namepassword)){
+				ServerMessage(Messages.MSG_PLAYER_BAN);
+				return false;
+			}
 			if(Program.Config.isNeedAuth || namepassword.StartsWith("[AI]")){
 				string[] _names=namepassword.Split('$');
 				if(_names.Length==1){

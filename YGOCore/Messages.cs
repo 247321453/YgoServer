@@ -32,7 +32,7 @@ namespace YGOCore
 		public const string MSG_SIDE="请在120秒内换好side";
 		public const string MSG_TIP_TIME="你还有 {0} 秒";
 		public const string MSG_READY="{0} 准备好";
-		
+		public const string MSG_PLAYER_BAN="你的帐号无法登陆本服务器";
 		public const string ERR_NO_NAME="名字不能为空";
 		public const string ERR_NO_PASS="密码不能为空";
 		public const string ERR_AUTH_FAIL="登录失败";

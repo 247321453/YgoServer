@@ -105,13 +105,24 @@ namespace YGOCore
 		/// <summary>
 		/// 公告文本
 		/// </summary>
-		public string ServerMsgs{get;private set;}
+		public string File_ServerMsgs{get;private set;}
 		
 		public int MaxAICount{get;private set;}
 		
 		public bool AIisHide{get;private set;}
 		public string AIPass{get;private set;}
 		
+		/// <summary>
+		/// 帐号禁止模式
+		/// 0 不禁止
+		/// 1 禁止列表
+		/// 2 只允许列表
+		/// </summary>
+		public int BanMode{get;private set;}
+		/// <summary>
+		/// 帐号列表
+		/// </summary>
+		public string File_BanAccont{get;private set;}
 		//public int Timeout{get;private set;}
 		
 		public ServerConfig()
@@ -138,13 +149,15 @@ namespace YGOCore
 			//PrivateChat=false;
 			//SaveRecordTime=1;//
 			ServerDesc="Server is Testing.";
-			ServerMsgs="server_msg.txt";
+			File_ServerMsgs="server_msg.txt";
 			MaxAICount=10;
 			AIPass="3ab51053212386455461483e66c65425";//kenan123
 			LoginUrl="http://127.0.0.1/login.php";
 			AIisHide=false;
 			ApiIsLocal=true;
 			AsyncMode=false;
+			BanMode = 0;
+			File_BanAccont = "namelist.txt";
 		//	Timeout = 20;
 		}
 
@@ -204,7 +217,7 @@ namespace YGOCore
 					ServerPort = Convert.ToInt32(value);
 					break;
 				case "servermsgs":
-					ServerMsgs=value;
+					File_ServerMsgs=value;
 					break;
 				case "apiport":
 					ApiPort = Convert.ToInt32(value);
@@ -220,6 +233,12 @@ namespace YGOCore
 					break;
 				case "banlist":
 					BanlistFile = value;
+					break;
+				case "bannamemode":
+					BanMode = Convert.ToInt32(value);
+					break;
+				case "bannamelist":
+					File_BanAccont = value;
 					break;
 //				case "privatechat":
 //					PrivateChat=Convert.ToBoolean(value);
