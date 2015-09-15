@@ -50,14 +50,14 @@ namespace YGOCore.Game
 		private string yrpName;
 		private bool IsEnd = false;
 		//断线重连
-		private bool IsPause = false;
+	//	private bool IsPause = false;
 		public string[] PlayerNames{get;private set;}
 		private bool AutoEndTrun;
 		
 		/// <summary>
 		/// 是否允许断线重连
 		/// </summary>
-		private bool CanPause = false;
+	//	private bool CanPause = false;
 		
 		public Game(GameRoom room, GameConfig config)
 		{
@@ -178,29 +178,29 @@ namespace YGOCore.Game
 				if (State == GameState.End)
 					return;
 				//断线重连
-				if(CanPause && IsPause){
-					for(int i=0;i<PlayerNames.Length;i++){
-						if(PlayerNames[i] == player.Name){
-							if(Players[i] == null){
-								//重新加入游戏
-								player.Type = i;
-								Players[i] = player;
-								AutoEndTrun = Program.Config.AutoEndTurn;
-								GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
-								enter.Write(player.Name, 20);
-								enter.Write((byte)i);
-								SendToAll(enter);
-								SendJoinGame(player);
-								player.SendTypeChange();
-								//player.Send(new GameServerPacket(StocMessage.DuelStart));
-								InitNewSpectator(player, i);
-								IsPause = false;
-								return;
-							}
-							break;
-						}
-					}
-				}
+//				if(CanPause && IsPause){
+//					for(int i=0;i<PlayerNames.Length;i++){
+//						if(PlayerNames[i] == player.Name){
+//							if(Players[i] == null){
+//								//重新加入游戏
+//								player.Type = i;
+//								Players[i] = player;
+//								AutoEndTrun = Program.Config.AutoEndTurn;
+//								GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
+//								enter.Write(player.Name, 20);
+//								enter.Write((byte)i);
+//								SendToAll(enter);
+//								SendJoinGame(player);
+//								player.SendTypeChange();
+//								//player.Send(new GameServerPacket(StocMessage.DuelStart));
+//								InitNewSpectator(player, i);
+//								IsPause = false;
+//								return;
+//							}
+//							break;
+//						}
+//					}
+//				}
 				player.Type = (int)PlayerType.Observer;
 				SendJoinGame(player);
 				player.SendTypeChange();
@@ -301,25 +301,25 @@ namespace YGOCore.Game
 				player.Disconnect();
 			}
 			else{
-				if(CanPause){
-					if(State == GameState.Duel){
-						//断线重连
-						string name = player.Name;
-						int pos = player.Type;
-						if(pos != (int)PlayerType.Observer){
-							PlayerNames[pos] = name;
-							Players[pos] = null;
-							IsPause = true;
-							AutoEndTrun = false;
-							SendToAll(GameManager.getMessage(string.Format(Messages.MSG_DISCONECT
-							                                               , name, Config.GameTimer),PlayerType.Red));
-							return;
-						}
-					}else if(State == GameState.Side){
-						//断线重连
-						IsPause = true;
-					}
-				}
+//				if(CanPause){
+//					if(State == GameState.Duel){
+//						//断线重连
+//						string name = player.Name;
+//						int pos = player.Type;
+//						if(pos != (int)PlayerType.Observer){
+//							PlayerNames[pos] = name;
+//							Players[pos] = null;
+//							IsPause = true;
+//							AutoEndTrun = false;
+//							SendToAll(GameManager.getMessage(string.Format(Messages.MSG_DISCONECT
+//							                                               , name, Config.GameTimer),PlayerType.Red));
+//							return;
+//						}
+//					}else if(State == GameState.Side){
+//						//断线重连
+//						IsPause = true;
+//					}
+//				}
 				if(IsEnd){
 					return;
 				}
