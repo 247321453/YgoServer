@@ -108,7 +108,7 @@ namespace YGOCore.Game
 						}
 						if(index < head){
 							tmp=gameinfo.Substring(index++,1);
-							LfList = ("1"==tmp||"t"==tmp||"T"==tmp)?1:0;
+							LfList = Convert.ToInt32(tmp);//("1"==tmp||"t"==tmp||"T"==tmp)?1:0;
 						}
 						if(index < head){
 							tmp=gameinfo.Substring(index++,1);
@@ -159,8 +159,9 @@ namespace YGOCore.Game
 					}
 				}
 			}
-			catch(Exception){
+			catch(Exception e){
 				Name = GameManager.RandomRoomName();
+				Logger.WriteLine("gameinfo="+e);
 			}
 			//
 			//(N|M|T)(0|1|2)(0|1|o|t)(0-9)(T|F|1|0)(T|F|1|0)(T|F|1|0)(0-9)(0-9)(0-9)#name$password

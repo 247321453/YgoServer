@@ -79,6 +79,9 @@ namespace YGOCore.Game
 			Observers = new List<Player>();
 			if (config.LfList >= 0 && config.LfList < BanlistManager.Banlists.Count)
 				Banlist = BanlistManager.Banlists[config.LfList];
+			else if(BanlistManager.Banlists.Count>0){
+				Banlist = BanlistManager.Banlists[0];
+			}
 			m_room = room;
 			m_analyser = new GameAnalyser(this);
 			yrpName=DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -94,6 +97,10 @@ namespace YGOCore.Game
 			IsReady = new bool[IsTag ? 4 : 2];
 			if (Config.LfList >= 0 && Config.LfList < BanlistManager.Banlists.Count)
 				Banlist = BanlistManager.Banlists[Config.LfList];
+			else if(BanlistManager.Banlists.Count>0){
+				Banlist = BanlistManager.Banlists[0];
+			}
+				
 			LifePoints[0] = Config.StartLp;
 			LifePoints[1] = Config.StartLp;
 

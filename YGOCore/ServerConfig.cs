@@ -208,7 +208,7 @@ namespace YGOCore
 					AIPass=value;
 					break;
 				case "maxai":
-					MaxAICount=Convert.ToInt32(value, 10);
+					MaxAICount=Convert.ToInt32(value);
 					break;
 				case "servername":
 					ServerName=value;
@@ -265,7 +265,10 @@ namespace YGOCore
 					isNeedAuth = (value.ToLower()=="true"||value=="1");
 					break;
 				case "maxroom":
-					MaxRoomCount=Convert.ToInt32(value, 10);
+					MaxRoomCount=Convert.ToInt32(value);
+					if(MaxRoomCount<=10){
+						MaxRoomCount = 10;
+					}
 					break;
 				case "autoreplay":
 					AutoReplay= (value.ToLower()=="true"||value=="1");
