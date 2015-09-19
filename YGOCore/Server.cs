@@ -260,7 +260,7 @@ namespace YGOCore
 			int uid=-1;
 			//Logger.WriteLine(name+"$"+pass+" is login");
 			try{
-				string dpass=Tool.GetMd5(pass);
+				string dpass= (Program.Config.ShortPwd && pass.Length == 4)? pass:Tool.GetMd5(pass);
 				if(name.StartsWith("[AI]")){
 					return (dpass==Tool.GetMd5(Program.Config.AIPass))?1:-1;
 				}else{

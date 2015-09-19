@@ -27,11 +27,13 @@ namespace YGOClient
 		User m_User;
 		private string m_dir;
 		bool ClickOK=false;
+		bool ShortPwd= false;
 
-		public UserForm(bool needuser)
+		public UserForm(bool needuser,bool shortpwd)
 		{
 			InitializeComponent();
 			this.NeedUser=needuser;
+			this.ShortPwd = shortpwd;
 			m_dir=User.DIR;
 			loadUsers();
 		}
@@ -151,6 +153,7 @@ namespace YGOClient
 					tb_gamepath.Text=""+user.GamePath;
 					tb_args.Text=""+user.GameArgs;
 					chkb_record.Checked=user.RePassword;
+					user.ShortPwd = ShortPwd;
 				}else{
 					//MessageBox.Show("加载失败");
 				}

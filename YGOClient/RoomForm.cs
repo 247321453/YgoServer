@@ -10,8 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using System.Xml;
 using System.Windows.Forms;
+using System.Xml;
 
 using YGOCore;
 using YGOCore.Game;
@@ -31,7 +31,6 @@ namespace YGOClient
 		public RoomForm(Client client)
 		{
 			InitializeComponent();
-			this.fp_rooms.SetParent(client, null);
 			this.m_client=client;
 			m_dir=Tool.Combine(Application.StartupPath, "data");
 		}
@@ -91,10 +90,10 @@ namespace YGOClient
 				try{
 					List<RoomInfo> list=new List<RoomInfo>();
 					list=Tool.Parse<List<RoomInfo>>(json);
-					fp_rooms.SetRooms(list.ToArray());
+					fp_rooms.SetRooms(m_client, m_server, list.ToArray());
 				}
 				catch{
-					fp_rooms.SetRooms(null);
+					fp_rooms.SetRooms(m_client, m_server, null);
 				}
 			}
 			btn_refresh.BeginInvoke(new Action(()=>
@@ -116,9 +115,8 @@ namespace YGOClient
 					cb_auth.Checked=srv.NeedAuth;
 					btn_reg.Enabled = srv.NeedAuth;
 					m_server=srv;
-					fp_rooms.SetParent(m_client, m_server);
 					ConfigManager.Save(Server.TAG, name);
-					fp_rooms.SetRooms(null);
+					fp_rooms.SetRooms(m_client, m_server, null);
 					m_lasttime=Environment.TickCount-2000;
 				}else{
 					//MessageBox.Show("加载失败");

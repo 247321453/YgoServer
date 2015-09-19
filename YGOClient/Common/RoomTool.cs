@@ -57,7 +57,7 @@ namespace YGOClient
 				room="";
 			}
 			if(server.NeedAuth){
-				Start(server.IP, ""+server.Port, user.Name+"$"+user.Password,room, user.GameArgs, user.GamePath);
+				Start(server.IP, ""+server.Port, user.Name+"$"+user.getPassword(),room, user.GameArgs, user.GamePath);
 			}else{
 				Start(server.IP, ""+server.Port, user.Name, room, user.GameArgs, user.GamePath);
 			}

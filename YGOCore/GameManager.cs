@@ -207,6 +207,26 @@ namespace YGOCore
 			return exist;
 		}
 		
+		public static List<int> GameCards(string name){
+			List<int> cards =new List<int>();
+			if(m_rooms.ContainsKey(name)){
+				GameRoom room = m_rooms[name];
+				if(room !=null && room.Game!=null && room.Game.Players!=null){
+					foreach(Player pl in room.Game.Players){
+						if(pl!=null && pl.Deck!=null){
+							List<int> _cards = pl.Deck.Alls;
+							foreach(int id in _cards){
+								if(!cards.Contains(id)){
+									cards.Add(id);
+								}
+							}
+						}
+					}
+				}
+			}
+			return cards;
+		}
+		
 		public static bool CheckPassword(string name){
 			if(string.IsNullOrEmpty(name)){
 				return true;

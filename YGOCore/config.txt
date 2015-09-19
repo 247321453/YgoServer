@@ -13,6 +13,8 @@ apiislocal=true
 ##############
 ###需要登录认证，AI任何时候都需要密码
 needauth=false
+###短密码，md5的前2位和后2位
+shortpwd=false
 ############如果卡的话，试试asyncmode为true
 asyncmode=true
 ###最大房间数

@@ -34,6 +34,22 @@ namespace YGOClient
 				return Path.GetDirectoryName(GamePath);
 			}
 		}
+		[IgnoreDataMember()]
+		public bool ShortPwd{get; set;}
+		public string getPassword(){
+			if(ShortPwd){
+				string pwd = Tool.GetMd5(Password);
+				if(pwd.Length >= 32){
+					return pwd.Substring(0,2)+pwd.Substring(30, 2);
+				}else if(pwd.Length>=4){
+					return pwd.Substring(0,4);
+				}else{
+					return pwd;
+				}
+			}else{
+				return Password;
+			}
+		}
 		
 		//	private static string KEY="IBM855";
 		
@@ -44,11 +60,13 @@ namespace YGOClient
 		
 		public User(User _user){
 			SetUser(_user);
+			ShortPwd = false;
 		}
 		public User(string name, string password)
 		{
 			this.Name=name;
 			this.Password=password;
+			ShortPwd = false;
 		}
 		
 		public void SetUser(User _user){

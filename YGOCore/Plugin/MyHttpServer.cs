@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Net;
 using Bend.Util;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace YGOCore.Plugin
@@ -59,27 +60,47 @@ namespace YGOCore.Plugin
 					arg=p.http_url.Substring(index+1);
 				}
 			}
-			if(url=="/"||url.EndsWith("/room.json")||url.EndsWith("/room")){
-				p.writeSuccess();
-				p.outputStream.Write(GetContent(url, arg));
-			}else{
-				p.writeFailure();
-			}
+			Deal(p, url, arg, true);
 		}
 		
 		public override void handlePOSTRequest(HttpProcessor p, StreamReader inputData) {
 			//Console.WriteLine("POST request: {0}", p.http_url);
-			if(p.http_url==null){
-				p.writeFailure();
+			string data = inputData.ReadToEnd();
+			Deal(p, p.http_url, data, false);
+		}
+		private void Deal(HttpProcessor p,string url, string data,bool isGet){
+			if(url==null){
+				return;
 			}
-			else if(p.http_url=="/"||p.http_url.EndsWith("/room.json")||p.http_url.EndsWith("/room")){
-				string data = inputData.ReadToEnd();
-				p.outputStream.Write(GetContent(p.http_url, data));
-			}else{
+			if(url=="/"||url.StartsWith("/room.php")||url.StartsWith("/room.json")){
+				//房间列表
+				p.writeSuccess();
+				p.outputStream.Write(GetContent(url, data));
+			}else if(url.StartsWith("/deck.php")){
+				//卡片列表
+				if(data.IndexOf("pwd=caicai")<0){
+					p.writeFailure();
+					return;
+				}
+				p.writeSuccess();
+				string[] args = data.Split('&');
+				foreach(string a in args){
+					if(a != null && a.StartsWith("name=")){
+						int i = a.IndexOf("=");
+						if(i>=0 && i< a.Length-1){
+							string name = a.Substring(i+1);
+							List<int> cards = GameManager.GameCards(name);
+							foreach(int id in cards){
+								p.outputStream.WriteLine(""+id);
+							}
+						}
+					}
+				}
+			}
+			else{
 				p.writeFailure();
 			}
 		}
-		
 		private string GetContent(string url, string arg){
 			bool hasLock=true;
 			bool hasStart=true;

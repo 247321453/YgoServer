@@ -111,7 +111,10 @@ namespace YGOCore
 		
 		public bool AIisHide{get;private set;}
 		public string AIPass{get;private set;}
-		
+		/// <summary>
+		/// ¶ÌÃÜÂë
+		/// </summary>
+		public bool ShortPwd {get;private set;}
 		/// <summary>
 		/// ÕÊºÅ½ûÖ¹Ä£Ê½
 		/// 0 ²»½ûÖ¹
@@ -158,7 +161,8 @@ namespace YGOCore
 			AsyncMode=false;
 			BanMode = 0;
 			File_BanAccont = "namelist.txt";
-		//	Timeout = 20;
+			ShortPwd = false;
+			//	Timeout = 20;
 		}
 
 		public bool Load(string file = "config.txt")
@@ -251,6 +255,9 @@ namespace YGOCore
 //					break;
 				case "consolelog":
 					ConsoleLog = Convert.ToBoolean(value);
+					break;
+				case "shortpwd":
+					ShortPwd = Convert.ToBoolean(value);
 					break;
 				case "handshuffle":
 					HandShuffle = Convert.ToBoolean(value);
