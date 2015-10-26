@@ -144,3 +144,20 @@
 [10:15:11] OnStart
 [10:20:26] Duel finished against 菜菜, result: Lose
 [10:20:26] OnDuelEnd
+[17:06:22] [AI]Robot$kenan123 join 127.0.0.1:8910 T#gTkL8 use 
+[17:06:22] Decks initialized, 2 found.
+[17:06:22] use deck is AI_Horus
+[17:06:24] [AI]Robot$kenan123 join 127.0.0.1:8910 T#gTkL8 use 
+[17:06:24] Decks initialized, 2 found.
+[17:06:24] use deck is Horus
+[17:06:29] Server is close
+[17:06:29] Server is close
+[17:08:28] [AI]Robot$kenan123 join 127.0.0.1:8910 T#h2ceZ use 
+[17:08:28] Decks initialized, 2 found.
+[17:08:28] use deck is AI_OldSchool
+[17:08:29] [AI]Robot$kenan123 join 127.0.0.1:8910 T#h2ceZ use 
+[17:08:29] Decks initialized, 2 found.
+[17:08:29] use deck is Horus
+[17:08:46] Duel finished against [AI]Robot, result: Lose
+[17:08:46] OnDuelEnd
+[17:08:46] OnDuelEnd

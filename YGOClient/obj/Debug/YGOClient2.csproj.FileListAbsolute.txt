@@ -1,9 +1,0 @@
-F:\git\ygoserver\YGOClient2\bin\Debug\YGOClient2.exe
-F:\git\ygoserver\YGOClient2\bin\Debug\YGOClient2.pdb
-F:\git\ygoserver\YGOClient2\obj\Debug\YGOClient.RoomForm.resources
-F:\git\ygoserver\YGOClient2\obj\Debug\YGOClient.UserForm.resources
-F:\git\ygoserver\YGOClient2\obj\Debug\YGOClient2.csproj.GenerateResource.Cache
-F:\git\ygoserver\YGOClient2\obj\Debug\YGOClient2.exe
-F:\git\ygoserver\YGOClient2\obj\Debug\YGOClient2.pdb
-F:\git\ygoserver\YGOClient2\obj\Debug\YGOClient2.csprojResolveAssemblyReference.cache
-F:\git\ygoserver\YGOClient2\obj\Debug\YGOClient.MyNotifyIcon.resources
