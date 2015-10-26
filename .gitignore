@@ -1,6 +1,8 @@
 *.suo
 *.cdb
 *.db
+*.log
+*Log.txt
 release/script/*.lua
 release/replay/*.yrp
 ## Ignore Visual Studio temporary files, build results, and
