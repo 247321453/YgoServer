@@ -712,10 +712,10 @@ namespace YGOCore.Game
 			packet.Write((byte)epcount);
 			packet.Write((byte)hcount);
 			
-			uint code = msg.Reader.ReadUInt32();
+			uint id = msg.Reader.ReadUInt32();
 			packet.Write(id);
 
-			for (int i = 0; i < count; i++)
+			for (int i = 0; i < hcount; i++)
 			{
 				uint code = msg.Reader.ReadUInt32();
 				if ((code & 0x80000000) != 0)
