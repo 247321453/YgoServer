@@ -1256,6 +1256,7 @@ int32 scriptlib::duel_negate_effect(lua_State *L) {
 	lua_pushboolean(L, pduel->game_field->disable_chain(c));
 	return 1;
 }
+// negate the effects activated on field
 int32 scriptlib::duel_negate_related_chain(lua_State *L) {
 	check_param_count(L, 2);
 	check_param(L, PARAM_TYPE_CARD, 1);
@@ -1269,7 +1270,7 @@ int32 scriptlib::duel_negate_related_chain(lua_State *L) {
 	effect* negeff = pduel->new_effect();
 	negeff->owner = pduel->game_field->core.reason_effect->handler;
 	negeff->type = EFFECT_TYPE_SINGLE;
-	negeff->code = EFFECT_DISABLE_CHAIN;
+	negeff->code = EFFECT_DISABLE_CHAIN_FIELD;
 	negeff->reset_flag = RESET_CHAIN | RESET_EVENT | reset_flag;
 	pcard->add_effect(negeff);
 	return 0;
@@ -2327,8 +2328,8 @@ int32 scriptlib::duel_set_operation_info(lua_State *L) {
 	opt.op_player = playerid;
 	opt.op_param = param;
 	if(ct == 0 && pduel->game_field->core.continuous_chain.size()) {
-		field::chain_list::reverse_iterator clit = pduel->game_field->core.continuous_chain.rbegin();
-		chain::opmap::iterator omit = clit->opinfos.find(cate);
+		auto clit = pduel->game_field->core.continuous_chain.rbegin();
+		auto omit = clit->opinfos.find(cate);
 		if(omit != clit->opinfos.end() && omit->second.op_cards)
 			pduel->delete_group(omit->second.op_cards);
 		clit->opinfos[cate] = opt;
@@ -2336,14 +2337,14 @@ int32 scriptlib::duel_set_operation_info(lua_State *L) {
 		if (pduel->game_field->core.current_chain.size() == 0)
 			return 0;
 		if(ct < 1 || ct > pduel->game_field->core.current_chain.size()) {
-			field::chain_array::reverse_iterator cait = pduel->game_field->core.current_chain.rbegin();
-			chain::opmap::iterator omit = cait->opinfos.find(cate);
+			auto cait = pduel->game_field->core.current_chain.rbegin();
+			auto omit = cait->opinfos.find(cate);
 			if(omit != cait->opinfos.end() && omit->second.op_cards)
 				pduel->delete_group(omit->second.op_cards);
 			cait->opinfos[cate] = opt;
 		} else {
 			chain* ch = &pduel->game_field->core.current_chain[ct - 1];
-			chain::opmap::iterator omit = ch->opinfos.find(cate);
+			auto omit = ch->opinfos.find(cate);
 			if(omit != ch->opinfos.end() && omit->second.op_cards)
 				pduel->delete_group(omit->second.op_cards);
 			ch->opinfos[cate] = opt;

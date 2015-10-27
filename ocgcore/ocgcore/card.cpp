@@ -165,8 +165,7 @@ uint32 card::get_infos(byte* buf, int32 query_flag, int32 use_cache) {
 	}
 	if(query_flag & QUERY_COUNTERS) {
 		*p++ = counters.size();
-		counter_map::iterator cmit;
-		for(cmit = counters.begin(); cmit != counters.end(); ++cmit)
+		for(auto cmit = counters.begin(); cmit != counters.end(); ++cmit)
 			*p++ = cmit->first + (cmit->second << 16);
 	}
 	if(query_flag & QUERY_OWNER)
@@ -297,6 +296,48 @@ int32 card::is_set_card(uint32 set_code) {
 	}
 	return FALSE;
 }
+int32 card::is_pre_set_card(uint32 set_code) {
+	uint32 code = previous.code;
+	uint64 setcode;
+	if (code == data.code) {
+		setcode = data.setcode;
+	} else {
+		card_data dat;
+		::read_card(code, &dat);
+		setcode = dat.setcode;
+	}
+	uint32 settype = set_code & 0xfff;
+	uint32 setsubtype = set_code & 0xf000;
+	while(setcode) {
+		if ((setcode & 0xfff) == settype && (setcode & 0xf000 & setsubtype) == setsubtype)
+			return TRUE;
+		setcode = setcode >> 16;
+	}
+	//add set code
+	effect_set eset;
+	filter_effect(EFFECT_ADD_SETCODE, &eset);
+	for(int32 i = 0; i < eset.size(); ++i) {
+		uint32 value = eset[i]->get_value(this);
+		if ((value & 0xfff) == settype && (value & 0xf000 & setsubtype) == setsubtype)
+			return TRUE;
+	}
+	//another code
+	uint32 code2 = previous.code2;
+	uint64 setcode2;
+	if (code2 != 0) {
+		card_data dat;
+		::read_card(code2, &dat);
+		setcode2 = dat.setcode;
+	} else {
+		return FALSE;
+	}
+	while(setcode2) {
+		if ((setcode2 & 0xfff) == settype && (setcode2 & 0xf000 & setsubtype) == setsubtype)
+			return TRUE;
+		setcode2 = setcode2 >> 16;
+	}
+	return FALSE;
+}
 uint32 card::get_type() {
 	if(assume_type == ASSUME_TYPE)
 		return assume_value;
@@ -327,7 +368,7 @@ uint32 card::get_type() {
 int32 card::get_base_attack(uint8 swap) {
 	if (current.location != LOCATION_MZONE && !(data.type & TYPE_MONSTER) && !(get_type() & TYPE_MONSTER))
 		return 0;
-	if (current.location != LOCATION_MZONE)
+	if (current.location != LOCATION_MZONE || status & STATUS_SUMMONING)
 		return data.attack;
 	if (temp.base_attack != -1)
 		return temp.base_attack;
@@ -355,7 +396,7 @@ int32 card::get_attack() {
 		return assume_value;
 	if (current.location != LOCATION_MZONE && !(data.type & TYPE_MONSTER) && !(get_type() & TYPE_MONSTER))
 		return 0;
-	if (current.location != LOCATION_MZONE)
+	if (current.location != LOCATION_MZONE || status & STATUS_SUMMONING)
 		return data.attack;
 	if (temp.attack != -1)
 		return temp.attack;
@@ -366,7 +407,7 @@ int32 card::get_attack() {
 int32 card::get_base_defence(uint8 swap) {
 	if (current.location != LOCATION_MZONE && !(data.type & TYPE_MONSTER) && !(get_type() & TYPE_MONSTER))
 		return 0;
-	if (current.location != LOCATION_MZONE)
+	if (current.location != LOCATION_MZONE || status & STATUS_SUMMONING)
 		return data.defence;
 	if (temp.base_defence != -1)
 		return temp.base_defence;
@@ -394,7 +435,7 @@ int32 card::get_defence() {
 		return assume_value;
 	if (current.location != LOCATION_MZONE && !(data.type & TYPE_MONSTER) && !(get_type() & TYPE_MONSTER))
 		return 0;
-	if (current.location != LOCATION_MZONE)
+	if (current.location != LOCATION_MZONE || status & STATUS_SUMMONING)
 		return data.defence;
 	if (temp.defence != -1)
 		return temp.defence;
@@ -406,20 +447,20 @@ void card::calc_attack_defence(int32 *patk, int32 *pdef) {
 	uint32 base_atk = get_base_attack();
 	uint32 base_def = get_base_defence();
 	temp.base_attack = base_atk;
-	temp.attack = base_atk;
 	temp.base_defence = base_def;
-	temp.defence = base_def;
 	int32 up_atk = 0, upc_atk = 0;
 	int32 up_def = 0, upc_def = 0;
 	effect_set eset;
 	filter_effect(EFFECT_SWAP_AD, &eset, FALSE);
 	int32 swap = eset.size();
 	if(swap || patk) {
+		temp.attack = base_atk;
 		filter_effect(EFFECT_UPDATE_ATTACK, &eset, FALSE);
 		filter_effect(EFFECT_SET_ATTACK, &eset, FALSE);
 		filter_effect(EFFECT_SET_ATTACK_FINAL, &eset, FALSE);
 	}
 	if(swap || pdef) {
+		temp.defence = base_def;
 		filter_effect(EFFECT_UPDATE_DEFENCE, &eset, FALSE);
 		filter_effect(EFFECT_SET_DEFENCE, &eset, FALSE);
 		filter_effect(EFFECT_SET_DEFENCE_FINAL, &eset, FALSE);
@@ -485,11 +526,15 @@ void card::calc_attack_defence(int32 *patk, int32 *pdef) {
 			break;
 		}
 		if (!rev) {
-			temp.attack = base_atk + up_atk + upc_atk;
-			temp.defence = base_def + up_def + upc_def;
+			if (swap || patk)
+				temp.attack = base_atk + up_atk + upc_atk;
+			if (swap || pdef)
+				temp.defence = base_def + up_def + upc_def;
 		} else {
-			temp.attack = base_atk - up_atk - upc_atk;
-			temp.defence = base_def - up_def - upc_def;
+			if (swap || patk)
+				temp.attack = base_atk - up_atk - upc_atk;
+			if (swap || pdef)
+				temp.defence = base_def - up_def - upc_def;
 		}
 	}
 	if (swap_final) {
@@ -965,7 +1010,7 @@ int32 card::add_effect(effect* peffect) {
 		return 0;
 	card* check_target = this;
 	if (peffect->type & EFFECT_TYPE_SINGLE) {
-		if(peffect->code == EFFECT_SET_ATTACK && !(peffect->flag & EFFECT_FLAG_SINGLE_RANGE)) {
+		if((peffect->code == EFFECT_SET_ATTACK || peffect->code == EFFECT_SET_BASE_ATTACK) && !(peffect->flag & EFFECT_FLAG_SINGLE_RANGE)) {
 			for(it = single_effect.begin(); it != single_effect.end();) {
 				rm = it++;
 				if((rm->second->code == EFFECT_SET_ATTACK || rm->second->code == EFFECT_SET_ATTACK_FINAL)
@@ -981,7 +1026,7 @@ int32 card::add_effect(effect* peffect) {
 					remove_effect(rm->second);
 			}
 		}
-		if(peffect->code == EFFECT_SET_DEFENCE && !(peffect->flag & EFFECT_FLAG_SINGLE_RANGE)) {
+		if((peffect->code == EFFECT_SET_DEFENCE || peffect->code == EFFECT_SET_BASE_DEFENCE) && !(peffect->flag & EFFECT_FLAG_SINGLE_RANGE)) {
 			for(it = single_effect.begin(); it != single_effect.end();) {
 				rm = it++;
 				if((rm->second->code == EFFECT_SET_DEFENCE || rm->second->code == EFFECT_SET_DEFENCE_FINAL)
@@ -1026,6 +1071,9 @@ int32 card::add_effect(effect* peffect) {
 	}
 	indexer.insert(make_pair(peffect, it));
 	peffect->handler = this;
+	if((peffect->type & 0x7e0)
+		|| (pduel->game_field->core.reason_effect && (pduel->game_field->core.reason_effect->status & EFFECT_STATUS_ACTIVATED)))
+		peffect->status |= EFFECT_STATUS_ACTIVATED;
 	if (peffect->in_range(current.location, current.sequence) && (peffect->type & EFFECT_TYPE_FIELD))
 		pduel->game_field->add_effect(peffect);
 	if (current.controler != PLAYER_NONE && check_target) {
@@ -1145,6 +1193,7 @@ int32 card::copy_effect(uint32 code, uint32 reset, uint32 count) {
 	pduel->uncopy.clear();
 	return pduel->game_field->infos.copy_id - 1;
 }
+// add EFFECT_SET_CONTROL
 void card::reset(uint32 id, uint32 reset_type) {
 	effect* peffect;
 	if (reset_type != RESET_EVENT && reset_type != RESET_PHASE && reset_type != RESET_CODE && reset_type != RESET_COPY && reset_type != RESET_CARD)
@@ -1358,7 +1407,7 @@ int32 card::add_counter(uint8 playerid, uint16 countertype, uint16 count) {
 	return TRUE;
 }
 int32 card::remove_counter(uint16 countertype, uint16 count) {
-	counter_map::iterator cmit = counters.find(countertype);
+	auto cmit = counters.find(countertype);
 	if(cmit == counters.end())
 		return FALSE;
 	if(cmit->second <= count)
@@ -1384,7 +1433,7 @@ int32 card::is_can_add_counter(uint8 playerid, uint16 countertype, uint16 count)
 		return FALSE;
 	int32 limit = -1;
 	int32 cur = 0;
-	counter_map::iterator cmit = counters.find(countertype);
+	auto cmit = counters.find(countertype);
 	if(cmit != counters.end())
 		cur = cmit->second;
 	filter_effect(EFFECT_COUNTER_LIMIT + countertype, &eset);
@@ -1395,7 +1444,7 @@ int32 card::is_can_add_counter(uint8 playerid, uint16 countertype, uint16 count)
 	return TRUE;
 }
 int32 card::get_counter(uint16 countertype) {
-	counter_map::iterator cmit = counters.find(countertype);
+	auto cmit = counters.find(countertype);
 	if(cmit == counters.end())
 		return 0;
 	return cmit->second;
@@ -1754,7 +1803,7 @@ int32 card::is_equipable(card* pcard) {
 int32 card::is_summonable() {
 	if(!(data.type & TYPE_MONSTER))
 		return FALSE;
-	return !(status & (STATUS_REVIVE_LIMIT | STATUS_UNSUMMONABLE_CARD));
+	return !is_affected_by_effect(EFFECT_UNSUMMONABLE_CARD);
 }
 int32 card::is_summonable(effect* peffect) {
 	effect* oreason = pduel->game_field->core.reason_effect;
@@ -1832,7 +1881,7 @@ int32 card::is_can_be_summoned(uint8 playerid, uint8 ignore_count, effect* peffe
 			return FALSE;
 		}
 	} else if(current.location == LOCATION_HAND) {
-		if(is_status(STATUS_REVIVE_LIMIT) || is_affected_by_effect(EFFECT_CANNOT_SUMMON)) {
+		if(is_affected_by_effect(EFFECT_CANNOT_SUMMON)) {
 			pduel->game_field->restore_lp_cost();
 			return FALSE;
 		}
@@ -1972,7 +2021,7 @@ int32 card::is_can_be_special_summoned(effect * reason_effect, uint32 sumtype, u
 		return FALSE;
 	if(current.location == LOCATION_REMOVED && (current.position & POS_FACEDOWN))
 		return FALSE;
-	if(is_status(STATUS_REVIVE_LIMIT) && !is_status(STATUS_PROC_COMPLETE)) {
+	if(is_affected_by_effect(EFFECT_REVIVE_LIMIT) && !is_status(STATUS_PROC_COMPLETE)) {
 		if((!nolimit && (current.location & 0x38)) || (!nocheck && !nolimit && (current.location & 0x3)))
 			return FALSE;
 		if(!nolimit && (data.type & TYPE_PENDULUM) && current.location == LOCATION_EXTRA && (current.position & POS_FACEUP))
@@ -2028,7 +2077,7 @@ int32 card::is_can_be_special_summoned(effect * reason_effect, uint32 sumtype, u
 int32 card::is_setable_mzone(uint8 playerid, uint8 ignore_count, effect* peffect, uint8 min_tribute) {
 	if(!(data.type & TYPE_MONSTER))
 		return FALSE;
-	if(status & (STATUS_REVIVE_LIMIT | STATUS_UNSUMMONABLE_CARD))
+	if(is_affected_by_effect(EFFECT_UNSUMMONABLE_CARD))
 		return FALSE;
 	if(current.location != LOCATION_HAND)
 		return FALSE;

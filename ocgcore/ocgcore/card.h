@@ -12,6 +12,7 @@
 #include "effectset.h"
 #include <set>
 #include <map>
+#include <unordered_map>
 
 class card;
 class duel;
@@ -80,11 +81,11 @@ public:
 	typedef std::vector<card*> card_vector;
 	typedef std::multimap<uint32, effect*> effect_container;
 	typedef std::set<card*, card_sort> card_set;
-	typedef std::map<effect*, effect_container::iterator> effect_indexer;
-	typedef std::map<effect*, uint32> effect_relation;
-	typedef std::map<card*, uint32> relation_map;
+	typedef std::unordered_map<effect*, effect_container::iterator> effect_indexer;
+	typedef std::unordered_map<effect*, uint32> effect_relation;
+	typedef std::unordered_map<card*, uint32> relation_map;
 	typedef std::map<uint16, uint16> counter_map;
-	typedef std::map<uint16, card*> attacker_map;
+	typedef std::unordered_map<uint16, card*> attacker_map;
 	int32 scrtype;
 	int32 ref_handle;
 	duel* pduel;
@@ -144,6 +145,7 @@ public:
 	uint32 get_code();
 	uint32 get_another_code();
 	int32 is_set_card(uint32 set_code);
+	int32 is_pre_set_card(uint32 set_code);
 	uint32 get_type();
 	int32 get_base_attack(uint8 swap = FALSE);
 	int32 get_attack();

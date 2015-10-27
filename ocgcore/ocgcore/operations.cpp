@@ -243,6 +243,9 @@ void field::send_to(card_set* targets, effect* reason_effect, uint32 reason, uin
 		pcard->current.reason_effect = reason_effect;
 		pcard->current.reason_player = reason_player;
 		p = playerid;
+		// send to hand from deck  & playerid not given => send to the hand of controler
+		if(p == PLAYER_NONE && (destination & LOCATION_HAND) && (pcard->current.location & LOCATION_DECK) && pcard->current.controler == reason_player)
+			p = reason_player;
 		if(destination & (LOCATION_GRAVE + LOCATION_REMOVED) || p == PLAYER_NONE)
 			p = pcard->owner;
 		if(destination != LOCATION_REMOVED)
@@ -1042,28 +1045,45 @@ int32 field::control_adjust(uint16 step) {
 int32 field::self_destroy(uint16 step) {
 	switch(step) {
 	case 0: {
-		if(!core.self_destroy_set.empty())
-			destroy(&core.self_destroy_set, 0, REASON_EFFECT, 5);
-		else
-			returns.ivalue[0] = 0;
+		if(core.self_destroy_set.empty()) {
+			core.units.begin()->step = 1;
+			return FALSE;
+		}
+		card_set cset;
+		for (auto cit = core.self_destroy_set.begin(); cit != core.self_destroy_set.end();) {
+			auto rm = cit++;
+			card* pcard = *rm;
+			if(pcard->current.reason_effect->code == EFFECT_UNIQUE_CHECK) {
+				cset.insert(pcard);
+				core.self_destroy_set.erase(rm);
+			}
+		}
+		if(!cset.empty())
+			destroy(&cset, 0, REASON_RULE, 5);
 		return FALSE;
 	}
 	case 1: {
+		core.operated_set.clear();
+		if(!core.self_destroy_set.empty())
+			destroy(&core.self_destroy_set, 0, REASON_EFFECT, 5);
+		return FALSE;
+	}
+	case 2: {
 		core.self_destroy_set.clear();
 		core.operated_set.clear();
+		returns.ivalue[0] = 0;
 		if(!(core.global_flag & GLOBALFLAG_SELF_TOGRAVE))
 			return TRUE;
-		core.units.begin()->arg1 = returns.ivalue[0];
 		if(!core.self_tograve_set.empty())
 			send_to(&core.self_tograve_set, 0, REASON_EFFECT, PLAYER_NONE, PLAYER_NONE, LOCATION_GRAVE, 0, POS_FACEUP);
 		else
 			return TRUE;
 		return FALSE;
 	}
-	case 2: {
+	case 3: {
 		core.self_tograve_set.clear();
 		core.operated_set.clear();
-		returns.ivalue[0] += core.units.begin()->arg1;
+		returns.ivalue[0] = 0;
 		return TRUE;
 	}
 	}
@@ -1666,7 +1686,7 @@ int32 field::flip_summon(uint16 step, uint8 sumplayer, card * target) {
 int32 field::mset(uint16 step, uint8 setplayer, card * target, effect * proc, uint8 ignore_count, uint8 min_tribute) {
 	switch(step) {
 	case 0: {
-		if(target->is_status(STATUS_REVIVE_LIMIT))
+		if(target->is_affected_by_effect(EFFECT_UNSUMMONABLE_CARD))
 			return TRUE;
 		if(target->current.location != LOCATION_HAND)
 			return TRUE;
@@ -2412,7 +2432,7 @@ int32 field::special_summon_step(uint16 step, group * targets, card * target) {
 		returns.ivalue[0] = FALSE;
 		uint32 result = TRUE;
 		effect_set eset;
-		if(target->is_status(STATUS_REVIVE_LIMIT) && !target->is_status(STATUS_PROC_COMPLETE)) {
+		if(target->is_affected_by_effect(EFFECT_REVIVE_LIMIT) && !target->is_status(STATUS_PROC_COMPLETE)) {
 			if((!nolimit && (target->current.location & 0x38)) || (!nocheck && !nolimit && (target->current.location & 0x3)))
 				result = FALSE;
 		}
@@ -2596,6 +2616,7 @@ int32 field::destroy(uint16 step, group * targets, card * target, uint8 battle) 
 			add_process(PROCESSOR_OPERATION_REPLACE, 10, eset[i], targets, (ptr)target, 1);
 	return TRUE;
 }
+// PROCESSOR_DESTROY goes here
 int32 field::destroy(uint16 step, group * targets, effect * reason_effect, uint32 reason, uint8 reason_player) {
 	switch (step) {
 	case 0: {
@@ -2953,6 +2974,7 @@ int32 field::release(uint16 step, group * targets, effect * reason_effect, uint3
 	}
 	return TRUE;
 }
+// PROCESSOR_SENDTO_STEP goes here
 int32 field::send_to(uint16 step, group * targets, card * target) {
 	uint8 playerid = (target->operation_param >> 16) & 0xff;
 	uint8 dest = (target->operation_param >> 8) & 0xff;
@@ -2975,6 +2997,7 @@ int32 field::send_to(uint16 step, group * targets, card * target) {
 	}
 	return TRUE;
 }
+// PROCESSOR_SENDTO goes here
 int32 field::send_to(uint16 step, group * targets, effect * reason_effect, uint32 reason, uint8 reason_player) {
 	struct exargs {
 		group* targets;
@@ -3085,7 +3108,7 @@ int32 field::send_to(uint16 step, group * targets, effect * reason_effect, uint3
 		uint32 dest, redirect, redirect_seq, check_cb;
 		for(auto cit = targets->container.begin(); cit != targets->container.end(); ++cit)
 			(*cit)->enable_field_effect(FALSE);
-		adjust_instant();
+		adjust_disable_check_list();
 		for(auto cit = targets->container.begin(); cit != targets->container.end(); ++cit) {
 			card* pcard = *cit;
 			dest = (pcard->operation_param >> 8) & 0xff;
@@ -3412,7 +3435,7 @@ int32 field::send_to(uint16 step, group * targets, effect * reason_effect, uint3
 				released.insert(pcard);
 				raise_single_event(pcard, 0, EVENT_RELEASE, pcard->current.reason_effect, pcard->current.reason, pcard->current.reason_player, 0, 0);
 			}
-			if(pcard->current.reason & REASON_DESTROY) {
+			if(pcard->current.reason & REASON_DESTROY && !pcard->is_status(STATUS_BATTLE_DESTROYED)) {
 				destroyed.insert(pcard);
 				raise_single_event(pcard, 0, EVENT_DESTROYED, pcard->current.reason_effect, pcard->current.reason, pcard->current.reason_player, 0, 0);
 			}
@@ -3721,7 +3744,7 @@ int32 field::move_to_field(uint16 step, card * target, uint32 enable, uint32 ret
 			target->unequip();
 		if(enable || ((ret == 1) && target->is_position(POS_FACEUP)))
 			target->enable_field_effect(TRUE);
-		adjust_instant();
+		adjust_disable_check_list();
 		return FALSE;
 	}
 	case 3: {
@@ -3902,8 +3925,7 @@ int32 field::operation_replace(uint16 step, effect * replace_effect, group * tar
 	case 3: {
 		if(core.continuous_chain.rbegin()->target_cards)
 			pduel->delete_group(core.continuous_chain.rbegin()->target_cards);
-		chain::opmap::iterator oit;
-		for(oit = core.continuous_chain.rbegin()->opinfos.begin(); oit != core.continuous_chain.rbegin()->opinfos.end(); ++oit) {
+		for(auto oit = core.continuous_chain.rbegin()->opinfos.begin(); oit != core.continuous_chain.rbegin()->opinfos.end(); ++oit) {
 			if(oit->second.op_cards)
 				pduel->delete_group(oit->second.op_cards);
 		}
@@ -3972,8 +3994,7 @@ int32 field::operation_replace(uint16 step, effect * replace_effect, group * tar
 	case 8: {
 		if(core.continuous_chain.rbegin()->target_cards)
 			pduel->delete_group(core.continuous_chain.rbegin()->target_cards);
-		chain::opmap::iterator oit;
-		for(oit = core.continuous_chain.rbegin()->opinfos.begin(); oit != core.continuous_chain.rbegin()->opinfos.end(); ++oit) {
+		for(auto oit = core.continuous_chain.rbegin()->opinfos.begin(); oit != core.continuous_chain.rbegin()->opinfos.end(); ++oit) {
 			if(oit->second.op_cards)
 				pduel->delete_group(oit->second.op_cards);
 		}
