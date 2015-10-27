@@ -57,6 +57,12 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DogSE.Library">
+      <HintPath>..\lib\DogSE.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="DogSE.Server.Core">
+      <HintPath>..\lib\DogSE.Server.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Data.Sqlite">
       <HintPath>..\lib\Mono.Data.Sqlite.dll</HintPath>
     </Reference>
