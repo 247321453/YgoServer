@@ -8,7 +8,7 @@ namespace System.Net {
 	/// <summary>
 	/// Receive event handler.
 	/// </summary>
-	public delegate void ReceiveEventHandler(Connection Client, byte[] datas);
+	public delegate void ReceiveEventHandler(Connection Client);
 	/// <summary>
 	/// Connect event handler.
 	/// </summary>
@@ -29,8 +29,6 @@ namespace System.Net {
 	public class Server {
 		
 		#region private member
-		
-		private const int CacheSize=1024;
 		/// <summary>
 		/// The listening socket.
 		/// </summary>
@@ -228,10 +226,10 @@ namespace System.Net {
 		/// <param name="connection">The connection to read from.</param>
 		private void BeginRead(Connection connection) {
 			try {
-				connection.Bytes = new byte[CacheSize];
+				byte[] cache = connection.ResetCache();
 				lock(connection.SyncRoot)
 					if(connection.Connected)
-						connection.Client.GetStream().BeginRead(connection.Bytes, 0, CacheSize, ReceiveCallback, connection);
+						connection.Client.GetStream().BeginRead(cache, 0, cache.Length, ReceiveCallback, connection);
 					else
 						DisconnectHandler(connection);
 			}catch(System.IO.IOException) {
@@ -255,11 +253,10 @@ namespace System.Net {
 				available = connection.Client.Available;
 			}
 			if(read != 0 && connected) {
-				byte[] datas =new byte[read];
-				Array.Copy(connection.Bytes, datas, read);
+				connection.ReceiveQueue.Enqueue(connection.Bytes, 0, read);
 //				if(read != CacheSize && available == 0) {
 				if(available == 0) {
-					Received(connection, datas);
+					Received(connection);
 				}
 				if(connection.Timer.Interval != timeout) connection.Timer.Interval = timeout;
 				connection.Timer.Restart();
@@ -397,8 +394,8 @@ namespace System.Net {
 		/// </summary>
 		/// <param name="client">Client.</param>
 		/// <param name="packet">Packet.</param>
-		private void Received(Connection client, byte[] packet) {
-			if(OnReceive != null) OnReceive(client, packet);
+		private void Received(Connection client) {
+			if(OnReceive != null) OnReceive(client);
 		}
 		
 		/// <summary>

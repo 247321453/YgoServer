@@ -7,47 +7,52 @@ namespace System.Net {
 	/// Timeout Timer
 	/// </summary>
 	public class TimeoutTimer : Timers.Timer {
-        private object tag;
-        
-        public object Tag {
-            get { return tag; }
-        }
-    
-        public TimeoutTimer(object tag) : base() {
-            this.tag = tag;
-        }
-        
-        public void Restart() {
-            Stop();
-            Start();
-        }
-    }
+		private object tag;
+		
+		public object Tag {
+			get { return tag; }
+		}
+		
+		public TimeoutTimer(object tag) : base() {
+			this.tag = tag;
+		}
+		
+		public void Restart() {
+			Stop();
+			Start();
+		}
+	}
 	#endregion
 	
 	/// <summary>
 	/// Represents an Asterion client connection.
 	/// </summary>
 	public class Connection : IDisposable{
+				
+		public static int sCacheSize = 1024;
+		public static int sPacketLength = 2;
+		public static int sMaxCacheSize = ReceiveQueue.BUFFER_SIZE;
 		/// <summary>
 		/// Initializes a new instance of the Connection class.
 		/// </summary>
 		public Connection() {
 			timer = new TimeoutTimer(this);
+			m_ReceiveQueue = new ReceiveQueue(sPacketLength, sMaxCacheSize);
 		}
 		#region private member
+		private ReceiveQueue m_ReceiveQueue;
+		
 		private TimeoutTimer timer;
 		internal readonly object SyncRoot = new object();
 		private TcpClient client;
 		private bool _Dispose;
-		/// <summary>
-		/// Bytes received from the connection temporarily stored here.
-		/// </summary>
-		/// <value>The received bytes.</value>
-		internal byte[] Bytes {
-			get;
-			set;
+		
+		internal byte[] Bytes;
+		
+		internal byte[] ResetCache(){
+			Bytes = new byte[sCacheSize];
+			return Bytes;
 		}
-
 		/// <summary>
 		/// Gets the timeout timer.
 		/// </summary>
@@ -83,6 +88,9 @@ namespace System.Net {
 			private set;
 		}
 
+		public ReceiveQueue ReceiveQueue{
+			get{return m_ReceiveQueue;}
+		}
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Asterion.Connection"/> is connected.
 		/// </summary>
