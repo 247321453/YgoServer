@@ -1,13 +1,10 @@
-﻿ using System;
-namespace Asterion {
-	using TcpClient = System.Net.Sockets.TcpClient;
-	using TcpListener = System.Net.Sockets.TcpListener;
-	using LingerOption = System.Net.Sockets.LingerOption;
-	using ManualResetEvent = System.Threading.ManualResetEvent;
-	using ElapsedEventArgs = System.Timers.ElapsedEventArgs;
-	using Interlocked = System.Threading.Interlocked;
-	using IPAddress = System.Net.IPAddress;
+﻿using System;
+using System.Net.Sockets;
+using System.Timers;
+
+namespace System.Net {
 	
+	#region delegate
 	/// <summary>
 	/// Receive event handler.
 	/// </summary>
@@ -24,11 +21,16 @@ namespace Asterion {
 	/// Timeout event handler.
 	/// </summary>
 	public delegate void TimeoutEventHandler(Connection timeoutConnection, double time);
-
+	#endregion
+	
 	/// <summary>
 	/// Implaments an asynchronous TCP server.
 	/// </summary>
 	public class Server {
+		
+		#region private member
+		
+		private const int CacheSize=1024;
 		/// <summary>
 		/// The listening socket.
 		/// </summary>
@@ -76,12 +78,14 @@ namespace Asterion {
 		/// <summary>
 		/// Occurs when information is logged by the server.
 		/// </summary>
-		public event Logging.LogEventHandler OnLog;
+		public event LogEventHandler OnLog;
 		/// <summary>
 		/// Occurs when a client times out.
 		/// </summary>
 		public event TimeoutEventHandler OnTimeout;
-
+		#endregion
+		
+		#region public member
 		/// <summary>
 		/// Gets the host the server is listening in.
 		/// </summary>
@@ -117,6 +121,9 @@ namespace Asterion {
 		public double Timeout {
 			get { return timeout; }
 		}
+		#endregion
+		
+		#region Initializes
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Asterion.Server"/> class.
 		/// </summary>
@@ -124,8 +131,8 @@ namespace Asterion {
 		/// <param name="port">Port to listen on.</param>
 		/// <param name="capacity">Server capacity.</param>
 		/// <param name="timeout">Client timeout time.</param>
-		public Server(string host, int port, int capacity = 0, int timeout = 0) {
-			Init(IPAddress.Parse(host), port, capacity, timeout);
+		public Server(int port, int capacity = 0, int timeout = 0) {
+			Init(IPAddress.Any, port, capacity, timeout);
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Asterion.Server"/> class.
@@ -145,17 +152,9 @@ namespace Asterion {
 			if(capacity != 0) this.capacity = capacity;
 			listener = new TcpListener(host, port);
 		}
+		#endregion
 
-		/// <summary>
-		/// Starts the server.
-		/// </summary>
-		public void Start() {
-			if(!started) {
-				started = true;
-				Listen();
-			}
-		}
-
+		#region private method
 		/// <summary>
 		/// Listens for incoming connections.
 		/// </summary>
@@ -180,10 +179,10 @@ namespace Asterion {
 				Heard(client);
 			}catch(System.Net.Sockets.SocketException ex) {
 				// If this happens, socket error code information is at: http://msdn.microsoft.com/en-us/library/windows/desktop/ms740668(v=vs.85).aspx
-				Log("Could not accept socket (" + ex.ErrorCode.ToString() + "): " + ex.Message, Logging.LogLevel.Error);
-			}catch(Exceptions.AsterionException ex) {
+				Log("Could not accept socket (" + ex.ErrorCode.ToString() + "): " + ex.Message, LogLevel.Error);
+			}catch(AsterionException ex) {
 				// Either the server is full or the client has reached the maximum connections per IP.
-				Log("Could not add client: " + ex.Message, Logging.LogLevel.Error);
+				Log("Could not add client: " + ex.Message, LogLevel.Error);
 				DisconnectClient(ex.Connection);
 			}finally{
 				if(!accepting) listener.BeginAcceptTcpClient(AcceptCallback, null);
@@ -201,7 +200,7 @@ namespace Asterion {
 			};
 			lock(clients_l) {
 				if(capacity != 0 && clients >= capacity)
-					throw new Exceptions.ServerFullException("Server full, rejecting client with IP '" + connection.Address + "'.", connection);
+					throw new ServerFullException("Server full, rejecting client with IP '" + connection.Address + "'.", connection);
 				clients++;
 			}
 			if(timeout != 0) {
@@ -212,17 +211,27 @@ namespace Asterion {
 			Connected(connection);
 			BeginRead(connection);
 		}
-
+		/// <summary>
+		/// Timer elapse event handler, raised only when the client has timed out
+		/// </summary>
+		/// <param name="source">The timer that elapsed.</param>
+		/// <param name="e">Event arguments.</param>
+		private void TimeoutEventHandler(object source, ElapsedEventArgs e) {
+			TimeoutTimer timer = (TimeoutTimer) source;
+			timer.Stop();
+			Connection connection = (Connection) timer.Tag;
+			if(OnTimeout != null) OnTimeout(connection, timer.Interval);
+		}
 		/// <summary>
 		/// Begins reading from a connected client.
 		/// </summary>
 		/// <param name="connection">The connection to read from.</param>
 		private void BeginRead(Connection connection) {
 			try {
-				connection.Bytes = new byte[1024];
+				connection.Bytes = new byte[CacheSize];
 				lock(connection.SyncRoot)
 					if(connection.Connected)
-						connection.Client.GetStream().BeginRead(connection.Bytes, 0, 1024, ReceiveCallback, connection);
+						connection.Client.GetStream().BeginRead(connection.Bytes, 0, CacheSize, ReceiveCallback, connection);
 					else
 						DisconnectHandler(connection);
 			}catch(System.IO.IOException) {
@@ -248,7 +257,8 @@ namespace Asterion {
 			if(read != 0 && connected) {
 				byte[] datas =new byte[read];
 				Array.Copy(connection.Bytes, datas, read);
-				if(read != 1024 && available == 0) {
+//				if(read != CacheSize && available == 0) {
+				if(available == 0) {
 					Received(connection, datas);
 				}
 				if(connection.Timer.Interval != timeout) connection.Timer.Interval = timeout;
@@ -288,7 +298,35 @@ namespace Asterion {
 			connection.Timer.Close();
 			connection.Client.Close();
 		}
+		#endregion
 
+		#region start/close
+		/// <summary>
+		/// Starts the server.
+		/// </summary>
+		public void Start() {
+			if(!started) {
+				started = true;
+				Listen();
+			}
+		}
+		
+		/// <summary>
+		/// Disconnects the connection from the server.
+		/// </summary>
+		/// <param name="connection">The connection to disconnect.</param>
+		public void DisconnectClient(Connection connection) {
+			try {
+				lock(connection.SyncRoot)
+					if(connection.Connected) {
+					connection.Client.Client.Shutdown(SocketShutdown.Both);
+					connection.Client.Close();
+				}
+			}catch(System.Exception e) {
+				Log("Could not disconnect socket: " + e.Message, LogLevel.Error);
+			}
+		}
+	
 		/// <summary>
 		/// Writes data to a client.
 		/// </summary>
@@ -296,15 +334,14 @@ namespace Asterion {
 		/// <param name="connection">The connection to write to.</param>
 		/// <param name="data">The data to write.</param>
 		/// <param name="isAsync">If set to <c>true</c>, the write will be performed asynchronously.</param>
-		public bool WriteData(Connection connection, string data, bool isAsync) {
+		public bool WriteData(Connection connection, byte[] bytes, bool isAsync) {
 			try {
-				byte[] bytes = System.Text.Encoding.UTF8.GetBytes(data);
 				lock(connection.SyncRoot) {
 					if(connection.Connected) {
 						if(isAsync) {
-							connection.Client.GetStream().BeginWrite(bytes, 0, data.Length, WriteCallback, connection);
+							connection.Client.GetStream().BeginWrite(bytes, 0, bytes.Length, WriteCallback, connection);
 						}else{
-							connection.Client.GetStream().Write(bytes, 0, data.Length);
+							connection.Client.GetStream().Write(bytes, 0, bytes.Length);
 						}
 						return connection.Client.GetStream().CanWrite;
 					}else{
@@ -312,7 +349,7 @@ namespace Asterion {
 					}
 				}
 			}catch(System.IO.IOException ex) {
-				Log("Could not write to client: " + ex.Message + ".", Logging.LogLevel.Error);
+				Log("Could not write to client: " + ex.Message + ".", LogLevel.Error);
 				return false;
 			}
 		}
@@ -323,10 +360,9 @@ namespace Asterion {
 		/// <returns><c>true</c>, if data could be written, <c>false</c> otherwise.</returns>
 		/// <param name="connection">The connection to write to.</param>
 		/// <param name="data">The data to write.</param>
-		public bool WriteData(Connection connection, string data) {
+		public bool WriteData(Connection connection, byte[] data) {
 			return WriteData(connection, data, true);
 		}
-
 		/// <summary>
 		/// Callback handling data being written to a client.
 		/// </summary>
@@ -341,39 +377,13 @@ namespace Asterion {
 					}
 				}
 			}catch(System.IO.IOException ex) {
-				Log("Could not end write to client: " + ex.Message + ".", Logging.LogLevel.Error);
+				Log("Could not end write to client: " + ex.Message + ".", LogLevel.Error);
 			}
-		}
-
-		/// <summary>
-		/// Disconnects the connection from the server.
-		/// </summary>
-		/// <param name="connection">The connection to disconnect.</param>
-		public void DisconnectClient(Connection connection) {
-			try {
-				lock(connection.SyncRoot)
-					if(connection.Connected) {
-					connection.Client.Client.Shutdown(System.Net.Sockets.SocketShutdown.Both);
-					connection.Client.Close();
-				}
-			}catch(System.Exception e) {
-				Log("Could not disconnect socket: " + e.Message, Asterion.Logging.LogLevel.Error);
-			}
-		}
-
-
-		/// <summary>
-		/// Timer elapse event handler, raised only when the client has timed out
-		/// </summary>
-		/// <param name="source">The timer that elapsed.</param>
-		/// <param name="e">Event arguments.</param>
-		private void TimeoutEventHandler(object source, ElapsedEventArgs e) {
-			Limits.TimeoutTimer timer = (Limits.TimeoutTimer) source;
-			timer.Stop();
-			Connection connection = (Connection) timer.Tag;
-			if(OnTimeout != null) OnTimeout(connection, timer.Interval);
 		}
 		
+		#endregion
+		
+		#region Events
 		/// <summary>
 		/// Raises the OnConnect event.
 		/// </summary>
@@ -398,13 +408,15 @@ namespace Asterion {
 		private void Disconnected(Connection client) {
 			if(OnDisconnect != null) OnDisconnect(client);
 		}
+		#endregion
 
+		#region Log
 		/// <summary>
 		/// Raises the OnLog event.
 		/// </summary>
 		/// <param name="text">Log text.</param>
 		/// <param name="level">Log level.</param>
-		public void Log(string text, Logging.LogLevel level) {
+		public void Log(string text, LogLevel level) {
 			if(OnLog != null) OnLog(text, level);
 		}
 
@@ -413,8 +425,9 @@ namespace Asterion {
 		/// </summary>
 		/// <param name="text">Log text.</param>
 		public void Log(string text) {
-			Log(text, Logging.LogLevel.Info);
+			Log(text, LogLevel.Info);
 		}
+		#endregion
 	}
 
 }

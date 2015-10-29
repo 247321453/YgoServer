@@ -73,30 +73,6 @@
     <Reference Include="Mono.Data.Sqlite" Condition=" '$(OS)' == 'Unix' " />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\AsyncServer\Connection.cs">
-      <Link>AsyncServer\Connection.cs</Link>
-    </Compile>
-    <Compile Include="..\AsyncServer\Exceptions\AsterionException.cs">
-      <Link>AsyncServer\Exceptions\AsterionException.cs</Link>
-    </Compile>
-    <Compile Include="..\AsyncServer\Exceptions\ServerFullException.cs">
-      <Link>AsyncServer\Exceptions\ServerFullException.cs</Link>
-    </Compile>
-    <Compile Include="..\AsyncServer\Exceptions\UnavailableEndPointException.cs">
-      <Link>AsyncServer\Exceptions\UnavailableEndPointException.cs</Link>
-    </Compile>
-    <Compile Include="..\AsyncServer\Limits\TimeoutTimer.cs">
-      <Link>AsyncServer\Limits\TimeoutTimer.cs</Link>
-    </Compile>
-    <Compile Include="..\AsyncServer\Logging\LogEventHandler.cs">
-      <Link>AsyncServer\Logging\LogEventHandler.cs</Link>
-    </Compile>
-    <Compile Include="..\AsyncServer\Logging\LogLevel.cs">
-      <Link>AsyncServer\Logging\LogLevel.cs</Link>
-    </Compile>
-    <Compile Include="..\AsyncServer\Server.cs">
-      <Link>AsyncServer\Server.cs</Link>
-    </Compile>
     <Compile Include="..\lib\Ocgcore\Api.cs">
       <Link>Ocgcore\Api.cs</Link>
     </Compile>
@@ -166,6 +142,10 @@
     <Compile Include="..\lib\Ocgcore\WinInfo.cs">
       <Link>Ocgcore\WinInfo.cs</Link>
     </Compile>
+    <Compile Include="AsyncServer\Connection.cs" />
+    <Compile Include="AsyncServer\Exceptions.cs" />
+    <Compile Include="AsyncServer\Logs.cs" />
+    <Compile Include="AsyncServer\Server.cs" />
     <Compile Include="GameManager.cs" />
     <Compile Include="Game\Banlist.cs" />
     <Compile Include="Game\BanlistManager.cs" />
@@ -212,14 +192,11 @@
     <Compile Include="SevenZip\ICoder.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="AsyncServer\Limits" />
-    <Folder Include="AsyncServer\Exceptions" />
-    <Folder Include="AsyncServer\Logging" />
+    <Folder Include="AsyncServer" />
     <Folder Include="Ocgcore\Enums" />
     <Folder Include="Ocgcore\Network" />
     <Folder Include="Plugin" />
     <Folder Include="Ocgcore" />
-    <Folder Include="AsyncServer" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\lib\ocgcore.dll">
