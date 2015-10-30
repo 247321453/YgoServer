@@ -144,8 +144,9 @@
     </Compile>
     <Compile Include="AsyncServer\Connection.cs" />
     <Compile Include="AsyncServer\Exceptions.cs" />
+    <Compile Include="AsyncServer\IPacket.cs" />
     <Compile Include="AsyncServer\Logs.cs" />
-    <Compile Include="AsyncServer\ReceiveQueue.cs" />
+    <Compile Include="AsyncServer\ByteArray.cs" />
     <Compile Include="AsyncServer\Server.cs" />
     <Compile Include="GameManager.cs" />
     <Compile Include="Game\Banlist.cs" />

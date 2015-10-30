@@ -193,7 +193,7 @@ namespace System.Net {
 		/// </summary>
 		/// <param name="client">The new client.</param>
 		private void Heard(TcpClient client) {
-			Connection connection = new Connection {
+			Connection connection = new Connection (this) {
 				Client = client,
 			};
 			lock(clients_l) {
@@ -323,7 +323,7 @@ namespace System.Net {
 				Log("Could not disconnect socket: " + e.Message, LogLevel.Error);
 			}
 		}
-	
+			
 		/// <summary>
 		/// Writes data to a client.
 		/// </summary>
@@ -331,7 +331,7 @@ namespace System.Net {
 		/// <param name="connection">The connection to write to.</param>
 		/// <param name="data">The data to write.</param>
 		/// <param name="isAsync">If set to <c>true</c>, the write will be performed asynchronously.</param>
-		public bool WriteData(Connection connection, byte[] bytes, bool isAsync) {
+		internal bool WriteData(Connection connection, byte[] bytes, bool isAsync) {
 			try {
 				lock(connection.SyncRoot) {
 					if(connection.Connected) {
@@ -357,7 +357,7 @@ namespace System.Net {
 		/// <returns><c>true</c>, if data could be written, <c>false</c> otherwise.</returns>
 		/// <param name="connection">The connection to write to.</param>
 		/// <param name="data">The data to write.</param>
-		public bool WriteData(Connection connection, byte[] data) {
+		protected  bool WriteData(Connection connection, byte[] data) {
 			return WriteData(connection, data, true);
 		}
 		/// <summary>
@@ -377,7 +377,6 @@ namespace System.Net {
 				Log("Could not end write to client: " + ex.Message + ".", LogLevel.Error);
 			}
 		}
-		
 		#endregion
 		
 		#region Events

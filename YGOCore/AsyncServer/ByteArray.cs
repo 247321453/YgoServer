@@ -13,7 +13,7 @@ namespace System.Net
 	/// <summary>
 	/// Description of ReceiveQueue.
 	/// </summary>
-	public class ReceiveQueue
+	public class ByteArray
 	{
 		public const int BUFFER_SIZE = 1024*32;
 		private int m_Head;
@@ -22,6 +22,13 @@ namespace System.Net
 		private byte[] m_Buffer;
 		private object m_LockBuffer = new object();
 		private int m_Size;
+		
+		public byte[] Bytes{
+			get{return m_Buffer;}
+		}
+		/// <summary>
+		/// 长度
+		/// </summary>
 		public int Length
 		{
 			get
@@ -30,7 +37,7 @@ namespace System.Net
 			}
 		}
 		
-		public ReceiveQueue(int packetLen,int maxLength=BUFFER_SIZE){
+		public ByteArray(int packetLen,int maxLength=BUFFER_SIZE){
 			this.m_PacketLen=packetLen;
 			m_Buffer = new byte[maxLength];
 		}
