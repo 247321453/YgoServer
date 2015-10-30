@@ -124,8 +124,12 @@ namespace OcgWrapper
 
 		internal void Dispose()
 		{
-			Marshal.FreeHGlobal(m_buffer);
-			Duels.Remove(m_pDuel);
+			try{
+				Marshal.FreeHGlobal(m_buffer);
+				Duels.Remove(m_pDuel);
+			}catch(Exception e){
+				
+			}
 		}
 
 		internal void OnMessage(UInt32 messageType)
