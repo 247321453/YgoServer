@@ -45,13 +45,17 @@ namespace YGOCore.Game
 
 		public void Disconnect()
 		{
+			if(m_client==null){
+				return;
+			}
 			m_client.Close();
+			m_client = null;
 		}
 
 		public void OnDisconnected()
 		{
 			if (IsAuthentified){
-				if(Game!=null){
+				if(Game != null){
 					Game.RemovePlayer(this);
 				}
 			}
