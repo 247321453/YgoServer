@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.IO;
 using System.Diagnostics;
+using AsyncServer;
 
 namespace YGOCore
 {
@@ -14,16 +15,20 @@ namespace YGOCore
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
+			Logger.SetLogLevel(LogLevel.Info);
+			#if DEBUG
+			Logger.SetLogLevel(LogLevel.Debug);
+			#endif
 			Config = new ServerConfig();
 			bool loaded = args.Length > 0 ? Config.Load(args[0]): Config.Load();
 
 			ChatCommand.WriteHead(Config);
 			if(loaded)
-				Logger.WriteLine("Config loaded.");
+				Logger.Info("Config loaded.");
 			else
-				Logger.WriteLine("Unable to load config.txt, using default settings.");
+				Logger.Warn("Unable to load config.txt, using default settings.");
 			if(Config.HandShuffle){
-				Logger.WriteLine("Warning: Hand shuffle requires a custom ocgcore to work.");
+				Logger.Warn("Warning: Hand shuffle requires a custom ocgcore to work.");
 			}
 			int coreport = Config.ServerPort;
 //
@@ -41,16 +46,12 @@ namespace YGOCore
 			Random = new Random();
 			
 			Server server = new Server();
-			if (!server.Start(coreport))
-				Thread.Sleep(5000);
-			ThreadPool.SetMaxThreads(128, 256);
-			Thread inputThread=new Thread(new ParameterizedThreadStart(Command));
-			inputThread.IsBackground=true;
-			inputThread.Start(server);
-			while (server.IsListening)
-			{
-				server.Process();
-				Thread.Sleep(1);
+			if (!server.Start(coreport)){
+				Console.WriteLine("Server start fail.");
+				Console.ReadKey();
+			}else{
+				ThreadPool.SetMaxThreads(128, 256);
+				Command(server);
 			}
 		}
 
@@ -63,8 +64,7 @@ namespace YGOCore
 			Console.ForegroundColor=color;
 		}
 		
-		private static void Command(object obj){
-			Server server=obj as Server;
+		private static void Command(Server server){
 			string cmd="";
 			while(server.IsListening){
 				cmd=Console.ReadLine();

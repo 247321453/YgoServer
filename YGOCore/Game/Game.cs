@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using OcgWrapper;
 using OcgWrapper.Enums;
+using AsyncServer;
 
 namespace YGOCore.Game
 {
@@ -743,7 +744,7 @@ namespace YGOCore.Game
 				Server.onWin(m_room.Game.Config.Name, m_room.Game.Config.Mode, team, reason, yrpName,
 				             names, uids,force);
 			}catch(Exception e){
-				Logger.WriteError(e);
+				Logger.Error(e);
 			}
 		}
 

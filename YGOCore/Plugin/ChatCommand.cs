@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Threading;
 using OcgWrapper.Enums;
+using AsyncServer;
 
 namespace YGOCore
 {
@@ -31,20 +32,20 @@ namespace YGOCore
 			}
 			string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 			Console.Title=(string.IsNullOrEmpty(config.ServerName)?"YgoServer":config.ServerName);
-			Logger.WriteLine("┌───────────────────────────────────",false);
-			Logger.WriteLine("│ __     _______  ____   _____",false);
-			Logger.WriteLine("│ \\ \\   / / ____|/ __ \\ / ____|", false);
-			Logger.WriteLine("│  \\ \\_/ / |  __| |  | | |     ___  _ __ ___", false);
-			Logger.WriteLine("│   \\   /| | |_ | |  | | |    / _ \\| '__/ _ \\", false);
-			Logger.WriteLine("│    | | | |__| | |__| | |___| (_) | | |  __/", false);
-			Logger.WriteLine("│    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|    Build: " + Version, false);
-			Logger.WriteLine("│", false);
-			Logger.WriteLine("│Client version 0x" + config.ClientVersion.ToString("x") + " or new, MaxRooms = "+config.MaxRoomCount, false);
-			Logger.WriteLine("│NeedAtuh="+config.isNeedAuth+", AutoReplay="+config.AutoReplay
+			Console.WriteLine("┌───────────────────────────────────");
+			Console.WriteLine("│ __     _______  ____   _____");
+			Console.WriteLine("│ \\ \\   / / ____|/ __ \\ / ____|");
+			Console.WriteLine("│  \\ \\_/ / |  __| |  | | |     ___  _ __ ___");
+			Console.WriteLine("│   \\   /| | |_ | |  | | |    / _ \\| '__/ _ \\");
+			Console.WriteLine("│    | | | |__| | |__| | |___| (_) | | |  __/");
+			Console.WriteLine("│    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|    Build: " + Version);
+			Console.WriteLine("│");
+			Console.WriteLine("│Client version 0x" + config.ClientVersion.ToString("x") + " or new, MaxRooms = "+config.MaxRoomCount, false);
+			Console.WriteLine("│NeedAtuh="+config.isNeedAuth+", AutoReplay="+config.AutoReplay
 			                 +", RecordWin="+config.RecordWin
-			                 +", BanMode="+config.BanMode, false);
-			Logger.WriteLine("│"+config.ServerDesc,false);
-			Logger.WriteLine("└───────────────────────────────────",false);
+			                 +", BanMode="+config.BanMode);
+			Console.WriteLine("│"+config.ServerDesc);
+			Console.WriteLine("└───────────────────────────────────");
 		}
 		public static bool onChat(GameConfig config,Player player,string msg)
 		{
@@ -130,11 +131,11 @@ namespace YGOCore
 				Process p = sender as Process;
 				p.Close();
 				AIs.Remove(p);
-				Logger.WriteLine("close ai");
+				Logger.Debug("close ai");
 			}else{
-				Logger.WriteLine("close ai:"+sender.GetType().ToString());
+				Logger.Debug("close ai:"+sender.GetType().ToString());
 			}
-			Logger.WriteLine("AI exit game. count="+AIs.Count);
+			Logger.Debug("AI exit game. count="+AIs.Count);
 		}
 		
 		public static void onCommand(Server server,string cmd){

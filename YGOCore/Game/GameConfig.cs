@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using AsyncServer;
 
 namespace YGOCore.Game
 {
@@ -161,7 +162,7 @@ namespace YGOCore.Game
 			}
 			catch(Exception e){
 				Name = GameManager.RandomRoomName();
-				Logger.WriteLine("gameinfo="+e);
+				Logger.Warn("gameinfo="+e);
 			}
 			//
 			//(N|M|T)(0|1|2)(0|1|o|t)(0-9)(T|F|1|0)(T|F|1|0)(T|F|1|0)(0-9)(0-9)(0-9)#name$password

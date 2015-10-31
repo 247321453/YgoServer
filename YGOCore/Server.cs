@@ -9,17 +9,16 @@ using YGOCore.Game;
 using OcgWrapper;
 using OcgWrapper.Enums;
 using YGOCore.Plugin;
+using AsyncServer;
 
 namespace YGOCore
 {
 	public class Server
 	{
 		public bool IsListening { get; private set; }
-		private TcpListener m_listener;
-		private List<GameClient> m_clients;
-		private Mutex m_mutexClients;
+		private AsyncTcpListener<GameClient> m_listener;
 		private static List<string> banNames=new List<string>();
-		
+		private List<GameClient> m_clients;
 		private static List<WinInfo> WinInfos=new List<WinInfo>();
 		private static Mutex MutexWinInfo=new Mutex();
 		
@@ -34,8 +33,6 @@ namespace YGOCore
 		delegate void ThreadDelagate(object obj);
 		public Server()
 		{
-			m_clients = new List<GameClient>();
-			m_mutexClients=new Mutex();
 			//int time=Program.Config.SaveRecordTime<=0?1*60*1000:Program.Config.SaveRecordTime*60*1000;
 			//每30秒记录游戏结果记录
 			WinSaveTimer = new System.Timers.Timer(15*1000);
@@ -46,8 +43,8 @@ namespace YGOCore
 			ServerMsgTimer.AutoReset=true;
 			ServerMsgTimer.Enabled=true;
 			ServerMsgTimer.Elapsed+=new System.Timers.ElapsedEventHandler(ServerMsgTimer_Elapsed);
-			
-			ApiServer=new MyHttpServer(this, Program.Config.ApiPort);
+			ApiServer = new MyHttpServer(this, Program.Config.ApiPort);
+			m_clients = new List<GameClient>();
 		}
 		
 		public string getRoomJson(bool hasLock=true,bool hasStart=false){
@@ -100,7 +97,7 @@ namespace YGOCore
 					{
 						//string[] sqls = (string[])obj;
 						SQLiteTool.Command(Program.Config.WinDbName, sqls);
-						Logger.WriteLine("save wins record:"+sqls.Length);
+						Logger.Debug("save wins record:"+sqls.Length);
 					}
 				));
 			}
@@ -153,31 +150,60 @@ namespace YGOCore
 					
 				}
 				IsListening = true;
-				m_listener = new TcpListener(IPAddress.Any, port == 0 ? Program.Config.ServerPort : port);
+				m_listener = new AsyncTcpListener<GameClient>(IPAddress.Any, port == 0 ? Program.Config.ServerPort : port);
+				m_listener.OnConnect += new AsyncTcpListener<GameClient>.ConnectEventHandler(m_listener_OnConnect);
+				m_listener.OnDisconnect+=new AsyncTcpListener<GameClient>.DisconnectEventHandler(m_listener_OnDisconnect);
+				m_listener.OnReceive+=new AsyncTcpListener<GameClient>.ReceiveEventHandler(m_listener_OnReceive);
+				m_listener.OnTimeout+=new AsyncTcpListener<GameClient>.TimeoutEventHandler(m_listener_OnTimeout);
 				m_listener.Start();
-				Thread acceptThread=new Thread(new ThreadStart(AcceptClient));
-				acceptThread.IsBackground=true;
-				acceptThread.Start();
 				WinSaveTimer.Start();
 				ApiServer.Start();
 				
 			}
 			catch (SocketException)
 			{
-				Logger.WriteError("The " + (port == 0 ? Program.Config.ServerPort : port) + " port is currently in use.");
+				Logger.Error("The " + (port == 0 ? Program.Config.ServerPort : port) + " port is currently in use.");
 				return false;
 			}
 			catch (Exception e)
 			{
-				Logger.WriteError(e);
+				Logger.Error(e);
 				return false;
 			}
 
-			Logger.WriteLine("Listening on port " + (port == 0 ? Program.Config.ServerPort : port));
+			Logger.Info("Listening on port " + (port == 0 ? Program.Config.ServerPort : port));
 			if(BanlistManager.Banlists!=null && BanlistManager.Banlists.Count>0){
-				Logger.WriteLine("Banlist = "+BanlistManager.Banlists[0].Name);
+				Logger.Info("Banlist = "+BanlistManager.Banlists[0].Name);
 			}
 			return true;
+		}
+
+		void m_listener_OnTimeout(Connection<GameClient> timeoutConnection, double time)
+		{
+			if(timeoutConnection!=null){
+				m_listener.DisconnectClient(timeoutConnection);
+			}
+		}
+
+		void m_listener_OnReceive(Connection<GameClient> Client)
+		{
+			if(Client!=null && Client.Tag!=null){
+				Client.Tag.NetworkReceive();
+			}
+		}
+		
+		void m_listener_OnDisconnect(Connection<GameClient> Client)
+		{
+			if(Client != null && Client.Tag!=null){
+				m_clients.Remove(Client.Tag);
+			}
+		}
+
+		void m_listener_OnConnect(Connection<GameClient> Client)
+		{
+			GameClient gameclient = new GameClient();
+			Client.Tag = gameclient;
+			m_clients.Add(gameclient);
 		}
 
 		public void Stop()
@@ -186,9 +212,6 @@ namespace YGOCore
 			{
 				m_listener.Stop();
 				IsListening = false;
-
-				foreach (GameClient client in m_clients)
-					client.Close();
 			}
 		}
 		/// <summary>
@@ -211,51 +234,7 @@ namespace YGOCore
 				return banNames.Contains(name);
 			}
 		}
-		
-		private void AcceptClient(){
-			while(IsListening){
-				GameClient client=null;
-				try{
-					TcpClient tcpClient=m_listener.AcceptTcpClient();
-					client=new GameClient(tcpClient);
-				}catch(Exception){
-					client=null;
-				}
-				m_mutexClients.WaitOne();
-				m_clients.Add(client);
-				m_mutexClients.ReleaseMutex();
-				Thread.Sleep(1);
-			}
-		}
-		
-		public void Process()
-		{
-			//在游戏的，则以房间为单位
-			//接收到 游戏房间内任意一个玩家的发送内容，则在房间内传播
-			GameManager.HandleRooms();
 
-			//大量玩家连接服务端，可能耗时
-			//while (IsListening && m_listener.Pending())
-			//	m_clients.Add(new GameClient(m_listener.AcceptTcpClient()));
-
-			//不在游戏房间的玩家
-			List<GameClient> _clients= new List<GameClient>();
-			m_mutexClients.WaitOne();
-			_clients.AddRange(m_clients);
-			m_mutexClients.ReleaseMutex();
-			foreach (GameClient client in _clients)
-			{
-				client.Tick();
-				if (!client.IsConnected || client.InGame()){
-					//断开，或者在游戏,一定时间内没有加入房间
-					//	Logger.WriteLine("player logout");
-					m_mutexClients.WaitOne();
-					m_clients.Remove(client);
-					m_mutexClients.ReleaseMutex();
-				}
-			}
-		}
-		
 		public static int onLogin(string name,string pass){
 			int uid=-1;
 			//Logger.WriteLine(name+"$"+pass+" is login");
@@ -282,9 +261,7 @@ namespace YGOCore
 			}
 			List<string> names=GameManager.SendMessage(msg, name);
 			List<GameClient> _clients= new List<GameClient>();
-			m_mutexClients.WaitOne();
 			_clients.AddRange(m_clients);
-			m_mutexClients.ReleaseMutex();
 			foreach (GameClient client in _clients)
 			{
 				if(client!=null && client.Player!=null){

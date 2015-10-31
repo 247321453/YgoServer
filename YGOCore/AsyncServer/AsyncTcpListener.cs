@@ -1,33 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Timers;
 using System.Net;
 
 namespace AsyncServer{
 	
-	#region delegate
-	/// <summary>
-	/// Receive event handler.
-	/// </summary>
-	public delegate void ReceiveEventHandler(Connection Client);
-	/// <summary>
-	/// Connect event handler.
-	/// </summary>
-	public delegate void ConnectEventHandler(Connection Client);
-	/// <summary>
-	/// Disconnect event handler.
-	/// </summary>
-	public delegate void DisconnectEventHandler(Connection Client);
-	/// <summary>
-	/// Timeout event handler.
-	/// </summary>
-	public delegate void TimeoutEventHandler(Connection timeoutConnection, double time);
-	#endregion
-	
 	/// <summary>
 	/// Implaments an asynchronous TCP server.
 	/// </summary>
-	public class Server {
+	public class AsyncTcpListener<T> {
+		#region delegate
+		/// <summary>
+		/// Receive event handler.
+		/// </summary>
+		public delegate void ReceiveEventHandler(Connection<T> Client);
+		/// <summary>
+		/// Connect event handler.
+		/// </summary>
+		public delegate void ConnectEventHandler(Connection<T> Client);
+		/// <summary>
+		/// Disconnect event handler.
+		/// </summary>
+		public delegate void DisconnectEventHandler(Connection<T> Client);
+		/// <summary>
+		/// Timeout event handler.
+		/// </summary>
+		public delegate void TimeoutEventHandler(Connection<T> timeoutConnection, double time);
+		#endregion
 		
 		#region private member
 		/// <summary>
@@ -74,10 +74,6 @@ namespace AsyncServer{
 		/// Occurs when a client disconnects.
 		/// </summary>
 		public event DisconnectEventHandler OnDisconnect;
-		/// <summary>
-		/// Occurs when information is logged by the server.
-		/// </summary>
-		public event LogEventHandler OnLog;
 		/// <summary>
 		/// Occurs when a client times out.
 		/// </summary>
@@ -130,7 +126,7 @@ namespace AsyncServer{
 		/// <param name="port">Port to listen on.</param>
 		/// <param name="capacity">Server capacity.</param>
 		/// <param name="timeout">Client timeout time.</param>
-		public Server(int port, int capacity = 0, int timeout = 0) {
+		public AsyncTcpListener(int port, int capacity = 0, int timeout = 0) {
 			Init(IPAddress.Any, port, capacity, timeout);
 		}
 		/// <summary>
@@ -140,11 +136,11 @@ namespace AsyncServer{
 		/// <param name="port">Port to listen on.</param>
 		/// <param name="capacity">Server capacity.</param>
 		/// <param name="timeout">Client timeout time.</param>
-		public Server(IPAddress host, int port, int capacity = 0, int timeout = 0) {
+		public AsyncTcpListener(IPAddress host, int port, int capacity = 0, int timeout = 0) {
 			Init(host, port, capacity, timeout);
 		}
 		
-		private void Init(IPAddress host, int port, int capacity = 0, int timeout = 0){
+		internal void Init(IPAddress host, int port, int capacity = 0, int timeout = 0){
 			this.host = host;
 			this.port = port;
 			this.timeout = timeout;
@@ -159,7 +155,8 @@ namespace AsyncServer{
 		/// </summary>
 		private void Listen() {
 			listener.Start();
-			Log("Awaiting connections...");
+			Logger.Debug("Awaiting connections...");
+			listener.Server.UseOnlyOverlappedIO = true;
 			listener.BeginAcceptTcpClient(AcceptCallback, null);
 		}
 
@@ -169,26 +166,23 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="result">Asynchronous result.</param>
 		private void AcceptCallback(System.IAsyncResult result) {
-			bool accepting = false;
 			TcpClient client  = null;
 			try {
 				client = listener.EndAcceptTcpClient(result);
-				listener.BeginAcceptTcpClient(AcceptCallback, null);
-				accepting = true;
-				client.Client.SetSocketOption(System.Net.Sockets.SocketOptionLevel.Socket, System.Net.Sockets.SocketOptionName.KeepAlive, 1);
+				client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, 1);
 				Heard(client);
 			}catch(System.Net.Sockets.SocketException ex) {
 				// If this happens, socket error code information is at: http://msdn.microsoft.com/en-us/library/windows/desktop/ms740668(v=vs.85).aspx
-				Log("Could not accept socket (" + ex.ErrorCode.ToString() + "): " + ex.Message, LogLevel.Error);
+				Logger.Error("Could not accept socket (" + ex.ErrorCode.ToString() + "): " + ex.ToString());
 			}catch(Exception ex) {
 				// Either the server is full or the client has reached the maximum connections per IP.
-				Log("Could not add client: " + ex.Message, LogLevel.Error);
+				Logger.Error("Could not add client: " + ex.ToString());
 				if(client!=null){
 					DisconnectClient(client);
 				}
 			}finally{
-				if(!accepting) listener.BeginAcceptTcpClient(AcceptCallback, null);
 			}
+			listener.BeginAcceptTcpClient(AcceptCallback, null);
 		}
 
 
@@ -197,7 +191,7 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="client">The new client.</param>
 		private void Heard(TcpClient client) {
-			Connection connection = new Connection (this) {
+			Connection<T> connection = new Connection<T>() {
 				Client = client,
 			};
 			lock(clients_l) {
@@ -210,7 +204,7 @@ namespace AsyncServer{
 			}
 			if(timeout != 0) {
 				connection.Timer.Interval = timeout;
-				connection.Timer.Elapsed += TimeoutEventHandler;
+				connection.Timer.Elapsed += OnTimeoutEventHandler;
 				connection.Timer.Start();
 			}
 			Connected(connection);
@@ -221,17 +215,17 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="source">The timer that elapsed.</param>
 		/// <param name="e">Event arguments.</param>
-		private void TimeoutEventHandler(object source, ElapsedEventArgs e) {
+		private void OnTimeoutEventHandler(object source, ElapsedEventArgs e) {
 			TimeoutTimer timer = (TimeoutTimer) source;
 			timer.Stop();
-			Connection connection = (Connection) timer.Tag;
+			Connection<T> connection = (Connection<T>) timer.Tag;
 			if(OnTimeout != null) OnTimeout(connection, timer.Interval);
 		}
 		/// <summary>
 		/// Begins reading from a connected client.
 		/// </summary>
 		/// <param name="connection">The connection to read from.</param>
-		private void BeginRead(Connection connection) {
+		private void BeginRead(Connection<T> connection) {
 			try {
 				byte[] cache = connection.ResetCache();
 				lock(connection.SyncRoot)
@@ -249,7 +243,7 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="result">Asynchronous result.</param>
 		private void ReceiveCallback(System.IAsyncResult result) {
-			Connection connection = (Connection) result.AsyncState;
+			Connection<T> connection = (Connection<T>) result.AsyncState;
 			int read = 0;
 			bool connected = false;
 			int available = 0;
@@ -279,7 +273,7 @@ namespace AsyncServer{
 		/// <returns>The read.</returns>
 		/// <param name="connection">The connection to end reading from.</param>
 		/// <param name="result">Asynchronous result.</param>
-		private int EndRead(Connection connection, System.IAsyncResult result) {
+		private int EndRead(Connection<T> connection, System.IAsyncResult result) {
 			try {
 				lock(connection.SyncRoot)
 					if(connection.Connected)
@@ -295,7 +289,7 @@ namespace AsyncServer{
 		/// Handles a client disconnect
 		/// </summary>
 		/// <param name="connection">Disconnected connection.</param>
-		private void DisconnectHandler(Connection connection) {
+		private void DisconnectHandler(Connection<T> connection) {
 			lock(clients_l) clients--;
 			connection.Timer.Stop();
 			Disconnected(connection);
@@ -319,7 +313,7 @@ namespace AsyncServer{
 		/// Disconnects the connection from the server.
 		/// </summary>
 		/// <param name="connection">The connection to disconnect.</param>
-		public void DisconnectClient(Connection connection) {
+		public void DisconnectClient(Connection<T> connection) {
 			try {
 				lock(connection.SyncRoot)
 					if(connection.Connected) {
@@ -327,7 +321,7 @@ namespace AsyncServer{
 					connection.Client.Close();
 				}
 			}catch(System.Exception e) {
-				Log("Could not disconnect socket: " + e.Message, LogLevel.Error);
+				Logger.Error("Could not disconnect socket: " + e.ToString());
 			}
 		}
 		private void DisconnectClient(TcpClient connection) {
@@ -337,7 +331,7 @@ namespace AsyncServer{
 					connection.Client.Close();
 				}
 			}catch(System.Exception e) {
-				Log("Could not disconnect socket: " + e.Message, LogLevel.Error);
+				Logger.Error("Could not disconnect socket: " + e.ToString());
 			}
 		}
 		/// <summary>
@@ -347,7 +341,7 @@ namespace AsyncServer{
 		/// <param name="connection">The connection to write to.</param>
 		/// <param name="data">The data to write.</param>
 		/// <param name="isAsync">If set to <c>true</c>, the write will be performed asynchronously.</param>
-		internal bool WriteData(Connection connection, byte[] bytes, bool isAsync) {
+		internal bool WriteData(Connection<T> connection, byte[] bytes, bool isAsync) {
 			try {
 				lock(connection.SyncRoot) {
 					if(connection.Connected) {
@@ -362,7 +356,7 @@ namespace AsyncServer{
 					}
 				}
 			}catch(System.IO.IOException ex) {
-				Log("Could not write to client: " + ex.Message + ".", LogLevel.Error);
+				Logger.Error("Could not write to client: " + ex.ToString() + ".");
 				return false;
 			}
 		}
@@ -373,7 +367,7 @@ namespace AsyncServer{
 		/// <returns><c>true</c>, if data could be written, <c>false</c> otherwise.</returns>
 		/// <param name="connection">The connection to write to.</param>
 		/// <param name="data">The data to write.</param>
-		protected  bool WriteData(Connection connection, byte[] data) {
+		protected  bool WriteData(Connection<T> connection, byte[] data) {
 			return WriteData(connection, data, true);
 		}
 		/// <summary>
@@ -381,7 +375,7 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="result">Result.</param>
 		private void WriteCallback(System.IAsyncResult result) {
-			Connection connection = (Connection) result.AsyncState;
+			Connection<T> connection = (Connection<T>) result.AsyncState;
 			try {
 				lock(connection.SyncRoot) {
 					if(connection.Connected) {
@@ -390,8 +384,12 @@ namespace AsyncServer{
 					}
 				}
 			}catch(System.IO.IOException ex) {
-				Log("Could not end write to client: " + ex.Message + ".", LogLevel.Error);
+				Logger.Error("Could not end write to client: " + ex.ToString() + ".");
 			}
+		}
+		
+		public void Stop(){
+			listener.Stop();
 		}
 		#endregion
 		
@@ -400,7 +398,7 @@ namespace AsyncServer{
 		/// Raises the OnConnect event.
 		/// </summary>
 		/// <param name="client">Client.</param>
-		private void Connected(Connection client) {
+		private void Connected(Connection<T> client) {
 			if(OnConnect != null) OnConnect(client);
 		}
 		
@@ -409,7 +407,7 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="client">Client.</param>
 		/// <param name="packet">Packet.</param>
-		private void Received(Connection client) {
+		private void Received(Connection<T> client) {
 			if(OnReceive != null) OnReceive(client);
 		}
 		
@@ -417,27 +415,8 @@ namespace AsyncServer{
 		/// Raises the OnDisconnect event.
 		/// </summary>
 		/// <param name="client">Client.</param>
-		private void Disconnected(Connection client) {
+		private void Disconnected(Connection<T> client) {
 			if(OnDisconnect != null) OnDisconnect(client);
-		}
-		#endregion
-
-		#region Log
-		/// <summary>
-		/// Raises the OnLog event.
-		/// </summary>
-		/// <param name="text">Log text.</param>
-		/// <param name="level">Log level.</param>
-		public void Log(string text, LogLevel level) {
-			if(OnLog != null) OnLog(text, level);
-		}
-
-		/// <summary>
-		/// Raises the OnLog event.
-		/// </summary>
-		/// <param name="text">Log text.</param>
-		public void Log(string text) {
-			Log(text, LogLevel.Info);
 		}
 		#endregion
 	}

@@ -30,22 +30,21 @@ namespace AsyncServer {
 	/// <summary>
 	/// Represents an Asterion client connection.
 	/// </summary>
-	public class Connection : IDisposable{
+	public class Connection<T> : IDisposable{
 		
 		public static int sCacheSize = 1024;
 		public static int sPacketLength = 2;
 		public static int sMaxCacheSize = ByteArray.BUFFER_SIZE;
-		private Server m_Server;
 		/// <summary>
 		/// Initializes a new instance of the Connection class.
 		/// </summary>
-		public Connection(Server server) {
-			m_Server = server;
+		public Connection() {
 			timer = new TimeoutTimer(this);
 			m_ReceiveQueue = new ByteArray(sPacketLength, sMaxCacheSize);
 		}
-		
-
+		protected T m_tag;
+		public T Tag{get{return m_tag;}set{m_tag = value;}}
+	/*
 		/// <summary>
 		/// 等待需要发出的数据
 		/// </summary>
@@ -53,6 +52,7 @@ namespace AsyncServer {
 
 		private bool isSending;
 
+	
 		/// <summary>
 		/// 向客户端发送数据
 		/// </summary>
@@ -120,6 +120,7 @@ namespace AsyncServer {
 			buffs.Enqueue(bys, 0, bys.Length);
 			writer.Dispose();
 		}
+		*/
 		#region private member
 		private ByteArray m_ReceiveQueue;
 		
@@ -169,6 +170,9 @@ namespace AsyncServer {
 			private set;
 		}
 
+		public int Available{
+			get{return client.Available;}
+		}
 		public ByteArray ReceiveQueue{
 			get{return m_ReceiveQueue;}
 		}
@@ -179,9 +183,10 @@ namespace AsyncServer {
 		public bool Connected {
 			get {
 				lock(SyncRoot)
-					return (Client != null && Client.Connected);
+					return ( Client != null && Client.Connected);
 			}
 		}
+
 		#endregion
 		
 		#region public method

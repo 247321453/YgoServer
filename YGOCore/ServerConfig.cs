@@ -1,6 +1,7 @@
 using System.IO;
 using System;
 using System.Globalization;
+using AsyncServer;
 
 namespace YGOCore
 {
@@ -167,6 +168,7 @@ namespace YGOCore
 
 		public bool Load(string file = "config.txt")
 		{
+			bool loaded = false;
 			if (File.Exists(file))
 			{
 				StreamReader reader = null;
@@ -187,18 +189,16 @@ namespace YGOCore
 						string value = data[1].Trim();
 						setValue(variable, value);
 					}
+					loaded = true;
 				}
 				catch (Exception ex)
 				{
-					Logger.WriteError(ex);
+					Logger.Error(ex);
+				}finally{
 					reader.Close();
-					return false;
 				}
-				reader.Close();
-				return true;
 			}
-
-			return false;
+			return loaded;
 		}
 		
 		public bool setValue(string variable,string value){

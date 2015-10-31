@@ -12,6 +12,7 @@ using System.Net;
 using Bend.Util;
 using System.Collections.Generic;
 using System.Threading;
+using AsyncServer;
 
 namespace YGOCore.Plugin
 {
@@ -27,7 +28,7 @@ namespace YGOCore.Plugin
 			json=new string[4];
 			lastTime=new int[4];
 			isLocal=Program.Config.ApiIsLocal;
-			Logger.WriteLine("Room List = http://{your ip}:"+port+"/room.json");
+			Logger.Info("Room List = http://{your ip}:"+port+"/room.json");
 		}
 		
 		public void Start(){
