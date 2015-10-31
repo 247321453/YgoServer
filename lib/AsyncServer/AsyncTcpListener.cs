@@ -14,19 +14,19 @@ namespace AsyncServer{
 		/// <summary>
 		/// Receive event handler.
 		/// </summary>
-		public delegate void ReceiveEventHandler(ClientSession<T> Client);
+		public delegate void ReceiveEventHandler(Connection<T> Client);
 		/// <summary>
 		/// Connect event handler.
 		/// </summary>
-		public delegate void ConnectEventHandler(ClientSession<T> Client);
+		public delegate void ConnectEventHandler(Connection<T> Client);
 		/// <summary>
 		/// Disconnect event handler.
 		/// </summary>
-		public delegate void DisconnectEventHandler(ClientSession<T> Client);
+		public delegate void DisconnectEventHandler(Connection<T> Client);
 		/// <summary>
 		/// Timeout event handler.
 		/// </summary>
-		public delegate void TimeoutEventHandler(ClientSession<T> timeoutConnection, double time);
+		public delegate void TimeoutEventHandler(Connection<T> timeoutConnection, double time);
 		#endregion
 		
 		#region private member
@@ -63,7 +63,7 @@ namespace AsyncServer{
 		/// </summary>
 		private bool started = false;
 		
-		private List<ClientSession<T>> m_clients;
+		private List<Connection<T>> m_clients;
 		/// <summary>
 		/// Occurs when a packet has been received.
 		/// </summary>
@@ -83,7 +83,7 @@ namespace AsyncServer{
 		#endregion
 		
 		#region public member
-		public List<ClientSession<T>> Clients{
+		public List<Connection<T>> Clients{
 			get{return m_clients;}
 		}
 		/// <summary>
@@ -151,7 +151,7 @@ namespace AsyncServer{
 			this.timeout = timeout;
 			if(capacity != 0) this.capacity = capacity;
 			listener = new TcpListener(host, port);
-			m_clients = new List<ClientSession<T>>();
+			m_clients = new List<Connection<T>>();
 		}
 		#endregion
 
@@ -197,7 +197,7 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="client">The new client.</param>
 		private void Heard(TcpClient client) {
-			ClientSession<T> connection = new ClientSession<T>() {
+			Connection<T> connection = new Connection<T>() {
 				Client = client,
 			};
 			lock(clients_l) {
@@ -225,14 +225,14 @@ namespace AsyncServer{
 		private void OnTimeoutEventHandler(object source, ElapsedEventArgs e) {
 			TimeoutTimer timer = (TimeoutTimer) source;
 			timer.Stop();
-			ClientSession<T> connection = (ClientSession<T>) timer.Tag;
+			Connection<T> connection = (Connection<T>) timer.Tag;
 			if(OnTimeout != null) OnTimeout(connection, timer.Interval);
 		}
 		/// <summary>
 		/// Begins reading from a connected client.
 		/// </summary>
 		/// <param name="connection">The connection to read from.</param>
-		private void BeginRead(ClientSession<T> connection) {
+		private void BeginRead(Connection<T> connection) {
 			try {
 				byte[] cache = connection.ResetCache();
 				lock(connection.SyncRoot)
@@ -250,7 +250,7 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="result">Asynchronous result.</param>
 		private void ReceiveCallback(System.IAsyncResult result) {
-			ClientSession<T> connection = (ClientSession<T>) result.AsyncState;
+			Connection<T> connection = (Connection<T>) result.AsyncState;
 			int read = 0;
 			bool connected = false;
 			int available = 0;
@@ -283,7 +283,7 @@ namespace AsyncServer{
 		/// <returns>The read.</returns>
 		/// <param name="connection">The connection to end reading from.</param>
 		/// <param name="result">Asynchronous result.</param>
-		private int EndRead(ClientSession<T> connection, System.IAsyncResult result) {
+		private int EndRead(Connection<T> connection, System.IAsyncResult result) {
 			try {
 				lock(connection.SyncRoot)
 					if(connection.Connected)
@@ -299,7 +299,7 @@ namespace AsyncServer{
 		/// Handles a client disconnect
 		/// </summary>
 		/// <param name="connection">Disconnected connection.</param>
-		private void DisconnectHandler(ClientSession<T> connection) {
+		private void DisconnectHandler(Connection<T> connection) {
 			lock(clients_l) {
 				clients--;
 				m_clients.Remove(connection);
@@ -330,7 +330,7 @@ namespace AsyncServer{
 		/// Disconnects the connection from the server.
 		/// </summary>
 		/// <param name="connection">The connection to disconnect.</param>
-		public void DisconnectClient(ClientSession<T> connection) {
+		public void DisconnectClient(Connection<T> connection) {
 			try {
 				lock(connection.SyncRoot)
 					if(connection.Connected) {
@@ -352,6 +352,11 @@ namespace AsyncServer{
 			}
 		}
 		public void Stop(){
+			lock(clients_l){
+				foreach(Connection<T> client in m_clients){
+					client.Close();
+				}
+			}
 			listener.Stop();
 		}
 		#endregion
@@ -361,7 +366,7 @@ namespace AsyncServer{
 		/// Raises the OnConnect event.
 		/// </summary>
 		/// <param name="client">Client.</param>
-		private void Connected(ClientSession<T> client) {
+		private void Connected(Connection<T> client) {
 			if(OnConnect != null) OnConnect(client);
 		}
 		
@@ -370,7 +375,7 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="client">Client.</param>
 		/// <param name="packet">Packet.</param>
-		private void Received(ClientSession<T> client) {
+		private void Received(Connection<T> client) {
 			if(OnReceive != null) OnReceive(client);
 		}
 		
@@ -378,7 +383,7 @@ namespace AsyncServer{
 		/// Raises the OnDisconnect event.
 		/// </summary>
 		/// <param name="client">Client.</param>
-		private void Disconnected(ClientSession<T> client) {
+		private void Disconnected(Connection<T> client) {
 			if(OnDisconnect != null) OnDisconnect(client);
 		}
 		#endregion

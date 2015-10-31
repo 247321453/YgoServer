@@ -1,6 +1,7 @@
 ﻿using OcgWrapper.Enums;
 using System.Text;
 using System.Collections.Generic;
+using YGOCore.Core;
 
 namespace YGOCore.Game
 {

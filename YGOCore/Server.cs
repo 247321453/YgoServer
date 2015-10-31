@@ -178,28 +178,28 @@ namespace YGOCore
 			return true;
 		}
 
-		void m_listener_OnTimeout(ClientSession<GameClient> timeoutConnection, double time)
+		void m_listener_OnTimeout(Connection<GameClient> timeoutConnection, double time)
 		{
 			if(timeoutConnection!=null){
 				m_listener.DisconnectClient(timeoutConnection);
 			}
 		}
 
-		void m_listener_OnReceive(ClientSession<GameClient> Client)
+		void m_listener_OnReceive(Connection<GameClient> Client)
 		{
 			if(Client!=null && Client.Tag!=null){
 				Client.Tag.NetworkReceive();
 			}
 		}
 		
-		void m_listener_OnDisconnect(ClientSession<GameClient> Client)
+		void m_listener_OnDisconnect(Connection<GameClient> Client)
 		{
 			if(Client != null && Client.Tag!=null){
 				m_clients.Remove(Client.Tag);
 			}
 		}
 
-		void m_listener_OnConnect(ClientSession<GameClient> Client)
+		void m_listener_OnConnect(Connection<GameClient> Client)
 		{
 			GameClient gameclient = new GameClient();
 			Client.Tag = gameclient;

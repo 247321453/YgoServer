@@ -8,7 +8,7 @@
     <ProjectGuid>{96C45ACA-7729-4147-AD99-B829EFAD23B1}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>YGOServer</RootNamespace>
+    <RootNamespace>YGOCore</RootNamespace>
     <AssemblyName>YGOServer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -73,6 +73,24 @@
     <Reference Include="Mono.Data.Sqlite" Condition=" '$(OS)' == 'Unix' " />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\lib\AsyncServer\ArrayQueue.cs">
+      <Link>AsyncServer\ArrayQueue.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\AsyncServer\AsyncTcpListener.cs">
+      <Link>AsyncServer\AsyncTcpListener.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\AsyncServer\Connection.cs">
+      <Link>AsyncServer\Connection.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\AsyncServer\Logger.cs">
+      <Link>AsyncServer\Logger.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\AsyncServer\PacketReader.cs">
+      <Link>AsyncServer\PacketReader.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\AsyncServer\PacketWriter.cs">
+      <Link>AsyncServer\PacketWriter.cs</Link>
+    </Compile>
     <Compile Include="..\lib\Ocgcore\Api.cs">
       <Link>Ocgcore\Api.cs</Link>
     </Compile>
@@ -142,12 +160,8 @@
     <Compile Include="..\lib\Ocgcore\WinInfo.cs">
       <Link>Ocgcore\WinInfo.cs</Link>
     </Compile>
-    <Compile Include="AsyncServer\ArrayQueue.cs" />
-    <Compile Include="AsyncServer\Connection.cs" />
-    <Compile Include="AsyncServer\Logger.cs" />
-    <Compile Include="AsyncServer\PacketReader.cs" />
-    <Compile Include="AsyncServer\PacketWriter.cs" />
-    <Compile Include="AsyncServer\AsyncTcpListener.cs" />
+    <Compile Include="Core\FileUil.cs" />
+    <Compile Include="Core\GameHandler.cs" />
     <Compile Include="GameManager.cs" />
     <Compile Include="Game\Banlist.cs" />
     <Compile Include="Game\BanlistManager.cs" />
@@ -176,6 +190,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="ServerConfig.cs" />
+    <Compile Include="Core\GameServer.cs" />
+    <Compile Include="Core\GameSession.cs" />
     <Compile Include="SevenZip\Common\CommandLineParser.cs" />
     <Compile Include="SevenZip\Common\CRC.cs" />
     <Compile Include="SevenZip\Common\InBuffer.cs" />
@@ -193,11 +209,12 @@
     <Compile Include="SevenZip\ICoder.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="AsyncServer" />
     <Folder Include="Ocgcore\Enums" />
     <Folder Include="Ocgcore\Network" />
     <Folder Include="Plugin" />
     <Folder Include="Ocgcore" />
+    <Folder Include="AsyncServer" />
+    <Folder Include="Core" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\lib\ocgcore.dll">
