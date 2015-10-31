@@ -40,7 +40,7 @@ namespace YGOCore.Game
 
 		public void Send(GameServerPacket packet)
 		{
-			m_client.Send(packet.GetContent());
+			m_client.Send(packet.Content);
 		}
 
 		public void Disconnect()
@@ -417,7 +417,7 @@ namespace YGOCore.Game
 			Send(join);
 
 			GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
-			enter.Write("[err]" + message, 20);
+			enter.WriteUnicode("[err]" + message, 20);
 			enter.Write((byte)0);
 			Send(enter);
 		}
@@ -427,7 +427,7 @@ namespace YGOCore.Game
 			string finalmsg = head + msg;
 			GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
 			packet.Write((short)type);
-			packet.Write(finalmsg, finalmsg.Length + 1);
+			packet.WriteUnicode(finalmsg, finalmsg.Length + 1);
 			Send(packet);
 		}
 	}

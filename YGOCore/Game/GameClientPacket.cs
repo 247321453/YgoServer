@@ -1,68 +1,19 @@
-﻿using System.IO;
+﻿using AsyncServer;
 using OcgWrapper.Enums;
 
 namespace YGOCore.Game
 {
-    public class GameClientPacket
+	public class GameClientPacket : PacketReader
     {
-        public byte[] Content { get; private set; }
+		public byte[] Content { get{return Bytes;} }
 
-        private BinaryReader m_reader;
-
-        public GameClientPacket(byte[] content)
+		public GameClientPacket(byte[] content):base(content)
         {
-            Content = content;
-            m_reader = new BinaryReader(new MemoryStream(Content));
         }
 
         public CtosMessage ReadCtos()
         {
             return (CtosMessage)m_reader.ReadByte();
-        }
-
-        public byte ReadByte()
-        {
-            return m_reader.ReadByte();
-        }
-
-        public byte[] ReadToEnd()
-        {
-            return m_reader.ReadBytes((int)m_reader.BaseStream.Length - (int)m_reader.BaseStream.Position);
-        }
-
-        public sbyte ReadSByte()
-        {
-            return m_reader.ReadSByte();
-        }
-
-        public short ReadInt16()
-        {
-            return m_reader.ReadInt16();
-        }
-
-        public int ReadInt32()
-        {
-            return m_reader.ReadInt32();
-        }
-
-        public uint ReadUInt32()
-        {
-            return m_reader.ReadUInt32();
-        }
-
-        public string ReadUnicode(int len)
-        {
-            return m_reader.ReadUnicode(len);
-        }
-
-        public long GetPosition()
-        {
-            return m_reader.BaseStream.Position;
-        }
-
-        public void SetPosition(long pos)
-        {
-            m_reader.BaseStream.Position = pos;
         }
     }
 }

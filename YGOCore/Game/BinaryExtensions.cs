@@ -1,8 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Text;
 
-namespace YGOCore.Game
+namespace System.IO
 {
     public static class BinaryExtensions
     {

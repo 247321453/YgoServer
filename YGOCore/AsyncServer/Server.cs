@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Timers;
+using System.Net;
 
-namespace System.Net {
+namespace AsyncServer{
 	
 	#region delegate
 	/// <summary>
@@ -169,8 +170,9 @@ namespace System.Net {
 		/// <param name="result">Asynchronous result.</param>
 		private void AcceptCallback(System.IAsyncResult result) {
 			bool accepting = false;
+			TcpClient client  = null;
 			try {
-				TcpClient client = listener.EndAcceptTcpClient(result);
+				client = listener.EndAcceptTcpClient(result);
 				listener.BeginAcceptTcpClient(AcceptCallback, null);
 				accepting = true;
 				client.Client.SetSocketOption(System.Net.Sockets.SocketOptionLevel.Socket, System.Net.Sockets.SocketOptionName.KeepAlive, 1);
@@ -178,10 +180,12 @@ namespace System.Net {
 			}catch(System.Net.Sockets.SocketException ex) {
 				// If this happens, socket error code information is at: http://msdn.microsoft.com/en-us/library/windows/desktop/ms740668(v=vs.85).aspx
 				Log("Could not accept socket (" + ex.ErrorCode.ToString() + "): " + ex.Message, LogLevel.Error);
-			}catch(AsterionException ex) {
+			}catch(Exception ex) {
 				// Either the server is full or the client has reached the maximum connections per IP.
 				Log("Could not add client: " + ex.Message, LogLevel.Error);
-				DisconnectClient(ex.Connection);
+				if(client!=null){
+					DisconnectClient(client);
+				}
 			}finally{
 				if(!accepting) listener.BeginAcceptTcpClient(AcceptCallback, null);
 			}
@@ -197,9 +201,12 @@ namespace System.Net {
 				Client = client,
 			};
 			lock(clients_l) {
-				if(capacity != 0 && clients >= capacity)
-					throw new ServerFullException("Server full, rejecting client with IP '" + connection.Address + "'.", connection);
-				clients++;
+				if(capacity != 0 && clients >= capacity){
+					DisconnectClient(connection);
+					return;
+				}else{
+					clients++;
+				}
 			}
 			if(timeout != 0) {
 				connection.Timer.Interval = timeout;
@@ -323,7 +330,16 @@ namespace System.Net {
 				Log("Could not disconnect socket: " + e.Message, LogLevel.Error);
 			}
 		}
-			
+		private void DisconnectClient(TcpClient connection) {
+			try {
+				if(connection.Connected) {
+					connection.Client.Shutdown(SocketShutdown.Both);
+					connection.Client.Close();
+				}
+			}catch(System.Exception e) {
+				Log("Could not disconnect socket: " + e.Message, LogLevel.Error);
+			}
+		}
 		/// <summary>
 		/// Writes data to a client.
 		/// </summary>

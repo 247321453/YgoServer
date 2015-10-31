@@ -1,13 +1,15 @@
 ﻿using System;
-using System.Net.Sockets;
+using System.Timers;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 
-namespace System.Net {
+namespace AsyncServer {
 	#region TimeoutTimer
 	/// <summary>
 	/// Timeout Timer
 	/// </summary>
-	public class TimeoutTimer : Timers.Timer {
+	public class TimeoutTimer : Timer {
 		private object tag;
 		
 		public object Tag {
@@ -29,7 +31,7 @@ namespace System.Net {
 	/// Represents an Asterion client connection.
 	/// </summary>
 	public class Connection : IDisposable{
-				
+		
 		public static int sCacheSize = 1024;
 		public static int sPacketLength = 2;
 		public static int sMaxCacheSize = ByteArray.BUFFER_SIZE;
@@ -47,7 +49,7 @@ namespace System.Net {
 		/// <summary>
 		/// 等待需要发出的数据
 		/// </summary>
-		private readonly Queue<IPacket> m_PendingBuffer = new Queue<IPacket>(32);
+		private readonly Queue<PacketWriter> m_PendingBuffer = new Queue<PacketWriter>(32);
 
 		private bool isSending;
 
@@ -56,23 +58,22 @@ namespace System.Net {
 		/// </summary>
 		/// <param name="buff"></param>
 		/// <param name="isSendNow">是否立即发送</param>
-		public void SendPackage(IPacket buff, bool isSendNow = true)
+		public void SendPackage(PacketWriter writer,bool isAsync = false, bool isSendNow = true)
 		{
 			if (client == null || !client.Connected)
 				return;
-			buff.Use();
 			lock (m_PendingBuffer)
 			{
-				m_PendingBuffer.Enqueue(buff);
+				m_PendingBuffer.Enqueue(writer);
 			}
 			if (isSendNow)
-				PeekSend();
+				PeekSend(isAsync);
 		}
 
 		/// <summary>
 		/// 检查队列里是否有要发送的数据，如果有则进行发送处理
 		/// </summary>
-		public void PeekSend()
+		public void PeekSend(bool isAsync = false)
 		{
 			lock (m_PendingBuffer)
 			{
@@ -90,27 +91,35 @@ namespace System.Net {
 
 					int offSet = 0;
 					foreach (var b in buffs)
-						offSet += b.Length;
+						offSet += b.Bytes.Length+b.PacketByteLength;
 
 					var sendBuff = new ByteArray(sPacketLength, offSet);
 					
 					foreach (var buff in buffs)
 					{
-						var bys = buff.GetBytes();
-						sendBuff.Enqueue(bys, 0, bys.Length);
+						AddBytes(sendBuff, buff);
 					}
-					m_Server.WriteData(this, sendBuff.Bytes, true);
+					m_Server.WriteData(this, sendBuff.Bytes, isAsync);
 				}
 				else
 				{
-					var bys = m_PendingBuffer.Dequeue().GetBytes();
-					var sendBuff = new ByteArray(sPacketLength, bys.Length);
-					sendBuff.Enqueue(bys, 0, bys.Length);
-					m_Server.WriteData(this, sendBuff.Bytes, true);
+					var buff = m_PendingBuffer.Dequeue();
+					var bys = buff.Bytes;
+					var sendBuff = new ByteArray(sPacketLength, bys.Length + buff.PacketByteLength);
+					AddBytes(sendBuff, buff);
+					m_Server.WriteData(this, sendBuff.Bytes, isAsync);
 				}
 			}
 		}
 
+		private void AddBytes(ByteArray buffs, PacketWriter writer){
+			var bys = writer.Bytes;
+			var blen = writer.PacketByteLength ==2 ?BitConverter.GetBytes((ushort)bys.Length)
+				:BitConverter.GetBytes((uint)bys.Length);
+			buffs.Enqueue(blen, 0, blen.Length);
+			buffs.Enqueue(bys, 0, bys.Length);
+			writer.Dispose();
+		}
 		#region private member
 		private ByteArray m_ReceiveQueue;
 		
@@ -144,7 +153,7 @@ namespace System.Net {
 				try {
 					Address = (client.Client.RemoteEndPoint as IPEndPoint).Address;
 				}catch{
-					throw new UnavailableEndPointException("Could not get the client's IP address.", this);
+					Address = IPAddress.None;
 				}
 			}
 		}

@@ -168,7 +168,7 @@ namespace YGOCore
 		public static GameServerPacket getMessage(string finalmsg,PlayerType type=PlayerType.Yellow){
 			GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
 			packet.Write((short)type);
-			packet.Write(finalmsg, finalmsg.Length + 1);
+			packet.WriteUnicode(finalmsg, finalmsg.Length + 1);
 			return packet;
 		}
 		

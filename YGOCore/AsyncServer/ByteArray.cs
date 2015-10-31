@@ -8,7 +8,7 @@
  */
 using System;
 
-namespace System.Net
+namespace AsyncServer
 {
 	/// <summary>
 	/// Description of ReceiveQueue.

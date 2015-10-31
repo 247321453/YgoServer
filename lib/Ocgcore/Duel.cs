@@ -128,7 +128,7 @@ namespace OcgWrapper
 				Marshal.FreeHGlobal(m_buffer);
 				Duels.Remove(m_pDuel);
 			}catch(Exception e){
-				
+				Console.WriteLine(e.ToString());
 			}
 		}
 

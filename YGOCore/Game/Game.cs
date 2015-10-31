@@ -229,7 +229,7 @@ namespace YGOCore.Game
 			if (pos != -1)
 			{
 				GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
-				enter.Write(player.Name, 20);
+				enter.WriteUnicode(player.Name, 20);
 				enter.Write((byte)pos);
 				SendToAll(enter);
 				PlayerNames[pos] = player.Name;
@@ -258,7 +258,7 @@ namespace YGOCore.Game
 				if (Players[i] != null)
 				{
 					GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
-					enter.Write(Players[i].Name, 20);
+					enter.WriteUnicode(Players[i].Name, 20);
 					enter.Write((byte)i);
 					player.Send(enter);
 					if (IsReady[i])
@@ -367,7 +367,7 @@ namespace YGOCore.Game
 				player.Type = pos;
 
 				GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
-				enter.Write(player.Name, 20);
+				enter.WriteUnicode(player.Name, 20);
 				enter.Write((byte)pos);
 				SendToAll(enter);
 
@@ -403,7 +403,7 @@ namespace YGOCore.Game
 		{
 			GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
 			packet.Write((short)player.Type);
-			packet.Write(msg, msg.Length + 1);
+			packet.WriteUnicode(msg, msg.Length + 1);
 			SendToAllBut(packet, player);
 		}
 
@@ -412,7 +412,7 @@ namespace YGOCore.Game
 			string finalmsg = "[Server] " + msg;
 			GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
 			packet.Write((short)PlayerType.Yellow);
-			packet.Write(finalmsg, finalmsg.Length + 1);
+			packet.WriteUnicode(finalmsg, finalmsg.Length + 1);
 			SendToAll(packet);
 		}
 
@@ -1322,7 +1322,7 @@ namespace YGOCore.Game
 					else
 						id = 1 - i;
 				}
-				enter.Write(PlayerNames[id], 20);
+				enter.WriteUnicode(PlayerNames[id], 20);
 				enter.Write((byte)i);
 				player.Send(enter);
 			}
@@ -1501,7 +1501,7 @@ namespace YGOCore.Game
 
 			GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
 			packet.Write((short)PlayerType.Observer);
-			packet.Write(error, error.Length + 1);
+			packet.WriteUnicode(error, error.Length + 1);
 			SendToAll(packet);
 		}
 

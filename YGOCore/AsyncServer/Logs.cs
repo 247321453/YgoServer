@@ -1,4 +1,4 @@
-namespace System.Net {
+namespace AsyncServer {
 	/**
 	 * Enum of log levels for the writeOutput method.
 	 */
