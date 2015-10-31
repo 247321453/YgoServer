@@ -14,19 +14,19 @@ namespace AsyncServer{
 		/// <summary>
 		/// Receive event handler.
 		/// </summary>
-		public delegate void ReceiveEventHandler(Connection<T> Client);
+		public delegate void ReceiveEventHandler(ClientSession<T> Client);
 		/// <summary>
 		/// Connect event handler.
 		/// </summary>
-		public delegate void ConnectEventHandler(Connection<T> Client);
+		public delegate void ConnectEventHandler(ClientSession<T> Client);
 		/// <summary>
 		/// Disconnect event handler.
 		/// </summary>
-		public delegate void DisconnectEventHandler(Connection<T> Client);
+		public delegate void DisconnectEventHandler(ClientSession<T> Client);
 		/// <summary>
 		/// Timeout event handler.
 		/// </summary>
-		public delegate void TimeoutEventHandler(Connection<T> timeoutConnection, double time);
+		public delegate void TimeoutEventHandler(ClientSession<T> timeoutConnection, double time);
 		#endregion
 		
 		#region private member
@@ -62,6 +62,8 @@ namespace AsyncServer{
 		/// Whether the server has been started.
 		/// </summary>
 		private bool started = false;
+		
+		private List<ClientSession<T>> m_clients;
 		/// <summary>
 		/// Occurs when a packet has been received.
 		/// </summary>
@@ -81,6 +83,9 @@ namespace AsyncServer{
 		#endregion
 		
 		#region public member
+		public List<ClientSession<T>> Clients{
+			get{return m_clients;}
+		}
 		/// <summary>
 		/// Gets the host the server is listening in.
 		/// </summary>
@@ -146,6 +151,7 @@ namespace AsyncServer{
 			this.timeout = timeout;
 			if(capacity != 0) this.capacity = capacity;
 			listener = new TcpListener(host, port);
+			m_clients = new List<ClientSession<T>>();
 		}
 		#endregion
 
@@ -191,7 +197,7 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="client">The new client.</param>
 		private void Heard(TcpClient client) {
-			Connection<T> connection = new Connection<T>() {
+			ClientSession<T> connection = new ClientSession<T>() {
 				Client = client,
 			};
 			lock(clients_l) {
@@ -200,6 +206,7 @@ namespace AsyncServer{
 					return;
 				}else{
 					clients++;
+					m_clients.Add(connection);
 				}
 			}
 			if(timeout != 0) {
@@ -218,14 +225,14 @@ namespace AsyncServer{
 		private void OnTimeoutEventHandler(object source, ElapsedEventArgs e) {
 			TimeoutTimer timer = (TimeoutTimer) source;
 			timer.Stop();
-			Connection<T> connection = (Connection<T>) timer.Tag;
+			ClientSession<T> connection = (ClientSession<T>) timer.Tag;
 			if(OnTimeout != null) OnTimeout(connection, timer.Interval);
 		}
 		/// <summary>
 		/// Begins reading from a connected client.
 		/// </summary>
 		/// <param name="connection">The connection to read from.</param>
-		private void BeginRead(Connection<T> connection) {
+		private void BeginRead(ClientSession<T> connection) {
 			try {
 				byte[] cache = connection.ResetCache();
 				lock(connection.SyncRoot)
@@ -243,7 +250,7 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="result">Asynchronous result.</param>
 		private void ReceiveCallback(System.IAsyncResult result) {
-			Connection<T> connection = (Connection<T>) result.AsyncState;
+			ClientSession<T> connection = (ClientSession<T>) result.AsyncState;
 			int read = 0;
 			bool connected = false;
 			int available = 0;
@@ -255,9 +262,12 @@ namespace AsyncServer{
 			}
 			if(read != 0 && connected) {
 				connection.ReceiveQueue.Enqueue(connection.Bytes, 0, read);
-//				if(read != CacheSize && available == 0) {
-				if(available == 0) {
-					Received(connection);
+				if(read == connection.Bytes.Length){
+					//还有内容
+				}else{
+					if(available == 0) {
+						Received(connection);
+					}
 				}
 				if(connection.Timer.Interval != timeout) connection.Timer.Interval = timeout;
 				connection.Timer.Restart();
@@ -273,7 +283,7 @@ namespace AsyncServer{
 		/// <returns>The read.</returns>
 		/// <param name="connection">The connection to end reading from.</param>
 		/// <param name="result">Asynchronous result.</param>
-		private int EndRead(Connection<T> connection, System.IAsyncResult result) {
+		private int EndRead(ClientSession<T> connection, System.IAsyncResult result) {
 			try {
 				lock(connection.SyncRoot)
 					if(connection.Connected)
@@ -289,12 +299,19 @@ namespace AsyncServer{
 		/// Handles a client disconnect
 		/// </summary>
 		/// <param name="connection">Disconnected connection.</param>
-		private void DisconnectHandler(Connection<T> connection) {
-			lock(clients_l) clients--;
-			connection.Timer.Stop();
+		private void DisconnectHandler(ClientSession<T> connection) {
+			lock(clients_l) {
+				clients--;
+				m_clients.Remove(connection);
+			}
 			Disconnected(connection);
-			connection.Timer.Close();
-			connection.Client.Close();
+			try{
+				connection.Timer.Stop();
+				connection.Timer.Close();
+				connection.Client.Close();
+			}catch(Exception e){
+				Logger.Error("Close error:"+e.ToString());
+			}
 		}
 		#endregion
 
@@ -313,7 +330,7 @@ namespace AsyncServer{
 		/// Disconnects the connection from the server.
 		/// </summary>
 		/// <param name="connection">The connection to disconnect.</param>
-		public void DisconnectClient(Connection<T> connection) {
+		public void DisconnectClient(ClientSession<T> connection) {
 			try {
 				lock(connection.SyncRoot)
 					if(connection.Connected) {
@@ -334,60 +351,6 @@ namespace AsyncServer{
 				Logger.Error("Could not disconnect socket: " + e.ToString());
 			}
 		}
-		/// <summary>
-		/// Writes data to a client.
-		/// </summary>
-		/// <returns><c>true</c>, if data could be written, <c>false</c> otherwise.</returns>
-		/// <param name="connection">The connection to write to.</param>
-		/// <param name="data">The data to write.</param>
-		/// <param name="isAsync">If set to <c>true</c>, the write will be performed asynchronously.</param>
-		internal bool WriteData(Connection<T> connection, byte[] bytes, bool isAsync) {
-			try {
-				lock(connection.SyncRoot) {
-					if(connection.Connected) {
-						if(isAsync) {
-							connection.Client.GetStream().BeginWrite(bytes, 0, bytes.Length, WriteCallback, connection);
-						}else{
-							connection.Client.GetStream().Write(bytes, 0, bytes.Length);
-						}
-						return connection.Client.GetStream().CanWrite;
-					}else{
-						return false;
-					}
-				}
-			}catch(System.IO.IOException ex) {
-				Logger.Error("Could not write to client: " + ex.ToString() + ".");
-				return false;
-			}
-		}
-		
-		/// <summary>
-		/// Writes data to a client.
-		/// </summary>
-		/// <returns><c>true</c>, if data could be written, <c>false</c> otherwise.</returns>
-		/// <param name="connection">The connection to write to.</param>
-		/// <param name="data">The data to write.</param>
-		protected  bool WriteData(Connection<T> connection, byte[] data) {
-			return WriteData(connection, data, true);
-		}
-		/// <summary>
-		/// Callback handling data being written to a client.
-		/// </summary>
-		/// <param name="result">Result.</param>
-		private void WriteCallback(System.IAsyncResult result) {
-			Connection<T> connection = (Connection<T>) result.AsyncState;
-			try {
-				lock(connection.SyncRoot) {
-					if(connection.Connected) {
-						connection.Client.GetStream().EndWrite(result);
-						connection.Client.LingerState = new LingerOption(false, 0);
-					}
-				}
-			}catch(System.IO.IOException ex) {
-				Logger.Error("Could not end write to client: " + ex.ToString() + ".");
-			}
-		}
-		
 		public void Stop(){
 			listener.Stop();
 		}
@@ -398,7 +361,7 @@ namespace AsyncServer{
 		/// Raises the OnConnect event.
 		/// </summary>
 		/// <param name="client">Client.</param>
-		private void Connected(Connection<T> client) {
+		private void Connected(ClientSession<T> client) {
 			if(OnConnect != null) OnConnect(client);
 		}
 		
@@ -407,7 +370,7 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="client">Client.</param>
 		/// <param name="packet">Packet.</param>
-		private void Received(Connection<T> client) {
+		private void Received(ClientSession<T> client) {
 			if(OnReceive != null) OnReceive(client);
 		}
 		
@@ -415,7 +378,7 @@ namespace AsyncServer{
 		/// Raises the OnDisconnect event.
 		/// </summary>
 		/// <param name="client">Client.</param>
-		private void Disconnected(Connection<T> client) {
+		private void Disconnected(ClientSession<T> client) {
 			if(OnDisconnect != null) OnDisconnect(client);
 		}
 		#endregion

@@ -30,41 +30,37 @@ namespace AsyncServer {
 	/// <summary>
 	/// Represents an Asterion client connection.
 	/// </summary>
-	public class Connection<T> : IDisposable{
+	public class ClientSession<T> : IDisposable{
 		
 		public static int sCacheSize = 1024;
 		public static int sPacketLength = 2;
-		public static int sMaxCacheSize = ByteArray.BUFFER_SIZE;
 		/// <summary>
 		/// Initializes a new instance of the Connection class.
 		/// </summary>
-		public Connection() {
+		public ClientSession() {
 			timer = new TimeoutTimer(this);
-			m_ReceiveQueue = new ByteArray(sPacketLength, sMaxCacheSize);
+			m_ReceiveQueue = new ArrayQueue<byte>();
 		}
-		protected T m_tag;
-		public T Tag{get{return m_tag;}set{m_tag = value;}}
-	/*
+		
+		#region send
 		/// <summary>
 		/// 等待需要发出的数据
 		/// </summary>
-		private readonly Queue<PacketWriter> m_PendingBuffer = new Queue<PacketWriter>(32);
+		private readonly Queue<byte[]> m_PendingBuffer = new Queue<byte[]>(32);
 
 		private bool isSending;
-
-	
 		/// <summary>
 		/// 向客户端发送数据
 		/// </summary>
 		/// <param name="buff"></param>
 		/// <param name="isSendNow">是否立即发送</param>
-		public void SendPackage(PacketWriter writer,bool isAsync = false, bool isSendNow = true)
+		public void SendPackage(byte[] data,bool isAsync = false, bool isSendNow = true)
 		{
 			if (client == null || !client.Connected)
 				return;
 			lock (m_PendingBuffer)
 			{
-				m_PendingBuffer.Enqueue(writer);
+				m_PendingBuffer.Enqueue(data);
 			}
 			if (isSendNow)
 				PeekSend(isAsync);
@@ -91,45 +87,90 @@ namespace AsyncServer {
 
 					int offSet = 0;
 					foreach (var b in buffs)
-						offSet += b.Bytes.Length+b.PacketByteLength;
+						offSet += b.Length;
 
-					var sendBuff = new ByteArray(sPacketLength, offSet);
+					var sendBuff = new ArrayQueue<byte>();
 					
 					foreach (var buff in buffs)
 					{
-						AddBytes(sendBuff, buff);
+						sendBuff.Enqueue(buff, 0, buff.Length);
 					}
-					m_Server.WriteData(this, sendBuff.Bytes, isAsync);
+					WriteData(this, sendBuff.ToArray(), isAsync);
 				}
 				else
 				{
-					var buff = m_PendingBuffer.Dequeue();
-					var bys = buff.Bytes;
-					var sendBuff = new ByteArray(sPacketLength, bys.Length + buff.PacketByteLength);
-					AddBytes(sendBuff, buff);
-					m_Server.WriteData(this, sendBuff.Bytes, isAsync);
+					var bys = m_PendingBuffer.Dequeue();
+					var sendBuff = new ArrayQueue<byte>();
+					sendBuff.Enqueue(bys, 0, bys.Length);
+					WriteData(this, sendBuff.ToArray(), isAsync);
 				}
 			}
 		}
-
-		private void AddBytes(ByteArray buffs, PacketWriter writer){
-			var bys = writer.Bytes;
-			var blen = writer.PacketByteLength ==2 ?BitConverter.GetBytes((ushort)bys.Length)
-				:BitConverter.GetBytes((uint)bys.Length);
-			buffs.Enqueue(blen, 0, blen.Length);
-			buffs.Enqueue(bys, 0, bys.Length);
-			writer.Dispose();
+				/// <summary>
+		/// Writes data to a client.
+		/// </summary>
+		/// <returns><c>true</c>, if data could be written, <c>false</c> otherwise.</returns>
+		/// <param name="connection">The connection to write to.</param>
+		/// <param name="data">The data to write.</param>
+		/// <param name="isAsync">If set to <c>true</c>, the write will be performed asynchronously.</param>
+		internal static bool WriteData(ClientSession<T> connection, byte[] bytes, bool isAsync) {
+			try {
+				lock(connection.SyncRoot) {
+					if(connection.Connected) {
+						if(isAsync) {
+							connection.Client.GetStream().BeginWrite(bytes, 0, bytes.Length, WriteCallback, connection);
+						}else{
+							connection.Client.GetStream().Write(bytes, 0, bytes.Length);
+						}
+						return connection.Client.GetStream().CanWrite;
+					}else{
+						return false;
+					}
+				}
+			}catch(System.IO.IOException ex) {
+				Logger.Error("Could not write to client: " + ex.ToString() + ".");
+				return false;
+			}
 		}
-		*/
-		#region private member
-		private ByteArray m_ReceiveQueue;
 		
+		/// <summary>
+		/// Writes data to a client.
+		/// </summary>
+		/// <returns><c>true</c>, if data could be written, <c>false</c> otherwise.</returns>
+		/// <param name="connection">The connection to write to.</param>
+		/// <param name="data">The data to write.</param>
+		protected  static bool WriteData(ClientSession<T> connection, byte[] data) {
+			return WriteData(connection, data, true);
+		}
+		/// <summary>
+		/// Callback handling data being written to a client.
+		/// </summary>
+		/// <param name="result">Result.</param>
+		private static void WriteCallback(System.IAsyncResult result) {
+			ClientSession<T> connection = (ClientSession<T>) result.AsyncState;
+			try {
+				lock(connection.SyncRoot) {
+					if(connection.Connected) {
+						connection.Client.GetStream().EndWrite(result);
+						connection.Client.LingerState = new LingerOption(false, 0);
+					}
+				}
+			}catch(System.IO.IOException ex) {
+				Logger.Error("Could not end write to client: " + ex.ToString() + ".");
+			}
+		}
+		
+		#endregion
+		
+		#region member
+		private ArrayQueue<byte> m_ReceiveQueue;
 		private TimeoutTimer timer;
-		internal readonly object SyncRoot = new object();
+		internal readonly byte[] SyncRoot = new byte[0];
 		private TcpClient client;
 		private bool _Dispose;
 		
 		internal byte[] Bytes;
+		private T m_tag;
 		
 		internal byte[] ResetCache(){
 			Bytes = new byte[sCacheSize];
@@ -142,7 +183,7 @@ namespace AsyncServer {
 		internal TimeoutTimer Timer {
 			get { return timer; }
 		}
-
+				
 		/// <summary>
 		/// Gets or sets the client.
 		/// </summary>
@@ -161,6 +202,7 @@ namespace AsyncServer {
 		#endregion
 
 		#region public member
+		public T Tag{get{return m_tag;}set{m_tag = value;}}
 		/// <summary>
 		/// Gets the client's address.
 		/// </summary>
@@ -173,7 +215,7 @@ namespace AsyncServer {
 		public int Available{
 			get{return client.Available;}
 		}
-		public ByteArray ReceiveQueue{
+		public ArrayQueue<byte> ReceiveQueue{
 			get{return m_ReceiveQueue;}
 		}
 		/// <summary>

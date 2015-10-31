@@ -142,9 +142,9 @@
     <Compile Include="..\lib\Ocgcore\WinInfo.cs">
       <Link>Ocgcore\WinInfo.cs</Link>
     </Compile>
+    <Compile Include="AsyncServer\ArrayQueue.cs" />
     <Compile Include="AsyncServer\Connection.cs" />
     <Compile Include="AsyncServer\Logger.cs" />
-    <Compile Include="AsyncServer\ByteArray.cs" />
     <Compile Include="AsyncServer\PacketReader.cs" />
     <Compile Include="AsyncServer\PacketWriter.cs" />
     <Compile Include="AsyncServer\AsyncTcpListener.cs" />

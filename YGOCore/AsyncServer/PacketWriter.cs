@@ -25,7 +25,9 @@ namespace AsyncServer
 		public int PacketByteLength{
 			get{return m_PacketByteLength;}
 		}
-		
+		public BinaryWriter Writer(){
+			return m_writer;
+		}
 		public void Write(byte[] array)
 		{
 			m_writer.Write(array);

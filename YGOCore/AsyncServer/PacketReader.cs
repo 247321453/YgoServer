@@ -15,18 +15,16 @@ namespace AsyncServer
 		public byte[] Bytes{
 			get { return data; }
 		}
-		public PacketReader()
-		{
-		}
 		public PacketReader(byte[] data)
 		{
-			SetBytes(data);
-		}
-		public void SetBytes(byte[] data){
-			Close();
 			m_stream = new MemoryStream(data);
 			m_reader = new BinaryReader(m_stream);
 		}
+
+		public BinaryReader Reader(){
+			return m_reader;
+		}
+		
 		public byte ReadByte()
 		{
 			return m_reader.ReadByte();
