@@ -180,7 +180,6 @@ namespace YGOCore.Game
 					ServerMessage("[Server] "+player.Name+" watch game.", PlayerType.White);
 				}
 			}
-			Logger.Debug("SendTypeChange");
 			SendJoinGame(player);
 			player.SendTypeChange();
 
@@ -622,21 +621,27 @@ namespace YGOCore.Game
 							{
 								if (Players[m_lastresponse].TurnSkip == 2)
 								{
+									//跳过2回合，自动投降
 									Surrender(Players[m_lastresponse], 3);
 								}
 								else
 								{
+									//跳过回合
 									Players[m_lastresponse].State = PlayerState.None;
 									Players[m_lastresponse].TurnSkip++;
 									SetResponse(m_analyser.LastMessage == GameMessage.SelectIdleCmd ? 7 : 3);
 									Process();
 								}
 							}
-							else
+							else{
 								Surrender(Players[m_lastresponse], 3);
+								//直接投降
+							}
 						}
-						else if (elapsed.TotalSeconds > m_timelimit[m_lastresponse] + 30)
+						else if (elapsed.TotalSeconds > m_timelimit[m_lastresponse] + 30){
+							//超时投降
 							Surrender(Players[m_lastresponse], 3);
+						}
 					}
 				}
 			}

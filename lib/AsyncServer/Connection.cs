@@ -3,6 +3,7 @@ using System.Timers;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.IO;
 
 namespace AsyncServer {
 	#region TimeoutTimer
@@ -46,7 +47,13 @@ namespace AsyncServer {
 		/// </summary>
 		private readonly Queue<byte[]> m_PendingBuffer = new Queue<byte[]>(32);
 
-		private bool isSending;
+		private readonly byte[] lock_send = new byte[0];
+		
+		private bool isSending = false;
+		
+		public void PeekSend(){
+			PeekSend(this);
+		}
 		/// <summary>
 		/// 向客户端发送数据
 		/// </summary>
@@ -56,8 +63,7 @@ namespace AsyncServer {
 		{
 			if (client == null || !client.Connected)
 				return;
-			lock (m_PendingBuffer)
-			{
+			lock (m_PendingBuffer){
 				m_PendingBuffer.Enqueue(data);
 			}
 			if(isSendNow){
@@ -70,38 +76,57 @@ namespace AsyncServer {
 		/// </summary>
 		public static void PeekSend(Connection<T> connection)
 		{
-			lock (connection.m_PendingBuffer)
-			{
-				if(connection.m_PendingBuffer.Count == 0){
-					return;
-				}
-				lock(connection.SyncRoot){
-					if (connection.isSending)
+			if(connection.isAsync){
+				lock(connection.lock_send){
+					if (connection.isSending){
+						Logger.Debug("wait send");
 						return;
+					}
 					connection.isSending = true;
 				}
-				if (connection.m_PendingBuffer.Count > 1)
-				{
-					//   2 个包以上，进行拼包后再发送
-					var buffs = connection.m_PendingBuffer.ToArray();
-					connection.m_PendingBuffer.Clear();
-					
-					var sendBuff = new ArrayQueue<byte>();
-					foreach (var buff in buffs)
-					{
-						sendBuff.Enqueue(buff, 0, buff.Length);
-					}
-					WriteData(connection, sendBuff.ToArray(), connection.isAsync);
+			}
+			byte[][] arrays = null;
+			lock (connection.m_PendingBuffer){
+				arrays = connection.m_PendingBuffer.ToArray();
+				connection.m_PendingBuffer.Clear();
+			}
+			if (arrays.Length > 1)
+			{
+				//   2 个包以上，进行拼包后再发送
+				int length  =0 ;
+				foreach (var buff in arrays){
+					length += buff.Length;
 				}
-				else
-				{
-					var bys = connection.m_PendingBuffer.Dequeue();
-					var sendBuff = new ArrayQueue<byte>();
-					sendBuff.Enqueue(bys, 0, bys.Length);
-					WriteData(connection, sendBuff.ToArray(), connection.isAsync);
+				byte[] datas = null;
+				using(MemoryStream stream  =new MemoryStream(length)){
+					using(BinaryWriter writer=new BinaryWriter(stream)){
+						foreach (var buff in arrays){
+							writer.Write(buff);
+						}
+					}
+					datas = stream.ToArray();
+				}
+				if(datas!=null && datas.Length>0){
+					WriteData(connection, datas, connection.isAsync);
+					return;
+				}
+			}
+			else if(arrays.Length==1)	{
+				var bys = arrays[0];
+				if(bys!=null && bys.Length>0){
+					WriteData(connection, bys, connection.isAsync);
+					return;
+				}
+			}else{
+				Logger.Debug("no thins send");
+			}
+			if(connection.isAsync){
+				lock(connection.lock_send){
+					connection.isSending = false;
 				}
 			}
 		}
+		
 		/// <summary>
 		/// Writes data to a client.
 		/// </summary>
@@ -120,7 +145,6 @@ namespace AsyncServer {
 							connection.Client.GetStream().BeginWrite(bytes, 0, bytes.Length, WriteCallback, connection);
 						}else{
 							connection.Client.GetStream().Write(bytes, 0, bytes.Length);
-							connection.isSending = false;
 						}
 						return connection.Client.GetStream().CanWrite;
 					}else{
@@ -144,10 +168,15 @@ namespace AsyncServer {
 					if(connection.Connected) {
 						connection.Client.GetStream().EndWrite(result);
 						connection.Client.LingerState = new LingerOption(false, 0);
-						connection.isSending = false;
-						PeekSend(connection);
+					}else{
+						Logger.Debug("don't send");
 					}
 				}
+				lock(connection.lock_send){
+					connection.isSending = false;
+					Logger.Debug("peek send:"+connection.isSending);
+				}
+				PeekSend(connection);
 			}catch(System.IO.IOException ex) {
 				Logger.Error("Could not end write to client: " + ex.ToString() + ".");
 			}

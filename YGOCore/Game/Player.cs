@@ -40,7 +40,7 @@ namespace YGOCore.Game
 
 		public void Send(GameServerPacket packet)
 		{
-			m_client.Send(packet.Content);
+			m_client.Send(packet.GetContent());
 		}
 
 		public void Disconnect()

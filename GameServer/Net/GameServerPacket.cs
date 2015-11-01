@@ -31,9 +31,10 @@ namespace YGOCore.Net
 			appendLength = true;
 			byte[] raw = Bytes;
 			using(MemoryStream stream = new MemoryStream(raw.Length + m_PacketByteLength)){
-				BinaryWriter writer = new BinaryWriter(stream);
-				writer.Write((ushort)raw.Length);
-				writer.Write(raw);
+				using(BinaryWriter writer = new BinaryWriter(stream)){
+					writer.Write((ushort)raw.Length);
+					writer.Write(raw);
+				}
 				content = stream.ToArray();
 			}
 		}

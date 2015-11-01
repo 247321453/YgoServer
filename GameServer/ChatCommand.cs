@@ -36,7 +36,7 @@ namespace YGOCore
 			Console.WriteLine("│    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|    Build: " + Version);
 			Console.WriteLine("│");
 			Console.WriteLine("│Client version 0x" + config.ClientVersion.ToString("x") + " or new, MaxRooms = "+config.MaxRoomCount, false);
-			Console.WriteLine("│NeedAtuh="+config.isNeedAuth+", AutoReplay="+config.AutoReplay
+			Console.WriteLine("│NeedAtuh="+config.isNeedAuth+", AsyncMode="+config.AsyncMode
 			                  +", RecordWin="+config.RecordWin
 			                  +", BanMode="+config.BanMode);
 			Console.WriteLine("│"+config.ServerDesc);
@@ -48,8 +48,14 @@ namespace YGOCore
 			}
 			cmd = cmd.ToLower();
 			switch(cmd){
+				case "cls":
+					Console.Clear();
+					if(Server!=null)
+						WriteHead(Server.Config);
+					break;
 				case "close":
-					Server.Stop();
+					if(Server!=null)
+						Server.Stop();
 					break;
 			}
 		}

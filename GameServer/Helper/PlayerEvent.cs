@@ -23,7 +23,7 @@ namespace YGOCore.Net
 		private static void Parse(GameSession m_player, GameClientPacket packet)
 		{
 			CtosMessage msg = packet.ReadCtos();
-			Logger.Debug("CtosMessage:"+msg);
+		//	Logger.Debug("CtosMessage:"+msg);
 			switch (msg)
 			{
 				case CtosMessage.PlayerInfo:

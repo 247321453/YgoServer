@@ -17,7 +17,7 @@ namespace YGOCore.Net
 			this.Server = Server;
 			this.m_client = client;
 			//异步发送
-			this.m_client.isAsync = true;
+			this.m_client.isAsync = Server.Config.AsyncMode;
 			this.Type = (int)PlayerType.Undefined;
 			this.State = PlayerState.None;
 		}

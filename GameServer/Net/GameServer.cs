@@ -110,7 +110,6 @@ namespace YGOCore.Net
 		{
 			if(Client!=null && Client.Tag!=null){
 				//处理接收数据
-				Logger.Debug("OnReceive");
 				ThreadPool.QueueUserWorkItem(Client.Tag.OnReceive);
 			}
 		}
