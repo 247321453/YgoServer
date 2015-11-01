@@ -93,7 +93,7 @@ namespace YGOCore
 			if(count>0){
 				string[] sqls=new string[count];
 				for(int i=0;i<count;i++){
-					sqls[i]=tmpList[i].getSQL();
+					sqls[i]=tmpList[i].GetSQL();
 				}
 				ThreadPool.QueueUserWorkItem(new WaitCallback(
 					delegate(object obj)
@@ -307,7 +307,7 @@ namespace YGOCore
 		}
 		public static void onWin(string room,int mode, int win,int reason,string replay,string[] names, int[] uids,bool force){
 			MutexWinInfo.WaitOne();
-			WinInfos.Add(new WinInfo(room, win, reason,replay, names, uids, force));
+			WinInfos.Add(new WinInfo(room, win, reason,replay, names, force));
 			MutexWinInfo.ReleaseMutex();
 		}
 		

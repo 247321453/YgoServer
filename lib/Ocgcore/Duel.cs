@@ -162,7 +162,7 @@ namespace OcgWrapper
 
 		public static Duel Create(uint seed)
 		{
-			MtRandom random = new MtRandom();
+			MtRandom random = new MtRandom(seed);
 			random.Reset(seed);
 			IntPtr pDuel = Api.create_duel(random.Rand());
 			return Create(pDuel);
