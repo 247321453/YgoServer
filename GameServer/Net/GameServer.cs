@@ -66,11 +66,7 @@ namespace YGOCore.Net
 				Logger.Error(e);
 				return false;
 			}
-
 			Logger.Info("Listening on port " + Config.ServerPort);
-			if(BanlistManager.Banlists!=null && BanlistManager.Banlists.Count>0){
-				Logger.Info("Banlist = "+BanlistManager.Banlists[0].Name);
-			}
 			return true;
 		}
 		
