@@ -80,7 +80,9 @@ namespace OcgWrapper
 			IntPtr buf = Marshal.AllocHGlobal(64);
 			Marshal.Copy(resp, 0, buf, resp.Length);
 			Api.set_responseb(m_pDuel, buf);
-			Marshal.FreeHGlobal(buf);
+			try{
+				Marshal.FreeHGlobal(buf);
+			}catch{}
 		}
 
 		public int QueryFieldCount(int player, CardLocation location)
