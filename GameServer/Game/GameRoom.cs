@@ -60,6 +60,10 @@ namespace YGOCore.Game
 		private bool m_swapped;
 		private bool m_matchKill;
 		
+		public bool isReading{
+			get{return State==GameState.Lobby;}
+		}
+		
 		private GameServer Server;
 		private System.Timers.Timer DuleTimer;
 		#endregion

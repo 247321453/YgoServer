@@ -28,11 +28,13 @@ namespace YGOCore.Net
 		public readonly SortedList<string, RoomInfo> Rooms = new SortedList<string, RoomInfo>(32);
 		public readonly Queue<WinInfo> WinInfos=new Queue<WinInfo>();
 		private System.Timers.Timer WinSaveTimer;
+		private RoomServer roomServer;
 		#endregion
 		
 		public GameServer(ServerConfig config)
 		{
 			Config = config;
+			roomServer = new RoomServer(this, config.ApiPort);
 		}
 		
 		#region socket
@@ -54,6 +56,7 @@ namespace YGOCore.Net
 				m_listener.OnTimeout    += new AsyncTcpListener<GameSession>.TimeoutEventHandler(Listener_OnTimeout);
 				m_listener.OnDisconnect    += new AsyncTcpListener<GameSession>.DisconnectEventHandler(Listener_OnDisconnect);
 				m_listener.Start();
+				roomServer.Start();
 				IsListening = true;
 			}
 			catch (SocketException)

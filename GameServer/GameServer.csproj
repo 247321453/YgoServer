@@ -225,6 +225,8 @@
     <Compile Include="Net\GameServer.cs" />
     <Compile Include="Net\GameServerPacket.cs" />
     <Compile Include="Net\GameSession.cs" />
+    <Compile Include="Net\HttpServer.cs" />
+    <Compile Include="Net\RoomServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerConfig.cs" />

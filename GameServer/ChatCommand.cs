@@ -47,7 +47,31 @@ namespace YGOCore
 				return;
 			}
 			cmd = cmd.ToLower();
+			string[] args = cmd.Split(new char[]{' '}, 2);
+			cmd = args[0];
 			switch(cmd){
+				case "room":
+					bool isdo = true;
+					if(args.Length>1){
+						switch(args[1]){
+							case "-json":
+							case "-j":
+								
+								if(Server!=null){
+									Console.WriteLine(""+Server.GetRoomJson(false, false));
+								}
+								break;
+								default :
+									isdo = false;
+								break;
+						}
+					}
+					if(!isdo){
+						if(Server!=null){
+							Console.WriteLine(">>count="+Server.GetRoomCount());
+						}
+					}
+					break;
 				case "cls":
 					Console.Clear();
 					if(Server!=null)
@@ -56,6 +80,9 @@ namespace YGOCore
 				case "close":
 					if(Server!=null)
 						Server.Stop();
+					break;
+				default:
+					Console.WriteLine(">>invalid command:"+cmd);
 					break;
 			}
 		}

@@ -21,6 +21,57 @@ namespace YGOCore.Net
 		#endregion
 		
 		#region 房间事件
+		public static List<int> GameCards(this GameServer server, string name){
+			List<int> cards =new List<int>();
+			GameRoom room = null;
+			lock(server.Rooms){
+				if(server.Rooms.ContainsKey(name)){
+					RoomInfo info = server.Rooms[name];
+					room = info.Room;
+				}
+			}
+			if(room !=null && room!=null && room.Players!=null){
+				foreach(GameSession pl in room.Players){
+					if(pl!=null && pl.Deck!=null){
+						List<int> _cards = pl.Deck.Alls;
+						foreach(int id in _cards){
+							if(!cards.Contains(id)){
+								cards.Add(id);
+							}
+						}
+					}
+				}
+			}
+			return cards;
+		}
+		public static int GetRoomCount(this GameServer server){
+			lock(server.Rooms){
+				return server.Rooms.Count;
+			}
+		}
+		public static string GetRoomJson(this GameServer server,bool noPwd,bool isReady){
+			List<RoomInfo> infos =new List<RoomInfo>();
+			lock(server.Rooms){
+				infos.AddRange(server.Rooms.Values);
+			}
+			int count = infos.Count;
+			for(count--;count>=0;count--){
+				RoomInfo info = infos[count];
+				if(noPwd){
+					if(info.NeedPass){
+						infos.RemoveAt(count);
+						continue;
+					}
+				}
+				if(isReady){
+					if(info.IsStart){
+						infos.RemoveAt(count);
+						continue;
+					}
+				}
+			}
+			return Tool.ToJson(infos);
+		}
 		public static void OnJoinRoom(this GameServer server,GameRoom room, GameSession client){
 			if(room == null||room.Config == null){
 				return;
