@@ -78,6 +78,10 @@ namespace AsyncServer {
 //					isSending = true;
 //				}
 //			}
+			if(!Connected){
+				//已经断开
+				return;
+			}
 			Queue<byte[]> arrays = new Queue<byte[]>();
 			lock (m_PendingBuffer){
 				while(m_PendingBuffer.Count>0){
@@ -86,45 +90,57 @@ namespace AsyncServer {
 			}
 			if (arrays.Count > 1)
 			{
-				Logger.Debug("send "+arrays.Count);
+				//Logger.Debug("send "+arrays.Count);
 				//   2 个包以上，进行拼包后再发送
 				byte[] datas = null;
 				using(MemoryStream stream  =new MemoryStream()){
 					using(BinaryWriter writer=new BinaryWriter(stream)){
 						while(arrays.Count>0){
-							var buff = arrays.Dequeue();
-							writer.Write(buff);
+							try{
+								var buff = arrays.Dequeue();
+								writer.Write(buff);
+							}catch(IOException){
+							}
 						}
 					}
 					datas = stream.ToArray();
 				}
 				if(datas!=null && datas.Length>0){
-					if(isAsync){
-						client.Client.BeginSend(datas, 0, datas.Length, SocketFlags.None,
-						                        new AsyncCallback(SendDataEnd), this);
-					}else{
-						client.Client.Send(datas);
+					try{
+						if(isAsync){
+							client.Client.BeginSend(datas, 0, datas.Length, SocketFlags.None,
+							                        new AsyncCallback(SendDataEnd), this);
+						}else{
+							client.Client.Send(datas);
+						}
+					}catch(SocketException){
+					}catch(Exception){
+						
 					}
 					//WriteData(this, datas, isAsync);
 					return;
 				}
 			}
 			else if(arrays.Count==1)	{
-				Logger.Debug("send 1");
+				//Logger.Debug("send 1");
 				var data = arrays.Dequeue();
 				if(data!=null && data.Length>0){
-					if(isAsync){
-						client.Client.BeginSend(data, 0, data.Length, SocketFlags.None,
-						                        new AsyncCallback(SendDataEnd), client);
-					}else{
-						client.Client.Send(data);
+					try{
+						if(isAsync){
+							client.Client.BeginSend(data, 0, data.Length, SocketFlags.None,
+							                        new AsyncCallback(SendDataEnd), client);
+						}else{
+							client.Client.Send(data);
+						}
+					}catch(SocketException){
+					}catch(Exception){
+						
 					}
-					
 					//WriteData(this, data, isAsync);
 					return;
 				}
 			}else{
-				Logger.Debug("nothing send");
+				//Logger.Debug("nothing send");
 			}
 //			if(isAsync){
 //				lock(lock_send){
@@ -134,8 +150,13 @@ namespace AsyncServer {
 		}
 		private void SendDataEnd(IAsyncResult ar)
 		{
-			TcpClient client = (TcpClient)ar.AsyncState;
-			client.Client.EndSend(ar);
+			try{
+				TcpClient client = (TcpClient)ar.AsyncState;
+				client.Client.EndSend(ar);
+			}catch(SocketException){
+			}catch(Exception){
+				
+			}
 //			if(isAsync){
 //				lock(lock_send){
 //					isSending = false;
@@ -270,8 +291,7 @@ namespace AsyncServer {
 		/// <value><c>true</c> if connected; otherwise, <c>false</c>.</value>
 		public bool Connected {
 			get {
-				lock(SyncRoot)
-					return ( Client != null && Client.Connected);
+				return ( Client != null && Client.Connected);
 			}
 		}
 
@@ -297,7 +317,10 @@ namespace AsyncServer {
 				return;
 			}
 			_Dispose = true;
-			timer.Close();
+			try{
+				timer.Stop();
+				timer.Close();
+			}catch{}
 			timer=null;
 		}
 		#endregion

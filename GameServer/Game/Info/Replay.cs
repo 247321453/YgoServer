@@ -61,29 +61,30 @@ namespace YGOCore.Game
 			Header.Props = new byte[8];
 
 			Encoder lzma = new Encoder();
-			using (MemoryStream props = new MemoryStream(Header.Props))
+			using (MemoryStream props = new MemoryStream(Header.Props)){
 				lzma.WriteCoderProperties(props);
+			}
 
-			MemoryStream compressed = new MemoryStream();
-			lzma.Code(new MemoryStream(raw), compressed, raw.LongLength, -1, null);
+			using(MemoryStream compressed = new MemoryStream()){
+				using(MemoryStream rawsream = new MemoryStream(raw)){
+					lzma.Code(rawsream, compressed, raw.LongLength, -1, null);
+					raw = compressed.ToArray();
+				}
+			}
+			using(MemoryStream ms = new MemoryStream()){
+				using(BinaryWriter writer = new BinaryWriter(ms)){
+					writer.Write(Header.Id);
+					writer.Write(Header.Version);
+					writer.Write(Header.Flag);
+					writer.Write(Header.Seed);
+					writer.Write(Header.DataSize);
+					writer.Write(Header.Hash);
+					writer.Write(Header.Props);
 
-			raw = compressed.ToArray();
-
-			MemoryStream ms = new MemoryStream();
-			BinaryWriter writer = new BinaryWriter(ms);
-
-			writer.Write(Header.Id);
-			writer.Write(Header.Version);
-			writer.Write(Header.Flag);
-			writer.Write(Header.Seed);
-			writer.Write(Header.DataSize);
-			writer.Write(Header.Hash);
-			writer.Write(Header.Props);
-
-			writer.Write(raw);
-
-			m_data = ms.ToArray();
-			
+					writer.Write(raw);
+				}
+				m_data = ms.ToArray();
+			}
 			if(AutoReplay){
 				ThreadPool.QueueUserWorkItem(new WaitCallback(saveYrp));
 			}

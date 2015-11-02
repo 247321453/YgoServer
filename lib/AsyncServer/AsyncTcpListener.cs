@@ -10,6 +10,7 @@ namespace AsyncServer{
 	/// Implaments an asynchronous TCP server.
 	/// </summary>
 	public class AsyncTcpListener<T> {
+		
 		#region delegate
 		/// <summary>
 		/// Receive event handler.
@@ -166,7 +167,7 @@ namespace AsyncServer{
 				client = listener.EndAcceptTcpClient(result);
 				client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, 1);
 				Heard(client);
-			}catch(System.Net.Sockets.SocketException ex) {
+			}catch(SocketException ex) {
 				// If this happens, socket error code information is at: http://msdn.microsoft.com/en-us/library/windows/desktop/ms740668(v=vs.85).aspx
 				Logger.Error("Could not accept socket (" + ex.ErrorCode.ToString() + "): " + ex.ToString());
 			}catch(Exception ex) {
@@ -306,7 +307,7 @@ namespace AsyncServer{
 					connection.Timer.Close();
 				}
 				connection.Client.Close();
-			}catch{
+			}catch(Exception){
 				//Logger.Error("Close error:"+e.ToString());
 			}
 		}

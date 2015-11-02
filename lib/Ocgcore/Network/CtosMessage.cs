@@ -2,7 +2,7 @@
 {
 	public enum CtosMessage : byte
     {
-    	Unknown = 0,
+		Unknown = 0,
         Response = 0x1,
         UpdateDeck = 0x2,
         HandResult = 0x3,

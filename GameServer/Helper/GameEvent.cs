@@ -13,78 +13,37 @@ namespace YGOCore.Net
 	public static class GameEvent
 	{
 		#region 消息匹配
+		static readonly EventHandler<GameSession, GameClientPacket> EventHandler = new EventHandler<GameSession, GameClientPacket>();
+		
+		static GameEvent(){
+			RegisterEvents();
+		}
+		static void RegisterEvents(){
+			EventHandler.Register((ushort)CtosMessage.PlayerInfo, 	OnPlayerInfo);
+			EventHandler.Register((ushort)CtosMessage.JoinGame,		OnJoinGame);
+			EventHandler.Register((ushort)CtosMessage.CreateGame,	OnCreateGame);
+			EventHandler.Register((ushort)CtosMessage.Chat, 		OnChat);
+			EventHandler.Register((ushort)CtosMessage.HsToDuelist, 	OnMoveToDeulList);
+			EventHandler.Register((ushort)CtosMessage.HsToObserver,	OnMoveToObserver);
+			EventHandler.Register((ushort)CtosMessage.LeaveGame,	OnLeaveGame);
+			EventHandler.Register((ushort)CtosMessage.HsReady,		OnSetReady);
+			EventHandler.Register((ushort)CtosMessage.HsNotReady,	OnNotReady);
+			EventHandler.Register((ushort)CtosMessage.HsKick,		OnKick);
+			EventHandler.Register((ushort)CtosMessage.HsStart,		OnStartDuel);
+			EventHandler.Register((ushort)CtosMessage.HandResult,	OnHandResult);
+			EventHandler.Register((ushort)CtosMessage.TpResult,		OnTpResult);
+			EventHandler.Register((ushort)CtosMessage.UpdateDeck,	OnUpdateDeck);
+			EventHandler.Register((ushort)CtosMessage.Response,		OnResponse);
+			EventHandler.Register((ushort)CtosMessage.Surrender,	OnSurrender);
+		}
 		public static void Handler(GameSession player, List<GameClientPacket> packets){
 			foreach(GameClientPacket packet in packets){
-				Parse(player, packet);
+				//			Parse(player, packet);
+				CtosMessage msg = packet.ReadCtos();
+				EventHandler.Do((ushort)msg, player, packet);
 			}
 		}
-		
-		
-		private static void Parse(GameSession m_player, GameClientPacket packet)
-		{
-			CtosMessage msg = packet.ReadCtos();
-		//	Logger.Debug("CtosMessage:"+msg);
-			switch (msg)
-			{
-				case CtosMessage.PlayerInfo:
-					m_player.OnPlayerInfo(packet);
-					break;
-				case CtosMessage.JoinGame:
-					m_player.OnJoinGame(packet);
-					break;
-				case CtosMessage.CreateGame:
-					m_player.OnCreateGame(packet);
-					break;
-				case CtosMessage.Unknown:
-					Logger.Error("unknown packet id:"+packet.CtosValue);
-					return;
-			}
-			if (!m_player.IsAuthentified){
-				return;
-			}
-			switch (msg)
-			{
-				case CtosMessage.Chat:
-					m_player.OnChat(packet);
-					break;
-				case CtosMessage.HsToDuelist:
-					m_player.OnMoveTo(true);
-					break;
-				case CtosMessage.HsToObserver:
-					m_player.OnMoveTo(false);
-					break;
-				case CtosMessage.LeaveGame:
-					m_player.OnLeaveGame(packet);
-					break;
-				case CtosMessage.HsReady:
-					m_player.OnSetReady(true);
-					break;
-				case CtosMessage.HsNotReady:
-					m_player.OnSetReady(false);
-					break;
-				case CtosMessage.HsKick:
-					m_player.OnKick(packet);
-					break;
-				case CtosMessage.HsStart:
-					m_player.OnStartDuel(packet);
-					break;
-				case CtosMessage.HandResult:
-					m_player.OnHandResult(packet);
-					break;
-				case CtosMessage.TpResult:
-					m_player.OnTpResult(packet);
-					break;
-				case CtosMessage.UpdateDeck:
-					m_player.OnUpdateDeck(packet);
-					break;
-				case CtosMessage.Response:
-					m_player.OnResponse(packet);
-					break;
-				case CtosMessage.Surrender:
-					m_player.OnSurrender(packet);
-					break;
-			}
-		}
+
 		#endregion
 		
 		#region 消息
@@ -123,7 +82,7 @@ namespace YGOCore.Net
 		#endregion
 		
 		#region 玩家信息/登录
-		public static void OnPlayerInfo(this GameSession client, GameClientPacket packet){
+		public static void OnPlayerInfo(GameSession client, GameClientPacket packet){
 			if (client.Name != null)
 				return;
 			string name = packet.ReadUnicode(20);
@@ -140,7 +99,7 @@ namespace YGOCore.Net
 		#endregion
 		
 		#region 加入游戏
-		public static void OnJoinGame(this GameSession client, GameClientPacket packet){
+		public static void OnJoinGame(GameSession client, GameClientPacket packet){
 			if (string.IsNullOrEmpty(client.Name) || client.Type != (int)PlayerType.Undefined){
 				Logger.Debug("join room fail:"+client.Name);
 				return;
@@ -202,7 +161,7 @@ namespace YGOCore.Net
 		#endregion
 		
 		#region 创建游戏
-		public static void OnCreateGame(this GameSession client, GameClientPacket packet){
+		public static void OnCreateGame(GameSession client, GameClientPacket packet){
 			if (string.IsNullOrEmpty(client.Name) || client.Type != (int)PlayerType.Undefined)
 				return;
 			GameRoom room = null;
@@ -230,7 +189,10 @@ namespace YGOCore.Net
 			packet.Write((byte)(client.Type + (client.Game.HostPlayer.Equals(client) ? (int)PlayerType.Host : 0)));
 			client.Send(packet);
 		}
-		public static void OnChat(this GameSession client, GameClientPacket packet){
+		public static void OnChat(GameSession client, GameClientPacket packet){
+			if (!client.IsAuthentified){
+				return;
+			}
 			string msg = packet.ReadUnicode(256);
 			if(client.Game==null){
 				return;
@@ -240,12 +202,12 @@ namespace YGOCore.Net
 			chat.WriteUnicode(msg, msg.Length + 1);
 			client.Game.SendToAllBut(chat, client);
 		}
-		public static void OnTpResult(this GameSession client, GameClientPacket packet){
+		public static void OnTpResult(GameSession client, GameClientPacket packet){
 			bool tp = packet.ReadByte() != 0;
 			if(client.Game!=null)
 				client.Game.TpResult(client, tp);
 		}
-		public static void OnUpdateDeck(this GameSession client, GameClientPacket packet){
+		public static void OnUpdateDeck(GameSession client, GameClientPacket packet){
 			if (client.Game==null||client.Type == (int)PlayerType.Observer)
 				return;
 			Deck deck = new Deck();
@@ -279,7 +241,7 @@ namespace YGOCore.Net
 				client.Game.MatchSide();
 			}
 		}
-		public static void OnResponse(this GameSession client, GameClientPacket packet){
+		public static void OnResponse(GameSession client, GameClientPacket packet){
 			if (client.Game==null||client.Game.State != GameState.Duel)
 				return;
 			if (client.State != PlayerState.Response)
@@ -290,17 +252,17 @@ namespace YGOCore.Net
 			client.State = PlayerState.None;
 			client.Game.SetResponse(resp);
 		}
-		public static void OnSurrender(this GameSession client, GameClientPacket packet){
+		public static void OnSurrender(GameSession client, GameClientPacket packet){
 			if(client.Game!=null)
 				client.Game.Surrender(client, 0);
 		}
 		
-		public static void OnHandResult(this GameSession client, GameClientPacket packet){
+		public static void OnHandResult(GameSession client, GameClientPacket packet){
 			int res = packet.ReadByte();
 			if(client.Game!=null)
 				client.Game.HandResult(client, res);
 		}
-		public static void OnStartDuel(this GameSession client, GameClientPacket packet){
+		public static void OnStartDuel(GameSession client, GameClientPacket packet){
 			if(client.Game!=null){
 				client.Game.StartDuel(client);
 			}
@@ -308,25 +270,38 @@ namespace YGOCore.Net
 		#endregion
 		
 		#region 决斗前
-		public static void OnKick(this GameSession client, GameClientPacket packet){
+		public static void OnKick(GameSession client, GameClientPacket packet){
 			int pos = packet.ReadByte();
 			if(client.Game!=null)
 				client.Game.KickPlayer(client, pos);
 		}
-		public static void OnSetReady(this GameSession client, bool ready){
-			if(client.Game!=null)
-				client.Game.SetReady(client, ready);
-		}
-
-		public static void OnMoveTo(this GameSession client, bool isdeul){
-			if(client.Game==null)return;
-			if(isdeul){
-				client.Game.MoveToDuelist(client);
-			}else{
-				client.Game.MoveToObserver(client);
+		public static void OnSetReady(GameSession client, GameClientPacket packet){
+			if (!client.IsAuthentified){
+				return;
 			}
+			if(client.Game!=null)
+				client.Game.SetReady(client, true);
 		}
-		public static void OnLeaveGame(this GameSession client, GameClientPacket packet){
+		public static void OnNotReady(GameSession client, GameClientPacket packet){
+			if (!client.IsAuthentified){
+				return;
+			}
+			if(client.Game!=null)
+				client.Game.SetReady(client, false);
+		}
+		public static void OnMoveToDeulList(GameSession client, GameClientPacket packet){
+			if (!client.IsAuthentified){
+				return;
+			}
+			client.Game.MoveToDuelist(client);
+		}
+		public static void OnMoveToObserver(GameSession client, GameClientPacket packet){
+			if (!client.IsAuthentified){
+				return;
+			}
+			client.Game.MoveToObserver(client);
+		}
+		public static void OnLeaveGame(GameSession client, GameClientPacket packet){
 			if(client.Game!=null)
 				client.Game.RemovePlayer(client);
 		}

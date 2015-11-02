@@ -61,6 +61,54 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\lib\SevenZip\Compress\LZ\LzOutWindow.cs">
+      <Link>SevenZip\Compress\LZ\LzOutWindow.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Compress\LZ\LzInWindow.cs">
+      <Link>SevenZip\Compress\LZ\LzInWindow.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Compress\LZ\LzBinTree.cs">
+      <Link>SevenZip\Compress\LZ\LzBinTree.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Compress\LZ\IMatchFinder.cs">
+      <Link>SevenZip\Compress\LZ\IMatchFinder.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Compress\RangeCoder\RangeCoder.cs">
+      <Link>SevenZip\Compress\RangeCoder\RangeCoder.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Compress\RangeCoder\RangeCoderBit.cs">
+      <Link>SevenZip\Compress\RangeCoder\RangeCoderBit.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Compress\RangeCoder\RangeCoderBitTree.cs">
+      <Link>SevenZip\Compress\RangeCoder\RangeCoderBitTree.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Compress\LZMA\LzmaBase.cs">
+      <Link>SevenZip\Compress\LZMA\LzmaBase.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Compress\LZMA\LzmaDecoder.cs">
+      <Link>SevenZip\Compress\LZMA\LzmaDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Compress\LZMA\LzmaEncoder.cs">
+      <Link>SevenZip\Compress\LZMA\LzmaEncoder.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Common\CommandLineParser.cs">
+      <Link>SevenZip\Common\CommandLineParser.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Common\OutBuffer.cs">
+      <Link>SevenZip\Common\OutBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Common\CRC.cs">
+      <Link>SevenZip\Common\CRC.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\Common\InBuffer.cs">
+      <Link>SevenZip\Common\InBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\SevenZip\ICoder.cs">
+      <Link>SevenZip\ICoder.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\AsyncServer\EventHandler.cs">
+      <Link>AsyncServer\EventHandler.cs</Link>
+    </Compile>
     <Compile Include="..\lib\AsyncServer\ArrayQueue.cs">
       <Link>AsyncServer\ArrayQueue.cs</Link>
     </Compile>
@@ -168,7 +216,7 @@
     <Compile Include="Game\Info\RoomInfo.cs" />
     <Compile Include="Game\MsgSystem.cs" />
     <Compile Include="Helper\BinaryExtensions.cs" />
-    <Compile Include="Helper\PlayerEvent.cs" />
+    <Compile Include="Helper\GameEvent.cs" />
     <Compile Include="Helper\Password.cs" />
     <Compile Include="Helper\ServerEvent.cs" />
     <Compile Include="Helper\Tool.cs" />
@@ -180,21 +228,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerConfig.cs" />
-    <Compile Include="SevenZip\Common\CommandLineParser.cs" />
-    <Compile Include="SevenZip\Common\CRC.cs" />
-    <Compile Include="SevenZip\Common\InBuffer.cs" />
-    <Compile Include="SevenZip\Common\OutBuffer.cs" />
-    <Compile Include="SevenZip\Compress\LZMA\LzmaBase.cs" />
-    <Compile Include="SevenZip\Compress\LZMA\LzmaDecoder.cs" />
-    <Compile Include="SevenZip\Compress\LZMA\LzmaEncoder.cs" />
-    <Compile Include="SevenZip\Compress\LZ\IMatchFinder.cs" />
-    <Compile Include="SevenZip\Compress\LZ\LzBinTree.cs" />
-    <Compile Include="SevenZip\Compress\LZ\LzInWindow.cs" />
-    <Compile Include="SevenZip\Compress\LZ\LzOutWindow.cs" />
-    <Compile Include="SevenZip\Compress\RangeCoder\RangeCoder.cs" />
-    <Compile Include="SevenZip\Compress\RangeCoder\RangeCoderBit.cs" />
-    <Compile Include="SevenZip\Compress\RangeCoder\RangeCoderBitTree.cs" />
-    <Compile Include="SevenZip\ICoder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Game\Info" />
@@ -204,7 +237,6 @@
     <Folder Include="Ocgcore\Helpers" />
     <Folder Include="Ocgcore\Managers" />
     <Folder Include="Ocgcore\Network" />
-    <Folder Include="SevenZip" />
     <Folder Include="Game" />
     <Folder Include="Ocgcore" />
     <Folder Include="Helper" />
