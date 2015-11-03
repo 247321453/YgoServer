@@ -25,7 +25,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\GameServer\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;__MonoCS__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -34,7 +34,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>..\release\</OutputPath>
+    <OutputPath>..\GameServer\bin\Release\</OutputPath>
     <DefineConstants>TRACE;__MonoCS__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

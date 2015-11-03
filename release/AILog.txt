@@ -161,3 +161,7 @@
 [17:08:46] Duel finished against [AI]Robot, result: Lose
 [17:08:46] OnDuelEnd
 [17:08:46] OnDuelEnd
+[16:45:09] [AI]Robot$kenan123 join 127.0.0.1:8910 lZogv use 
+[16:45:09] Decks initialized, 2 found.
+[16:45:09] use deck is AI_OldSchool
+[16:45:18] Server is close

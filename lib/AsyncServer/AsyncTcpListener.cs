@@ -162,6 +162,7 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="result">Asynchronous result.</param>
 		private void AcceptCallback(System.IAsyncResult result) {
+			if(!Started) return;
 			TcpClient client  = null;
 			try {
 				client = listener.EndAcceptTcpClient(result);
@@ -169,7 +170,7 @@ namespace AsyncServer{
 				Heard(client);
 			}catch(SocketException ex) {
 				// If this happens, socket error code information is at: http://msdn.microsoft.com/en-us/library/windows/desktop/ms740668(v=vs.85).aspx
-				Logger.Error("Could not accept socket (" + ex.ErrorCode.ToString() + "): " + ex.ToString());
+				Logger.Warn("Could not accept socket (" + ex.ErrorCode.ToString() + "): " + ex.ToString());
 			}catch(Exception ex) {
 				// Either the server is full or the client has reached the maximum connections per IP.
 				Logger.Error("Could not add client: " + ex.ToString());
@@ -178,7 +179,9 @@ namespace AsyncServer{
 				}
 			}finally{
 			}
-			listener.BeginAcceptTcpClient(AcceptCallback, null);
+			if(Started){
+				listener.BeginAcceptTcpClient(AcceptCallback, null);
+			}
 		}
 
 
@@ -251,7 +254,7 @@ namespace AsyncServer{
 				connected = connection.Client.Connected;
 				available = connection.Client.Available;
 			}
-		//	Logger.Debug("receive:"+read);
+			//	Logger.Debug("receive:"+read);
 			if(read != 0 && connected) {
 				connection.ReceiveQueue.Enqueue(connection.Bytes, 0, read);
 				if(read == connection.Bytes.Length){
@@ -266,6 +269,7 @@ namespace AsyncServer{
 						connection.Timer.Interval = timeout;
 					connection.Timer.Restart();
 				}
+				if(!Started) return;
 				BeginRead(connection);
 			}else{
 				DisconnectHandler(connection);
@@ -350,6 +354,7 @@ namespace AsyncServer{
 			}
 		}
 		public void Stop(){
+			Started =false;
 			lock(clients_l){
 				foreach(Connection<T> client in m_clients){
 					client.Close();

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using OcgWrapper;
 using System.Threading;
 using System.Text;
+using OcgWrapper.Enums;
 using AsyncServer;
 
 namespace YGOCore.Net
@@ -13,7 +14,11 @@ namespace YGOCore.Net
 	{
 		#region 登录/登出
 		public static bool OnLogin(this GameServer server, string name, string pwd){
-			return false;
+			if(name!=null&&name.StartsWith("[AI]")){
+				Logger.Debug("[AI]login:"+pwd+"=="+server.Config.AIPass+"?");
+				return server.Config.AIPass == pwd;
+			}
+			return true;
 		}
 		public static void OnLogout(this GameServer server, GameSession client){
 			
@@ -290,5 +295,22 @@ namespace YGOCore.Net
 		}
 		#endregion
 		
+		#region 公告
+		public static void OnWorldMessage(this GameServer server, string msg, PlayerType color= PlayerType.Yellow){
+			List<GameRoom> rooms = new List<GameRoom>();
+			lock(server.Rooms){
+				foreach(RoomInfo roominfo in server.Rooms.Values){
+					if(roominfo.Room!=null){
+						rooms.Add(roominfo.Room);
+					}
+				}
+			}
+			foreach(GameRoom room in rooms){
+				if(room!=null&& !room.IsEnd){
+					room.ServerMessage(msg, color);
+				}
+			}
+		}
+		#endregion
 	}
 }

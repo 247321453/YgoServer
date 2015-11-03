@@ -31,7 +31,7 @@
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;__MonoCS__</DefineConstants>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -40,9 +40,13 @@
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;__MonoCS__</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Data.Sqlite">
+      <HintPath>..\lib\Mono.Data.Sqlite.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -51,9 +55,6 @@
     <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\lib\System.Data.SQLite.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -61,6 +62,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\lib\Password.cs">
+      <Link>Helper\Password.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\RoomHelper.cs">
+      <Link>Helper\RoomHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\RoomInfo.cs">
+      <Link>Helper\RoomInfo.cs</Link>
+    </Compile>
     <Compile Include="..\lib\SevenZip\Compress\LZ\LzOutWindow.cs">
       <Link>SevenZip\Compress\LZ\LzOutWindow.cs</Link>
     </Compile>
@@ -160,9 +170,6 @@
     <Compile Include="..\lib\Ocgcore\Helpers\MtRandom.cs">
       <Link>Ocgcore\Helpers\MtRandom.cs</Link>
     </Compile>
-    <Compile Include="..\lib\Ocgcore\Helpers\RSAHelper.cs">
-      <Link>Ocgcore\Helpers\RSAHelper.cs</Link>
-    </Compile>
     <Compile Include="..\lib\Ocgcore\Managers\CardsManager.cs">
       <Link>Ocgcore\Managers\CardsManager.cs</Link>
     </Compile>
@@ -202,24 +209,25 @@
     <Compile Include="..\lib\Ocgcore\WinInfo.cs">
       <Link>Game\Info\WinInfo.cs</Link>
     </Compile>
+    <Compile Include="..\lib\Tool.cs">
+      <Link>Helper\Tool.cs</Link>
+    </Compile>
     <Compile Include="ChatCommand.cs" />
     <Compile Include="Game\BanlistManager.cs" />
     <Compile Include="Game\CoreMessage.cs" />
     <Compile Include="Game\GameAnalyser.cs" />
     <Compile Include="Game\GameConfig.cs" />
     <Compile Include="Game\GameRoom.cs" />
+    <Compile Include="Game\GameTimer.cs" />
     <Compile Include="Game\Info\Banlist.cs" />
     <Compile Include="Game\Info\ClientCard.cs" />
     <Compile Include="Game\Info\Deck.cs" />
     <Compile Include="Game\Info\Replay.cs" />
     <Compile Include="Game\Info\ReplayHeader.cs" />
-    <Compile Include="Game\Info\RoomInfo.cs" />
     <Compile Include="Game\MsgSystem.cs" />
     <Compile Include="Helper\BinaryExtensions.cs" />
     <Compile Include="Helper\GameEvent.cs" />
-    <Compile Include="Helper\Password.cs" />
     <Compile Include="Helper\ServerEvent.cs" />
-    <Compile Include="Helper\Tool.cs" />
     <Compile Include="Messages.cs" />
     <Compile Include="Net\GameClientPacket.cs" />
     <Compile Include="Net\GameServer.cs" />
@@ -246,6 +254,10 @@
   <ItemGroup>
     <None Include="..\lib\ocgcore.dll">
       <Link>ocgcore.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\lib\sqlite3.dll">
+      <Link>sqlite3.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="config.txt">

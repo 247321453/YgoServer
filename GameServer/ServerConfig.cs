@@ -34,14 +34,6 @@ namespace YGOCore
 		/// </summary>
 		public string BanlistFile { get; private set; }
 		/// <summary>
-		/// log
-		/// </summary>
-		public bool ErrorLog { get; private set; }
-		/// <summary>
-		/// 控制台日志
-		/// </summary>
-		public bool ConsoleLog { get; private set; }
-		/// <summary>
 		/// 超时自动结束回合
 		/// </summary>
 		public bool AutoEndTurn { get; private set; }
@@ -49,16 +41,14 @@ namespace YGOCore
 		/// 客户端版本
 		/// </summary>
 		public int ClientVersion { get; private set; }
-		
 		/// <summary>
 		/// 异步模式
 		/// </summary>
 		public bool AsyncMode{get;private set;}
-		
-//		/// <summary>
-//		/// 允许重复登陆
-//		/// </summary>
-//		public bool RepeatLogin{get;private set;}
+		/// <summary>
+		/// 日志等级
+		/// </summary>
+		public int LogLevel{get;private set;}
 		/// <summary>
 		/// 需要密码
 		/// </summary>
@@ -77,7 +67,6 @@ namespace YGOCore
 		public string replayFolder { get; private set; }
 		
 		public bool RecordWin{get;private set;}
-		
 		/// <summary>
 		/// 记录
 		/// </summary>
@@ -86,7 +75,6 @@ namespace YGOCore
 		/// 登录接口
 		/// </summary>
 		public string LoginUrl{get;private set;}
-		
 		// 私聊
 //		public bool PrivateChat{get;private set;}
 		
@@ -107,10 +95,6 @@ namespace YGOCore
 		
 		public bool AIisHide{get;private set;}
 		public string AIPass{get;private set;}
-		/// <summary>
-		/// 短密码
-		/// </summary>
-		public bool ShortPwd {get;private set;}
 		/// <summary>
 		/// 帐号禁止模式
 		/// 0 不禁止
@@ -136,9 +120,6 @@ namespace YGOCore
 			replayFolder="replay";
 			CardCDB = "cards.cdb";
 			BanlistFile = "lflist.conf";
-			ErrorLog = true;
-			//RepeatLogin=true;
-			ConsoleLog = true;
 			AutoEndTurn = true;
 			isNeedAuth=false;
 			MaxRoomCount=200;
@@ -149,14 +130,13 @@ namespace YGOCore
 			ServerDesc="Server is Testing.";
 			File_ServerMsgs="server_msg.txt";
 			MaxAICount=10;
-			AIPass="3ab51053212386455461483e66c65425";//kenan123
+			AIPass="kenan123";
 			LoginUrl="http://127.0.0.1/login.php";
 			AIisHide=false;
 			ApiIsLocal=true;
 			AsyncMode=false;
 			BanMode = 0;
 			File_BanAccont = "namelist.txt";
-			ShortPwd = false;
 			//	Timeout = 20;
 		}
 
@@ -238,20 +218,8 @@ namespace YGOCore
 				case "bannamelist":
 					File_BanAccont = value;
 					break;
-//				case "privatechat":
-//					PrivateChat=Convert.ToBoolean(value);
-//					break;
-				case "errorlog":
-					ErrorLog = Convert.ToBoolean(value);
-					break;
-//				case "repeatlogin":
-//					RepeatLogin = Convert.ToBoolean(value);
-//					break;
-				case "consolelog":
-					ConsoleLog = Convert.ToBoolean(value);
-					break;
-				case "shortpwd":
-					ShortPwd = Convert.ToBoolean(value);
+				case "loglevel":
+					LogLevel = Convert.ToInt32(value);
 					break;
 				case "autoendturn":
 					AutoEndTurn = Convert.ToBoolean(value);

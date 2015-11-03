@@ -35,6 +35,7 @@ namespace YGOCore.Net
 			EventHandler.Register((ushort)CtosMessage.UpdateDeck,	OnUpdateDeck);
 			EventHandler.Register((ushort)CtosMessage.Response,		OnResponse);
 			EventHandler.Register((ushort)CtosMessage.Surrender,	OnSurrender);
+			EventHandler.Register((ushort)CtosMessage.TimeConfirm,  OnTimeConfirm);
 		}
 		public static void Handler(GameSession player, List<GameClientPacket> packets){
 			foreach(GameClientPacket packet in packets){
@@ -157,6 +158,7 @@ namespace YGOCore.Net
 				}
 			}
 			Logger.Debug("room "+room.Name+" add "+client.Name);
+			client.Game = room;
 			room.AddPlayer(client);
 		}
 		#endregion
@@ -174,6 +176,7 @@ namespace YGOCore.Net
 				client.LobbyError(Messages.MSG_FULL);
 				return;
 			}
+			client.Game = room;
 			room.AddPlayer(client);
 			//IsAuthentified = CheckAuth();
 			if(!client.IsAuthentified){
@@ -183,6 +186,11 @@ namespace YGOCore.Net
 		#endregion
 		
 		#region 决斗事件
+		public static void OnTimeConfirm(GameSession client, GameClientPacket packet){
+			if(client!=null){
+				Logger.Debug("time out "+client.Name);
+			}
+		}
 		public static void SendTypeChange(this GameSession client)
 		{
 			if(client.Game==null)return;
@@ -198,7 +206,7 @@ namespace YGOCore.Net
 			if(client.Game==null){
 				return;
 			}
-			if(!ChatCommand.OnChat(client, msg)){
+			if(!client.OnChatCommand(msg)){
 				GameServerPacket chat = new GameServerPacket(StocMessage.Chat);
 				chat.Write((short)client.Type);
 				chat.WriteUnicode(msg, msg.Length + 1);

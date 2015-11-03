@@ -90,9 +90,15 @@ namespace YGOClient
 				try{
 					List<RoomInfo> list=new List<RoomInfo>();
 					list=Tool.Parse<List<RoomInfo>>(json);
+					#if DEBUG
+					MessageBox.Show("count:"+list.Count);
+					#endif
 					fp_rooms.SetRooms(m_client, m_server, list.ToArray());
 				}
-				catch{
+				catch(Exception e){
+					#if DEBUG
+					MessageBox.Show(json);
+					#endif
 					fp_rooms.SetRooms(m_client, m_server, null);
 				}
 			}

@@ -12,7 +12,7 @@ namespace WindBot
 {
 	public class Program
 	{
-		public const short ProVersion = 0x1336;
+		public static int ProVersion = 0x1337;
 
 		public static Random Rand;
 		public static bool Replay{get;private set;}
@@ -23,7 +23,7 @@ namespace WindBot
 			Replay=false;
 			if(args.Length < 3)
 			{
-				Console.Out.WriteLine("String username, String serverIP, int serverPort,String room,String deck");
+				Console.Out.WriteLine("String username, String serverIP, int serverPort,int version,String room,String deck");
 				//  args=new String[] {"AI", ""};
 				Console.ReadKey();
 				return;
@@ -31,11 +31,13 @@ namespace WindBot
 			try
 			{
 				if(args.Length==3){
-					Run(args[0], args[1], int.Parse(args[2]), "", "");
+					Run(args[0], args[1], int.Parse(args[2]), ProVersion);
 				}else if(args.Length==4){
-					Run(args[0], args[1], int.Parse(args[2]), args[3], "");
+					Run(args[0], args[1], int.Parse(args[2]), int.Parse(args[3]));
+				}else if(args.Length==5){
+					Run(args[0], args[1], int.Parse(args[2]), int.Parse(args[3]), args[4]);
 				}else{
-					Run(args[0], args[1], int.Parse(args[2]), args[3], args[4]);
+					Run(args[0], args[1], int.Parse(args[2]), int.Parse(args[3]), args[4], args[5]);
 				}
 			}
 			catch (Exception ex)
@@ -45,9 +47,10 @@ namespace WindBot
 			}
 		}
 
-		private static void Run(String username, String serverIP, int serverPort,String room, String deck)
+		private static void Run(String username, String serverIP, int serverPort,int version, String room="", String deck="")
 		{
-			Logger.WriteLine(username+" join "+serverIP+":"+serverPort+" "+room+" use "+deck);
+			ProVersion = version;
+			Logger.WriteLine(username+" "+serverIP+":"+serverPort+" 0x"+version.ToString("x")+" room:"+room+" deck "+deck);
 			Rand = new Random();
 			PathManager.Init(".", "script", "cards.cdb");
 			CardsManager.Init();

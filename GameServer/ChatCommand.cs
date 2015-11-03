@@ -19,34 +19,37 @@ namespace YGOCore
 	/// <summary>
 	/// Description of ChatCommand.
 	/// </summary>
-	public class ChatCommand
+	public static class ChatCommand
 	{
-		public ChatCommand()
-		{
-		}
-		public static void WriteHead(ServerConfig config){
-			if(config==null){
+		#region start info
+		public static void WriteHead(this GameServer server){
+			if(server==null||server.Config == null){
 				return;
 			}
+			ServerConfig config = server.Config;
 			string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 			Console.Title=(string.IsNullOrEmpty(config.ServerName)?"YgoServer":config.ServerName);
-			Console.WriteLine("┌───────────────────────────────────");
-			Console.WriteLine("│ __     _______  ____   _____");
-			Console.WriteLine("│ \\ \\   / / ____|/ __ \\ / ____|");
-			Console.WriteLine("│  \\ \\_/ / |  __| |  | | |     ___  _ __ ___");
-			Console.WriteLine("│   \\   /| | |_ | |  | | |    / _ \\| '__/ _ \\");
-			Console.WriteLine("│    | | | |__| | |__| | |___| (_) | | |  __/");
-			Console.WriteLine("│    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|    Build: " + Version);
-			Console.WriteLine("│");
-			Console.WriteLine("│Client version 0x" + config.ClientVersion.ToString("x") + " or new, MaxRooms = "+config.MaxRoomCount, false);
-			Console.WriteLine("│NeedAtuh="+config.isNeedAuth+", AsyncMode="+config.AsyncMode
-			                  +", RecordWin="+config.RecordWin
-			                  +", BanMode="+config.BanMode);
-			Console.WriteLine("│"+config.ServerDesc);
-			Console.WriteLine("└───────────────────────────────────");
+			Logger.Info("┌───────────────────────────────────", true);
+			Logger.Info("│ __     _______  ____   _____", true);
+			Logger.Info("│ \\ \\   / / ____|/ __ \\ / ____|", true);
+			Logger.Info("│  \\ \\_/ / |  __| |  | | |     ___  _ __ ___", true);
+			Logger.Info("│   \\   /| | |_ | |  | | |    / _ \\| '__/ _ \\", true);
+			Logger.Info("│    | | | |__| | |__| | |___| (_) | | |  __/", true);
+			Logger.Info("│    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|    Build: " + Version, true);
+			Logger.Info("│", true);
+			Logger.Info("│Client version 0x" + config.ClientVersion.ToString("x")
+			            + " or new, MaxRooms = "+config.MaxRoomCount, true);
+			Logger.Info("│NeedAtuh="+config.isNeedAuth+", AsyncMode="+config.AsyncMode
+			            +", RecordWin="+config.RecordWin
+			            +", BanMode="+config.BanMode, true);
+			Logger.Info("│"+config.ServerDesc, true);
+			Logger.Info("└───────────────────────────────────", true);
 		}
 		static readonly List<Process> AIs=new List<Process>();
 		
+		#endregion
+		
+		#region ai
 		/// <summary>
 		/// 拥有一定数量
 		/// </summary>
@@ -67,11 +70,14 @@ namespace YGOCore
 				" [AI]Robot$"+Config.AIPass
 				+" 127.0.0.1 "
 				+Config.ServerPort
+				+" "+ Config.ClientVersion
 				+ " "+room;
 			ai.EnableRaisingEvents=true;
+			#if !DEBUG
 			if(Config.AIisHide){
 				ai.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
 			}
+			#endif
 			ai.Exited+=new EventHandler(ai_Exited);
 			ai.Start();
 			lock(AIs){
@@ -92,13 +98,16 @@ namespace YGOCore
 			}
 			Logger.Debug("AI exit game. count="+AIs.Count);
 		}
+		#endregion
+		
+		#region client msg
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="client"></param>
 		/// <param name="msg"></param>
 		/// <returns>处理返回true，未处理返回false</returns>
-		public static bool OnChat(GameSession client, string msg){
+		public static bool OnChatCommand(this GameSession client, string msg){
 			if(msg == null){
 				return true;
 			}
@@ -119,7 +128,10 @@ namespace YGOCore
 			}
 			return false;
 		}
-		public static void OnCommand(GameServer Server, string cmd){
+		#endregion
+		
+		#region server
+		public static void OnCommand(this GameServer Server, string cmd){
 			if(cmd==null){
 				return;
 			}
@@ -128,25 +140,13 @@ namespace YGOCore
 			cmd = args[0];
 			bool isdo = true;
 			switch(cmd){
-				case "send":
-					if(args.Length>1){
-						switch(args[1]){
-							case "-t":
-							case "-to":
-								if(Server!=null){
-									//指定玩家
-								}
-								break;
-								default :
-									isdo = false;
-								break;
-						}
-					}
-					if(!isdo){
-						if(Server!=null){
-							//发送给所有玩家
-						}
-					}
+//				case "sendto":
+//					//发送给所有玩家
+//					Server.OnWorldMessage(args[1]);
+//					break;
+				case "sendall":
+					//发送给所有玩家
+					Server.OnWorldMessage(args[1]);
 					break;
 				case "ai":
 					lock(AIs){
@@ -159,34 +159,50 @@ namespace YGOCore
 							case "-json":
 							case "-j":
 								
-								if(Server!=null){
-									Console.WriteLine(""+Server.GetRoomJson(false, false));
-								}
+								Console.WriteLine(""+Server.GetRoomJson(false, false));
 								break;
 								default :
 									isdo = false;
 								break;
 						}
+					}else{
+						isdo  =false;
 					}
 					if(!isdo){
-						if(Server!=null){
-							Console.WriteLine(">>count="+Server.GetRoomCount());
-						}
+						Console.WriteLine(">>count="+Server.GetRoomCount());
 					}
 					break;
 				case "cls":
 					Console.Clear();
-					if(Server!=null)
-						WriteHead(Server.Config);
+					Server.WriteHead();
 					break;
 				case "close":
-					if(Server!=null)
+					if(Server!=null){
 						Server.Stop();
+						Console.WriteLine(">>close ok");
+						Console.WriteLine("Press any key...");
+						Console.ReadKey(true);
+					}
+					break;
+				case "addai":
+					string name = null;
+					GameRoom room = Server.CreateOrGetGame(GameConfig.Parse(Server, ""));
+					if(room == null && room.Config!=null){
+						name = Server.GetGuidString();
+					}else{
+						name = room.Config.Name;
+					}
+					if(AddAI(Server.Config, ""+name)){
+						Console.WriteLine(">>add ai to "+name);
+					}else{
+						Console.WriteLine(">>add ai fail");
+					}
 					break;
 				default:
 					Console.WriteLine(">>invalid command:"+cmd);
 					break;
 			}
 		}
+		#endregion
 	}
 }
