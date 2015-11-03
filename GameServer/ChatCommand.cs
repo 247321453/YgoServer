@@ -29,20 +29,21 @@ namespace YGOCore
 			ServerConfig config = server.Config;
 			string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 			Console.Title=(string.IsNullOrEmpty(config.ServerName)?"YgoServer":config.ServerName);
-			Console.WriteLine("┌───────────────────────────────────");
-			Console.WriteLine("│ __     _______  ____   _____");
-			Console.WriteLine("│ \\ \\   / / ____|/ __ \\ / ____|");
-			Console.WriteLine("│  \\ \\_/ / |  __| |  | | |     ___  _ __ ___");
-			Console.WriteLine("│   \\   /| | |_ | |  | | |    / _ \\| '__/ _ \\");
-			Console.WriteLine("│    | | | |__| | |__| | |___| (_) | | |  __/");
-			Console.WriteLine("│    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|    Build: " + Version);
-			Console.WriteLine("│");
-			Console.WriteLine("│Client version 0x" + config.ClientVersion.ToString("x") + " or new, MaxRooms = "+config.MaxRoomCount, false);
-			Console.WriteLine("│NeedAtuh="+config.isNeedAuth+", AsyncMode="+config.AsyncMode
+			Logger.Info("┌───────────────────────────────────", true);
+			Logger.Info("│ __     _______  ____   _____", true);
+			Logger.Info("│ \\ \\   / / ____|/ __ \\ / ____|", true);
+			Logger.Info("│  \\ \\_/ / |  __| |  | | |     ___  _ __ ___", true);
+			Logger.Info("│   \\   /| | |_ | |  | | |    / _ \\| '__/ _ \\", true);
+			Logger.Info("│    | | | |__| | |__| | |___| (_) | | |  __/", true);
+			Logger.Info("│    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|    Build: " + Version, true);
+			Logger.Info("│", true);
+			Logger.Info("│Client version 0x" + config.ClientVersion.ToString("x")
+			            + " or new, MaxRooms = "+config.MaxRoomCount, true);
+			Logger.Info("│NeedAtuh="+config.isNeedAuth+", AsyncMode="+config.AsyncMode
 			                  +", RecordWin="+config.RecordWin
-			                  +", BanMode="+config.BanMode);
-			Console.WriteLine("│"+config.ServerDesc);
-			Console.WriteLine("└───────────────────────────────────");
+			                  +", BanMode="+config.BanMode, true);
+			Logger.Info("│"+config.ServerDesc, true);
+			Logger.Info("└───────────────────────────────────", true);
 		}
 		static readonly List<Process> AIs=new List<Process>();
 		
@@ -161,6 +162,8 @@ namespace YGOCore
 									isdo = false;
 								break;
 						}
+					}else{
+						isdo  =false; 
 					}
 					if(!isdo){
 						Console.WriteLine(">>count="+Server.GetRoomCount());
@@ -171,8 +174,12 @@ namespace YGOCore
 					Server.WriteHead();
 					break;
 				case "close":
-					if(Server!=null)
+					if(Server!=null){
 						Server.Stop();
+						Console.WriteLine(">>close ok");
+						Console.WriteLine("Press any key...");
+						Console.ReadKey(true);
+					}
 					break;
 				default:
 					Console.WriteLine(">>invalid command:"+cmd);

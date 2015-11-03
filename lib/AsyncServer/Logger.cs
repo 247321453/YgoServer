@@ -25,23 +25,23 @@ namespace AsyncServer {
 		public static void SetErrorFile(string file){
 			ErrFile = file;
 		}
-		public static void Debug(object obj){
-			if(sLevel <= LogLevel.Debug){
-				WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") +" "+obj, ConsoleColor.White);
+		public static void Debug(object obj, bool ignoreLevel=false){
+			if(sLevel <= LogLevel.Debug || ignoreLevel){
+				WriteLine(" "+obj, ConsoleColor.Gray);
 			}
 		}
-		public static void Info(object obj){
-			if(sLevel <= LogLevel.Info){
-				WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") +" "+obj, ConsoleColor.Cyan);
+		public static void Info(object obj, bool ignoreLevel=false){
+			if(sLevel <= LogLevel.Info || ignoreLevel){
+				WriteLine(""+obj, ConsoleColor.White);
 			}
 		}
-		public static void Warn(object obj){
-			if(sLevel <= LogLevel.Warn){
+		public static void Warn(object obj, bool ignoreLevel=false){
+			if(sLevel <= LogLevel.Warn || ignoreLevel){
 				WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") +" "+obj, ConsoleColor.Yellow);
 			}
 		}
-		public static void Error(object obj){
-			if(sLevel <= LogLevel.Error){
+		public static void Error(object obj, bool ignoreLevel=false){
+			if(sLevel <= LogLevel.Error || ignoreLevel){
 				string str =DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") +" "+obj;
 				WriteLine(str, ConsoleColor.Red);
 				File.AppendAllText(ErrFile, str);

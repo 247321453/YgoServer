@@ -23,13 +23,13 @@ namespace YGOCore.Net
 		#region member
 		private AsyncTcpListener<GameSession> m_listener;
 		private static List<string> banNames=new List<string>();
-		public bool IsListening = false;
 		public ServerConfig Config{get;private set;}
 		public readonly SortedList<string, RoomInfo> Rooms = new SortedList<string, RoomInfo>(32);
 		public readonly Queue<WinInfo> WinInfos=new Queue<WinInfo>();
 		private System.Timers.Timer WinSaveTimer;
 		private RoomServer roomServer;
 		private TcpClient roomClient;
+		public bool IsListening;
 		#endregion
 		
 		public GameServer(ServerConfig config)
@@ -90,6 +90,7 @@ namespace YGOCore.Net
 		/// </summary>
 		public void Stop(){
 			if(IsListening){
+				IsListening = false;
 				if(roomClient != null ){
 					try{
 						if(roomClient.Connected){
@@ -104,7 +105,6 @@ namespace YGOCore.Net
 					WinSaveTimer.Close();
 				}
 				WinSaveTimer_Elapsed(null, null);
-				IsListening = false;
 			}
 		}
 		#endregion
