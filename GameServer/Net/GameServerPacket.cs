@@ -37,6 +37,7 @@ namespace YGOCore.Net
 				}
 				content = stream.ToArray();
 			}
+			Close();
 		}
 	}
 }

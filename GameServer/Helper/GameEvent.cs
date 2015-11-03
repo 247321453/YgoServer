@@ -13,7 +13,7 @@ namespace YGOCore.Net
 	public static class GameEvent
 	{
 		#region 消息匹配
-		static readonly EventHandler<GameSession, GameClientPacket> EventHandler = new EventHandler<GameSession, GameClientPacket>();
+		static readonly EventHandler<ushort, GameSession, GameClientPacket> EventHandler = new EventHandler<ushort, GameSession, GameClientPacket>();
 		
 		static GameEvent(){
 			RegisterEvents();
@@ -41,6 +41,7 @@ namespace YGOCore.Net
 				//			Parse(player, packet);
 				CtosMessage msg = packet.ReadCtos();
 				EventHandler.Do((ushort)msg, player, packet);
+				packet.Close();
 			}
 		}
 
@@ -197,10 +198,12 @@ namespace YGOCore.Net
 			if(client.Game==null){
 				return;
 			}
-			GameServerPacket chat = new GameServerPacket(StocMessage.Chat);
-			chat.Write((short)client.Type);
-			chat.WriteUnicode(msg, msg.Length + 1);
-			client.Game.SendToAllBut(chat, client);
+			if(!ChatCommand.OnChat(client, msg)){
+				GameServerPacket chat = new GameServerPacket(StocMessage.Chat);
+				chat.Write((short)client.Type);
+				chat.WriteUnicode(msg, msg.Length + 1);
+				client.Game.SendToAllBut(chat, client);
+			}
 		}
 		public static void OnTpResult(GameSession client, GameClientPacket packet){
 			bool tp = packet.ReadByte() != 0;
