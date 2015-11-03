@@ -12,7 +12,7 @@ namespace WindBot
 {
 	public class Program
 	{
-		public const short ProVersion = 0x1336;
+		public const short ProVersion = 0x1337;
 
 		public static Random Rand;
 		public static bool Replay{get;private set;}

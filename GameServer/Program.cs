@@ -23,6 +23,7 @@ namespace YGOCore
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
+			Console.ForegroundColor = ConsoleColor.White;
 			ServerConfig Config = new ServerConfig();
 			bool loaded = args.Length > 0 ? Config.Load(args[0]): Config.Load();
 			Logger.SetLogLevel(Config.LogLevel);

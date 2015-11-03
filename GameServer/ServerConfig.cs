@@ -130,7 +130,7 @@ namespace YGOCore
 			ServerDesc="Server is Testing.";
 			File_ServerMsgs="server_msg.txt";
 			MaxAICount=10;
-			AIPass="3ab51053212386455461483e66c65425";//kenan123
+			AIPass="kenan123";
 			LoginUrl="http://127.0.0.1/login.php";
 			AIisHide=false;
 			ApiIsLocal=true;

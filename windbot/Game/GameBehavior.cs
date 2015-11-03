@@ -52,12 +52,30 @@ namespace WindBot.Game
 			if (id == StocMessage.GameMsg)
 			{
 				GameMessage msg = packet.ReadGameMsg();
-				if (_messages.ContainsKey(msg))
+				
+				if (_messages.ContainsKey(msg)){
 					_messages[msg](packet);
+					#if DEBUG
+					Logger.WriteLine("GameMessage deal "+msg);
+					#endif
+				}
+				else{
+					#if DEBUG
+					Logger.WriteLine("GameMessage don't deal "+msg);
+					#endif
+				}
 				return;
 			}
-			if (_packets.ContainsKey(id))
+			if (_packets.ContainsKey(id)){
 				_packets[id](packet);
+				#if DEBUG
+				Logger.WriteLine("id deal "+id);
+				#endif
+			}else{
+				#if DEBUG
+				Logger.WriteLine("id don't deal "+id);
+				#endif
+			}
 		}
 
 		private void RegisterPackets()
@@ -144,6 +162,7 @@ namespace WindBot.Game
 		{
 			string name = packet.ReadUnicode(20);
 			if(name.StartsWith("[err]")){
+				Logger.WriteLine(name);
 				Connection.Close();
 				return;
 			}

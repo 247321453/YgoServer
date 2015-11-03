@@ -32,12 +32,12 @@ namespace YGOCore.Net
 				return false;
 			}
 			if(client.Server.Config.isNeedAuth || namepassword.StartsWith("[AI]")){
-				string[] _names=namepassword.Split('$');
+				string[] _names=namepassword.Split(new char[]{'$'}, 2);
 				if(_names.Length==1){
 					client.ServerMessage(Messages.ERR_NO_PASS);
 					return false;
 				}else{
-					if(client.Server.OnLogin(_names[0],_names[1])){
+					if(!client.Server.OnLogin(_names[0],_names[1])){
 						//LobbyError("Auth Fail");
 						if(Encoding.Default.GetBytes(namepassword).Length>=20){
 							client.ServerMessage(Messages.ERR_NAME_PASSWORD_LONG);

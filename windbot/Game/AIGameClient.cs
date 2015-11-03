@@ -84,6 +84,7 @@ namespace WindBot.Game
 
 			packet.Write((byte)CtosMessage.HsReady);
 			Connection.Send(packet);
+			Logger.WriteLine("send deck");
 		}
 
 		public void Tick()

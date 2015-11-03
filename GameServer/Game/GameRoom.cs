@@ -135,7 +135,6 @@ namespace YGOCore.Game
 				if(player.Server!=null){
 					player.Server.OnJoinRoom(this, player);
 				}
-				player.Game = this;
 			}
 			if (State != GameState.Lobby)
 			{
@@ -200,7 +199,6 @@ namespace YGOCore.Game
 					}
 				}
 			}
-
 			if (Observers.Count > 0)
 			{
 				GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);

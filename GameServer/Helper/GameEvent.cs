@@ -158,6 +158,7 @@ namespace YGOCore.Net
 				}
 			}
 			Logger.Debug("room "+room.Name+" add "+client.Name);
+			client.Game = room;
 			room.AddPlayer(client);
 		}
 		#endregion
@@ -175,6 +176,7 @@ namespace YGOCore.Net
 				client.LobbyError(Messages.MSG_FULL);
 				return;
 			}
+			client.Game = room;
 			room.AddPlayer(client);
 			//IsAuthentified = CheckAuth();
 			if(!client.IsAuthentified){

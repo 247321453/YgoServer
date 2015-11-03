@@ -40,8 +40,8 @@ namespace YGOCore
 			Logger.Info("│Client version 0x" + config.ClientVersion.ToString("x")
 			            + " or new, MaxRooms = "+config.MaxRoomCount, true);
 			Logger.Info("│NeedAtuh="+config.isNeedAuth+", AsyncMode="+config.AsyncMode
-			                  +", RecordWin="+config.RecordWin
-			                  +", BanMode="+config.BanMode, true);
+			            +", RecordWin="+config.RecordWin
+			            +", BanMode="+config.BanMode, true);
 			Logger.Info("│"+config.ServerDesc, true);
 			Logger.Info("└───────────────────────────────────", true);
 		}
@@ -72,9 +72,11 @@ namespace YGOCore
 				+Config.ServerPort
 				+ " "+room;
 			ai.EnableRaisingEvents=true;
+			#if !DEBUG
 			if(Config.AIisHide){
 				ai.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
 			}
+			#endif
 			ai.Exited+=new EventHandler(ai_Exited);
 			ai.Start();
 			lock(AIs){
@@ -163,7 +165,7 @@ namespace YGOCore
 								break;
 						}
 					}else{
-						isdo  =false; 
+						isdo  =false;
 					}
 					if(!isdo){
 						Console.WriteLine(">>count="+Server.GetRoomCount());
@@ -179,6 +181,20 @@ namespace YGOCore
 						Console.WriteLine(">>close ok");
 						Console.WriteLine("Press any key...");
 						Console.ReadKey(true);
+					}
+					break;
+				case "addai":
+					string name = null;
+					GameRoom room = Server.CreateOrGetGame(GameConfig.Parse(Server, ""));
+					if(room == null && room.Config!=null){
+						name = Server.GetGuidString();
+					}else{
+						name = room.Config.Name;
+					}
+					if(AddAI(Server.Config, ""+name)){
+						Console.WriteLine(">>add ai to "+name);
+					}else{
+						Console.WriteLine(">>add ai fail");
 					}
 					break;
 				default:

@@ -14,7 +14,11 @@ namespace YGOCore.Net
 	{
 		#region 登录/登出
 		public static bool OnLogin(this GameServer server, string name, string pwd){
-			return false;
+			if(name!=null&&name.StartsWith("[AI]")){
+				Logger.Debug("[AI]login:"+pwd+"=="+server.Config.AIPass+"?");
+				return server.Config.AIPass == pwd;
+			}
+			return true;
 		}
 		public static void OnLogout(this GameServer server, GameSession client){
 			
