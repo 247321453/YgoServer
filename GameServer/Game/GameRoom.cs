@@ -609,8 +609,9 @@ namespace YGOCore.Game
 			TimeTick();
 		}
 		
-		public void  TimeTick()
+		public void TimeTick()
 		{
+			#region Duel
 			if (State == GameState.Duel)
 			{
 				if (m_time != null)
@@ -649,7 +650,9 @@ namespace YGOCore.Game
 					}
 				}
 			}
-
+			#endregion
+			
+			#region Side
 			if (State == GameState.Side)
 			{
 				TimeSpan elapsed = DateTime.UtcNow - SideTimer;
@@ -678,7 +681,9 @@ namespace YGOCore.Game
 					return;
 				}
 			}
-
+			#endregion
+			
+			#region Starting
 			if (State == GameState.Starting)
 			{
 				if (IsTpSelect)
@@ -706,6 +711,9 @@ namespace YGOCore.Game
 
 				}
 			}
+			#endregion
+			
+			#region Hand
 			if (State==GameState.Hand)
 			{
 				TimeSpan elapsed = DateTime.UtcNow - RPSTimer;
@@ -743,6 +751,8 @@ namespace YGOCore.Game
 						Surrender(Players[1 - m_lastresponse], 3, true);
 				}
 			}
+			#endregion
+			
 		}
 		
 		#endregion

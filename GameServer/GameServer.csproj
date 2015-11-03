@@ -169,9 +169,6 @@
     <Compile Include="..\lib\Ocgcore\Helpers\MtRandom.cs">
       <Link>Ocgcore\Helpers\MtRandom.cs</Link>
     </Compile>
-    <Compile Include="..\lib\Ocgcore\Helpers\RSAHelper.cs">
-      <Link>Ocgcore\Helpers\RSAHelper.cs</Link>
-    </Compile>
     <Compile Include="..\lib\Ocgcore\Managers\CardsManager.cs">
       <Link>Ocgcore\Managers\CardsManager.cs</Link>
     </Compile>

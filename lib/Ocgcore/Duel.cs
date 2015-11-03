@@ -60,7 +60,11 @@ namespace OcgWrapper
 					byte[] arr = new byte[4096];
 					Api.get_message(m_pDuel, m_buffer);
 					Marshal.Copy(m_buffer, arr, 0, 4096);
-					result = HandleMessage(new BinaryReader(new MemoryStream(arr)), arr, len);
+					using(MemoryStream stream = new MemoryStream(arr)){
+						using(BinaryReader reader= new BinaryReader(stream)){
+							result = HandleMessage(reader, arr, len);
+						}
+					}
 					if (result != 0)
 						return result;
 				}
