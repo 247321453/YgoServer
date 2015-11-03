@@ -180,9 +180,9 @@ namespace YGOCore.Game
 
 				player.Type = (int)PlayerType.Observer;
 				Observers.Add(player);
-				if(player.IsAuthentified){
-					ServerMessage("[Server] "+player.Name+" watch game.", PlayerType.White);
-				}
+//				if(player.IsAuthentified){
+//					ServerMessage("[Server] "+player.Name+" watch game.", PlayerType.White);
+//				}
 			}
 			SendJoinGame(player);
 			player.SendTypeChange();
@@ -283,12 +283,10 @@ namespace YGOCore.Game
 				player.Send(enter);
 			}
 		}
-		public List<string> SendToAll(GameServerPacket packet)
+		public void SendToAll(GameServerPacket packet)
 		{
-			List<string> names=new List<string>();
-			names.AddRange(SendToPlayers(packet).ToArray());
-			names.AddRange(SendToObservers(packet).ToArray());
-			return names;
+			SendToPlayers(packet);
+			SendToObservers(packet);
 		}
 		
 		public void SendToAllBut(GameServerPacket packet, GameSession except)
@@ -308,28 +306,22 @@ namespace YGOCore.Game
 			else
 				SendToAll(packet);
 		}
-		public List<string> SendToPlayers(GameServerPacket packet)
+		public void SendToPlayers(GameServerPacket packet)
 		{
-			List<string> names=new List<string>();
 			foreach (GameSession player in Players){
 				if (player != null){
 					player.Send(packet);
-					names.Add(player.Name);
 				}
 			}
-			return names;
 		}
 
-		public List<string> SendToObservers(GameServerPacket packet)
+		public void SendToObservers(GameServerPacket packet)
 		{
-			List<string> names=new List<string>();
 			foreach (GameSession player in Observers){
 				if (player != null){
 					player.Send(packet);
-					names.Add(player.Name);
 				}
 			}
-			return names;
 		}
 		public void ServerMessage(string msg, PlayerType color = PlayerType.Yellow)
 		{

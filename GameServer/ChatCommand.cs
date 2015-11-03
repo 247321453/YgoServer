@@ -21,6 +21,7 @@ namespace YGOCore
 	/// </summary>
 	public static class ChatCommand
 	{
+		#region start info
 		public static void WriteHead(this GameServer server){
 			if(server==null||server.Config == null){
 				return;
@@ -45,6 +46,9 @@ namespace YGOCore
 		}
 		static readonly List<Process> AIs=new List<Process>();
 		
+		#endregion
+		
+		#region ai
 		/// <summary>
 		/// 拥有一定数量
 		/// </summary>
@@ -90,6 +94,9 @@ namespace YGOCore
 			}
 			Logger.Debug("AI exit game. count="+AIs.Count);
 		}
+		#endregion
+		
+		#region client msg
 		/// <summary>
 		/// 
 		/// </summary>
@@ -117,6 +124,9 @@ namespace YGOCore
 			}
 			return false;
 		}
+		#endregion
+		
+		#region server
 		public static void OnCommand(this GameServer Server, string cmd){
 			if(cmd==null){
 				return;
@@ -126,25 +136,13 @@ namespace YGOCore
 			cmd = args[0];
 			bool isdo = true;
 			switch(cmd){
-				case "send":
-					if(args.Length>1){
-						switch(args[1]){
-							case "-t":
-							case "-to":
-								if(Server!=null){
-									//指定玩家
-								}
-								break;
-								default :
-									isdo = false;
-								break;
-						}
-					}
-					if(!isdo){
-						if(Server!=null){
-							//发送给所有玩家
-						}
-					}
+//				case "sendto":
+//					//发送给所有玩家
+//					Server.OnWorldMessage(args[1]);
+//					break;
+				case "sendall":
+					//发送给所有玩家
+					Server.OnWorldMessage(args[1]);
 					break;
 				case "ai":
 					lock(AIs){
@@ -181,5 +179,6 @@ namespace YGOCore
 					break;
 			}
 		}
+		#endregion
 	}
 }

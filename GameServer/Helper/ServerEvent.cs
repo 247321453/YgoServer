@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using OcgWrapper;
 using System.Threading;
 using System.Text;
+using OcgWrapper.Enums;
 using AsyncServer;
 
 namespace YGOCore.Net
@@ -290,5 +291,22 @@ namespace YGOCore.Net
 		}
 		#endregion
 		
+		#region 公告
+		public static void OnWorldMessage(this GameServer server, string msg, PlayerType color= PlayerType.Yellow){
+			List<GameRoom> rooms = new List<GameRoom>();
+			lock(server.Rooms){
+				foreach(RoomInfo roominfo in server.Rooms.Values){
+					if(roominfo.Room!=null){
+						rooms.Add(roominfo.Room);
+					}
+				}
+			}
+			foreach(GameRoom room in rooms){
+				if(room!=null&& !room.IsEnd){
+					room.ServerMessage(msg, color);
+				}
+			}
+		}
+		#endregion
 	}
 }
