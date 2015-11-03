@@ -4,34 +4,28 @@ clientversion=1337
 #####################
 servername=菜菜服务器
 serverdesc=提供30只野生AI，房间数50，不支持私聊
-###服务器断开
 serverport=8910
-###房间列表端口
+###房间服务器端口
 apiport=18910
-###房间列表禁本地访问，用于网站
-apiislocal=true
+###true则是发送到房间服务端
+apiislocal=false
 ##############
 ###需要登录认证，AI任何时候都需要密码
 needauth=false
-###短密码，md5的前2位和后2位
-shortpwd=false
 ############如果卡的话，试试asyncmode为true
 asyncmode=true
 ###最大房间数
 maxroom=500
-###控制台输出
-consolelog=true
 ###自动录像
 autoreplay=true
 replayfolder=replay
-###记录游戏结果
 recordwin=true
 ###服务器公告
 servermsgs=server_msg.txt
 ###登录验证，POST 传参， username，password
 loginurl=http://www.ygobbs.com/index.php?ctrl=api
 ###AI最大数
-maxai=30
+maxai=100
 ###AI界面隐藏
 aiishide=true
 ###AI登录密码
@@ -40,3 +34,4 @@ aipassword=kenan123
 ##### 0 不禁止；1 禁止列表帐号；2 只允许列表帐号
 bannamemode=0
 bannamelist=namelist.txt
+loglevel=2

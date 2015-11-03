@@ -23,12 +23,12 @@ namespace YGOCore
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
-			Logger.SetLogLevel(LogLevel.Info);
+			ServerConfig Config = new ServerConfig();
+			bool loaded = args.Length > 0 ? Config.Load(args[0]): Config.Load();
+			Logger.SetLogLevel(Config.LogLevel);
 			#if DEBUG
 			Logger.SetLogLevel(LogLevel.Debug);
 			#endif
-			ServerConfig Config = new ServerConfig();
-			bool loaded = args.Length > 0 ? Config.Load(args[0]): Config.Load();
 			Random = new Random();
 			GameServer Server = new GameServer(Config);
 			Server.WriteHead();

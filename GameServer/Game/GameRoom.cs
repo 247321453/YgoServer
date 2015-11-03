@@ -31,18 +31,13 @@ namespace YGOCore.Game
 		/// </summary>
 		public Replay Replay;
 		public int[] m_handResult;
-		private int m_startplayer;
+		public int m_startplayer;
 		public int CurrentPlayer;
 		public GameSession HostPlayer{get; private set;}
-		private int m_lasttick;
-		private int m_lastresponse;
+		public int m_lastresponse{get; private set;}
 		private int[] m_timelimit;
 		private int[] m_bonustime;
 		private DateTime? m_time;
-		private DateTime SideTimer ;
-		private DateTime TpTimer;
-		private DateTime RPSTimer;
-		
 		private DateTime? StartTime;
 		/// <summary>
 		/// 是否在决斗
@@ -66,6 +61,7 @@ namespace YGOCore.Game
 		
 		private GameServer Server;
 		private System.Timers.Timer DuleTimer;
+		private GameTimer GameTimer;
 		#endregion
 		
 		#region 初始化
@@ -95,7 +91,8 @@ namespace YGOCore.Game
 			m_analyser = new GameAnalyser(this);
 			StartTime = DateTime.Now;
 			IsOpen =true;
-			DuleTimer = new System.Timers.Timer(1000);
+			GameTimer = new GameTimer(this);
+			DuleTimer = new System.Timers.Timer(10 *1000);
 			DuleTimer.AutoReset=true;
 			DuleTimer.Enabled=true;
 			DuleTimer.Elapsed+=new System.Timers.ElapsedEventHandler(DuleTimer_Elapsed);
@@ -415,8 +412,8 @@ namespace YGOCore.Game
 				IsReady[0] = false;
 				IsReady[1] = false;
 				ServerMessage(Messages.MSG_SIDE);
-				SideTimer = DateTime.UtcNow;
 				State = GameState.Side;
+				GameTimer.StartSideTimer();
 				SendToPlayers(new GameServerPacket(StocMessage.ChangeSide));
 				SendToObservers(new GameServerPacket(StocMessage.WaitingSide));
 			}
@@ -545,8 +542,9 @@ namespace YGOCore.Game
 			if (IsReady[0] && IsReady[1])
 			{
 				State = GameState.Starting;
+				GameTimer.StopSideTimer();
 				IsTpSelect = true;
-				TpTimer = DateTime.UtcNow;
+				GameTimer.StartStartingTimer();
 				Players[m_startplayer].Send(new GameServerPacket(StocMessage.SelectTp));
 			}
 		}
@@ -597,13 +595,7 @@ namespace YGOCore.Game
 			}
 		}
 		
-		public void DuleTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e){
-			TimeTick();
-		}
-		
-		public void TimeTick()
-		{
-			#region Duel
+		private void DuleTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e){
 			if (State == GameState.Duel)
 			{
 				if (m_time != null)
@@ -642,109 +634,6 @@ namespace YGOCore.Game
 					}
 				}
 			}
-			#endregion
-			
-			#region Side
-			if (State == GameState.Side)
-			{
-				TimeSpan elapsed = DateTime.UtcNow - SideTimer;
-				int currentTick = (int) (120 - elapsed.TotalSeconds);
-				if (currentTick == 60 || currentTick == 30 || currentTick == 10 || currentTick < 6)
-				{
-					if (m_lasttick != currentTick)
-					{
-						ServerMessage(string.Format(Messages.MSG_TIP_TIME, currentTick));
-						m_lasttick = currentTick;
-					}
-				}
-
-				if (elapsed.TotalMilliseconds >= 120000)
-				{
-					if (!IsReady[0] && !IsReady[1])
-					{
-						State = GameState.End;
-						End();
-						return;
-					}
-
-					Surrender(!IsReady[0] ? Players[0]:Players[1],3,true);
-					State = GameState.End;
-					End();
-					return;
-				}
-			}
-			#endregion
-			
-			#region Starting
-			if (State == GameState.Starting)
-			{
-				if (IsTpSelect)
-				{
-					TimeSpan elapsed = DateTime.UtcNow - TpTimer;
-
-					int currentTick = 30 - elapsed.Seconds;
-
-					if (currentTick == 15 || currentTick < 6)
-					{
-						if (m_lasttick != currentTick)
-						{
-							ServerMessage(string.Format(Messages.MSG_TIP_TIME, currentTick));
-							m_lasttick = currentTick;
-						}
-					}
-
-					if (elapsed.TotalMilliseconds >= 30000)
-					{
-						Surrender(Players[m_startplayer], 3, true);
-						State = GameState.End;
-						End();
-						return;
-					}
-
-				}
-			}
-			#endregion
-			
-			#region Hand
-			if (State==GameState.Hand)
-			{
-				TimeSpan elapsed = DateTime.UtcNow - RPSTimer;
-				int currentTick = (60 - elapsed.Seconds);
-
-				if (currentTick == 30 || currentTick == 15 || currentTick < 6)
-				{
-					if (m_lasttick != currentTick)
-					{
-						ServerMessage(string.Format(Messages.MSG_TIP_TIME, currentTick));
-						m_lasttick = currentTick;
-					}
-				}
-
-				if ((int)elapsed.TotalMilliseconds >= 60000)
-				{
-					if (m_handResult[0]!= 0)
-						Surrender(Players[1], 3, true);
-					else if (m_handResult[1] != 0)
-						Surrender(Players[0], 3, true);
-					else
-					{
-						State = GameState.End;
-						End();
-						return;
-					}
-
-					if (m_handResult[0] == 0 && m_handResult[1] == 0)
-					{
-						State = GameState.End;
-						End();
-						return;
-					}
-					else
-						Surrender(Players[1 - m_lastresponse], 3, true);
-				}
-			}
-			#endregion
-			
 		}
 		
 		#endregion
@@ -1147,7 +1036,7 @@ namespace YGOCore.Game
 		
 		private void SendHand()
 		{
-			RPSTimer = DateTime.UtcNow;
+			GameTimer.StartStartingTimer();
 			GameServerPacket hand = new GameServerPacket(StocMessage.SelectHand);
 			if (IsTag)
 			{

@@ -12,10 +12,33 @@ using YGOCore;
 using YGOCore.Game;
 using System.IO;
 using System.Net;
+using OcgWrapper.Enums;
 using System.Net.Sockets;
 
 namespace YGOCore.Net
 {
+	public enum StoSMessage{
+        /// <summary>
+        /// 添加一个房间
+        /// </summary>
+        RoomCreate = 0x101,
+        /// <summary>
+        /// 关闭一个房间
+        /// </summary>
+        RoomClose  = 0x102,
+        /// <summary>
+        /// 添加一个玩家
+        /// </summary>
+        RoomAdd    = 0x103,
+        /// <summary>
+        /// 移除一个玩家
+        /// </summary>
+        RoomRemove = 0x104,
+        /// <summary>
+        /// 所有房间信息
+        /// </summary>
+        RoomList   = 0x105,
+	}
 	public static class RoomHelper
 	{
 		public static void OnRoomCreate(this TcpClient client, RoomInfo info){
@@ -24,6 +47,7 @@ namespace YGOCore.Net
 			using(MemoryStream stream = new MemoryStream(bs.Length+2)){
 				using(BinaryWriter writer=new BinaryWriter(stream)){
 					writer.Write((ushort)bs.Length);
+					writer.Write((ushort)StoSMessage.RoomCreate);
 					writer.Write(bs);
 				}
 				bs = stream.ToArray();
