@@ -144,18 +144,15 @@ namespace Bend.Util {
 			}
 			//Console.WriteLine("get post data end");
 			srv.handlePOSTRequest(this, new StreamReader(ms));
-
 		}
 
 		public void writeSuccess() {
 			try{
 				outputStream.Write("HTTP/1.0 200 OK\r\n");
 				outputStream.Write("Content-Type: text/html;charset=utf-8\r\n");
-				if(srv.isLocal){
-					outputStream.Write("Access-Control-Allow-Origin: * \r\n");
-					outputStream.Write("Access-Control-Allow-Methods: * \r\n");
-					outputStream.Write("Access-Control-Allow-Headers: x-requested-with,content-type \r\n");
-				}
+				outputStream.Write("Access-Control-Allow-Origin: * \r\n");
+				outputStream.Write("Access-Control-Allow-Methods: * \r\n");
+				outputStream.Write("Access-Control-Allow-Headers: x-requested-with,content-type \r\n");
 				outputStream.Write("Connection: close\r\n");
 				outputStream.Write("\r\n");
 			}catch{}
@@ -174,7 +171,6 @@ namespace Bend.Util {
 	}
 
 	public abstract class HttpServer {
-		public bool isLocal=false;
 		protected int port;
 		TcpListener listener;
 		protected bool is_active = true;
@@ -185,11 +181,7 @@ namespace Bend.Util {
 
 		public void listen() {
 			try{
-				if(isLocal){
-					listener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
-				}else{
-					listener = new TcpListener(IPAddress.Any, port);
-				}
+				listener = new TcpListener(IPAddress.Any, port);
 				listener.Start();
 			}catch(Exception ex){
 				Console.WriteLine(ex);

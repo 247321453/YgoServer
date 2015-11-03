@@ -61,6 +61,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\lib\Password.cs">
+      <Link>Helper\Password.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\RoomHelper.cs">
+      <Link>Helper\RoomHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\RoomInfo.cs">
+      <Link>Helper\RoomInfo.cs</Link>
+    </Compile>
     <Compile Include="..\lib\SevenZip\Compress\LZ\LzOutWindow.cs">
       <Link>SevenZip\Compress\LZ\LzOutWindow.cs</Link>
     </Compile>
@@ -202,6 +211,9 @@
     <Compile Include="..\lib\Ocgcore\WinInfo.cs">
       <Link>Game\Info\WinInfo.cs</Link>
     </Compile>
+    <Compile Include="..\lib\Tool.cs">
+      <Link>Helper\Tool.cs</Link>
+    </Compile>
     <Compile Include="ChatCommand.cs" />
     <Compile Include="Game\BanlistManager.cs" />
     <Compile Include="Game\CoreMessage.cs" />
@@ -213,13 +225,10 @@
     <Compile Include="Game\Info\Deck.cs" />
     <Compile Include="Game\Info\Replay.cs" />
     <Compile Include="Game\Info\ReplayHeader.cs" />
-    <Compile Include="Game\Info\RoomInfo.cs" />
     <Compile Include="Game\MsgSystem.cs" />
     <Compile Include="Helper\BinaryExtensions.cs" />
     <Compile Include="Helper\GameEvent.cs" />
-    <Compile Include="Helper\Password.cs" />
     <Compile Include="Helper\ServerEvent.cs" />
-    <Compile Include="Helper\Tool.cs" />
     <Compile Include="Messages.cs" />
     <Compile Include="Net\GameClientPacket.cs" />
     <Compile Include="Net\GameServer.cs" />

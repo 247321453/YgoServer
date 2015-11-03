@@ -21,6 +21,27 @@
         Chat = 0x19,
         HsPlayerEnter = 0x20,
         HsPlayerChange = 0x21,
-        HsWatchChange = 0x22
+        HsWatchChange = 0x22,
+        
+        /// <summary>
+        /// 添加一个房间
+        /// </summary>
+        RoomCreate = 0x101,
+        /// <summary>
+        /// 关闭一个房间
+        /// </summary>
+        RoomClose  = 0x102,
+        /// <summary>
+        /// 添加一个玩家
+        /// </summary>
+        RoomAdd    = 0x103,
+        /// <summary>
+        /// 移除一个玩家
+        /// </summary>
+        RoomRemove = 0x104,
+        /// <summary>
+        /// 所有房间信息
+        /// </summary>
+        RoomList   = 0x105,
     }
 }

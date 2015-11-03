@@ -29,12 +29,12 @@ namespace YGOCore.Net
 		public readonly Queue<WinInfo> WinInfos=new Queue<WinInfo>();
 		private System.Timers.Timer WinSaveTimer;
 		private RoomServer roomServer;
+		private TcpClient roomClient;
 		#endregion
 		
 		public GameServer(ServerConfig config)
 		{
 			Config = config;
-			roomServer = new RoomServer(this, config.ApiPort);
 		}
 		
 		#region socket
@@ -54,9 +54,22 @@ namespace YGOCore.Net
 				m_listener.OnConnect    += new AsyncTcpListener<GameSession>.ConnectEventHandler(Listener_OnConnect);
 				m_listener.OnReceive    += new AsyncTcpListener<GameSession>.ReceiveEventHandler(Listener_OnReceive);
 				m_listener.OnTimeout    += new AsyncTcpListener<GameSession>.TimeoutEventHandler(Listener_OnTimeout);
-				m_listener.OnDisconnect    += new AsyncTcpListener<GameSession>.DisconnectEventHandler(Listener_OnDisconnect);
+				m_listener.OnDisconnect += new AsyncTcpListener<GameSession>.DisconnectEventHandler(Listener_OnDisconnect);
 				m_listener.Start();
-				roomServer.Start();
+				if(Config.ApiIsLocal){
+					if(roomClient==null){
+						roomClient = new TcpClient();
+						try{
+							roomClient.Client.Connect(IPAddress.Parse("127.0.0.1"), Config.ApiPort);
+						}catch(Exception){
+						}
+					}
+				}else{
+					if(roomServer==null){
+						roomServer = new RoomServer(this, Config.ApiPort);
+					}
+					roomServer.Start();
+				}
 				IsListening = true;
 			}
 			catch (SocketException)
@@ -72,9 +85,20 @@ namespace YGOCore.Net
 			Logger.Info("Listening on port " + Config.ServerPort);
 			return true;
 		}
-		
+		/// <summary>
+		/// 停止
+		/// </summary>
 		public void Stop(){
 			if(IsListening){
+				if(roomClient != null ){
+					try{
+						if(roomClient.Connected){
+							roomClient.Close();
+						}
+					}catch(Exception){
+						
+					}
+				}
 				m_listener.Stop();
 				if(Config.RecordWin){
 					WinSaveTimer.Close();
@@ -163,7 +187,6 @@ namespace YGOCore.Net
 			}
 		}
 		#endregion
-		
 		
 		#region 比赛记录
 		private void SatrtWinTimer(){

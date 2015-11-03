@@ -11,7 +11,6 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows.Forms;
 
 namespace YGOClient
 {
@@ -20,21 +19,24 @@ namespace YGOClient
 	/// </summary>
 	public class RoomTool
 	{
+		#region 协议启动
 		static string PRO="ccygo";
+		static string Path = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
 		/// <summary>
 		/// ccygo://127.0.0.1:8911/hello$123/username
 		/// </summary>
 		/// <param name="cmd"></param>
-		public static void Command(string cmd){
+		public static bool Command(string cmd){
 			if(cmd==null){
-				return;
+				return false;
 			}
 			int index=(PRO+"://").Length+1;
 			if(index<cmd.Length){
 				string room =cmd.Substring((PRO+"://").Length+1);
 				Start(room);
+				return true;
 			}else{
-				MessageBox.Show("error");
+				return false;
 			}
 		}
 		
@@ -57,22 +59,22 @@ namespace YGOClient
 			RunGame("-r");
 		}
 		
-		private static void RunGame(string arg=" "){
-			string file= Combine(Application.StartupPath, "ygopro.exe");
+		private static bool RunGame(string arg=" "){
+			string file= Combine(Path, "ygopro.exe");
 			if(File.Exists(file)){
 				Process.Start(file, arg);
-				return;
+				return true;
 			}
-			file= Combine(Application.StartupPath, "ygopro_vs.exe");
+			file= Combine(Path, "ygopro_vs.exe");
 			if(File.Exists(file)){
 				Process.Start(file, arg);
-				return;
+				return true;
 			}
-			MessageBox.Show("no find ygopro.exe");
+			return false;
 		}
 		
-		private static void Write(Dictionary<string, string> args){
-			string file= Combine(Application.StartupPath, "system.conf");
+		private static bool Write(Dictionary<string, string> args){
+			string file= Combine(Path, "system.conf");
 			if(File.Exists(file)){
 				string[] lines=File.ReadAllLines(file);
 				for(int i=0;i<lines.Length;i++){
@@ -100,10 +102,12 @@ namespace YGOClient
 				}else{
 					File.WriteAllLines(file, lines);
 				}
-				return;
+				return true;
 			}
-			MessageBox.Show("no find system.conf");
+			return false;
 		}
+		
+		#endregion
 		
 		#region
 		/// <summary>
@@ -120,7 +124,7 @@ namespace YGOClient
 			else
 			{
 				StringBuilder builder = new StringBuilder();
-				string spliter = Path.DirectorySeparatorChar.ToString();
+				string spliter = System.IO.Path.DirectorySeparatorChar.ToString();
 				string firstPath = paths[0];
 				if (firstPath.StartsWith("HTTP", StringComparison.OrdinalIgnoreCase))
 				{
