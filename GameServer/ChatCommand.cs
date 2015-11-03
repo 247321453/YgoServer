@@ -19,15 +19,13 @@ namespace YGOCore
 	/// <summary>
 	/// Description of ChatCommand.
 	/// </summary>
-	public class ChatCommand
+	public static class ChatCommand
 	{
-		public ChatCommand()
-		{
-		}
-		public static void WriteHead(ServerConfig config){
-			if(config==null){
+		public static void WriteHead(this GameServer server){
+			if(server==null||server.Config == null){
 				return;
 			}
+			ServerConfig config = server.Config;
 			string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 			Console.Title=(string.IsNullOrEmpty(config.ServerName)?"YgoServer":config.ServerName);
 			Console.WriteLine("┌───────────────────────────────────");
@@ -98,7 +96,7 @@ namespace YGOCore
 		/// <param name="client"></param>
 		/// <param name="msg"></param>
 		/// <returns>处理返回true，未处理返回false</returns>
-		public static bool OnChat(GameSession client, string msg){
+		public static bool OnChatCommand(this GameSession client, string msg){
 			if(msg == null){
 				return true;
 			}
@@ -119,7 +117,7 @@ namespace YGOCore
 			}
 			return false;
 		}
-		public static void OnCommand(GameServer Server, string cmd){
+		public static void OnCommand(this GameServer Server, string cmd){
 			if(cmd==null){
 				return;
 			}
@@ -159,9 +157,7 @@ namespace YGOCore
 							case "-json":
 							case "-j":
 								
-								if(Server!=null){
-									Console.WriteLine(""+Server.GetRoomJson(false, false));
-								}
+								Console.WriteLine(""+Server.GetRoomJson(false, false));
 								break;
 								default :
 									isdo = false;
@@ -169,15 +165,12 @@ namespace YGOCore
 						}
 					}
 					if(!isdo){
-						if(Server!=null){
-							Console.WriteLine(">>count="+Server.GetRoomCount());
-						}
+						Console.WriteLine(">>count="+Server.GetRoomCount());
 					}
 					break;
 				case "cls":
 					Console.Clear();
-					if(Server!=null)
-						WriteHead(Server.Config);
+					Server.WriteHead();
 					break;
 				case "close":
 					if(Server!=null)

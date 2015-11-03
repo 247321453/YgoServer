@@ -198,7 +198,7 @@ namespace YGOCore.Net
 			if(client.Game==null){
 				return;
 			}
-			if(!ChatCommand.OnChat(client, msg)){
+			if(!client.OnChatCommand(msg)){
 				GameServerPacket chat = new GameServerPacket(StocMessage.Chat);
 				chat.Write((short)client.Type);
 				chat.WriteUnicode(msg, msg.Length + 1);

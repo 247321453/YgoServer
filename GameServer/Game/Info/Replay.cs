@@ -44,7 +44,7 @@ namespace YGOCore.Game
 			if (m_stream.Position >= MaxReplaySize)
 			{
 				Writer.Close();
-				m_stream.Dispose();
+				m_stream.Close();
 				Disabled = true;
 			}
 		}
@@ -53,9 +53,7 @@ namespace YGOCore.Game
 		{
 			if (Disabled)
 				return;
-
 			byte[] raw = m_stream.ToArray();
-
 			Header.DataSize = (uint)raw.Length;
 			Header.Flag |= FlagCompressed;
 			Header.Props = new byte[8];
@@ -85,6 +83,7 @@ namespace YGOCore.Game
 				}
 				m_data = ms.ToArray();
 			}
+			Disabled = true;
 			if(AutoReplay){
 				ThreadPool.QueueUserWorkItem(new WaitCallback(saveYrp));
 			}

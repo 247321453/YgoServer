@@ -29,16 +29,14 @@ namespace YGOCore
 			#endif
 			ServerConfig Config = new ServerConfig();
 			bool loaded = args.Length > 0 ? Config.Load(args[0]): Config.Load();
-
-			ChatCommand.WriteHead(Config);
+			Random = new Random();
+			GameServer Server = new GameServer(Config);
+			Server.WriteHead();
 			if(loaded)
 				Logger.Info("Config loaded.");
 			else
 				Logger.Warn("Unable to load config.txt, using default settings.");
 			
-			Random = new Random();
-			
-			GameServer Server = new GameServer(Config);
 			if (!Server.Start()){
 				Console.WriteLine("Server start fail.");
 				Console.ReadKey();
@@ -60,7 +58,7 @@ namespace YGOCore
 			string cmd="";
 			while(server.IsListening){
 				cmd=Console.ReadLine();
-				ChatCommand.OnCommand(server,cmd);
+				server.OnCommand(cmd);
 			}
 		}
 
