@@ -57,7 +57,7 @@ namespace WindBot.Game
 
 			byte[] junk = { 0xCC, 0xCC, 0x00, 0x00, 0x00, 0x00 };
 			packet = new GameClientPacket(CtosMessage.JoinGame);
-			packet.Write(Program.ProVersion);
+			packet.Write((short)Program.ProVersion);
 			packet.Write(junk);
 
 			packet.Write(_roomInfos, 30);

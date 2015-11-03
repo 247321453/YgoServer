@@ -70,6 +70,7 @@ namespace YGOCore
 				" [AI]Robot$"+Config.AIPass
 				+" 127.0.0.1 "
 				+Config.ServerPort
+				+" "+ Config.ClientVersion
 				+ " "+room;
 			ai.EnableRaisingEvents=true;
 			#if !DEBUG
