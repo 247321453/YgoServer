@@ -10,6 +10,9 @@ using System;
 using YGOCore.Game;
 using YGOCore.Net;
 using System.Reflection;
+using System.Collections.Generic;
+using System.Diagnostics;
+using AsyncServer;
 
 namespace YGOCore
 {
@@ -42,6 +45,80 @@ namespace YGOCore
 			Console.WriteLine("│"+config.ServerDesc);
 			Console.WriteLine("└───────────────────────────────────");
 		}
+		static readonly List<Process> AIs=new List<Process>();
+		
+		/// <summary>
+		/// 拥有一定数量
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="room"></param>
+		/// <param name="deck"></param>
+		/// <returns></returns>
+		private static bool AddAI(ServerConfig Config, string room){
+			lock(AIs){
+				if(AIs.Count >= Config.MaxAICount){
+					return false;
+				}
+			}
+			Process ai=new Process();
+			ai.StartInfo.FileName = "ai";
+			//设定程式执行参数
+			ai.StartInfo.Arguments =
+				" [AI]Robot$"+Config.AIPass
+				+" 127.0.0.1 "
+				+Config.ServerPort
+				+ " "+room;
+			ai.EnableRaisingEvents=true;
+			if(Config.AIisHide){
+				ai.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
+			}
+			ai.Exited+=new EventHandler(ai_Exited);
+			ai.Start();
+			lock(AIs){
+				AIs.Add(ai);
+			}
+			return true;
+		}
+
+		static void ai_Exited(object sender, EventArgs e)
+		{
+			if(sender is Process){
+				Process p = sender as Process;
+				p.Close();
+				AIs.Remove(p);
+				Logger.Debug("close ai");
+			}else{
+				Logger.Debug("close ai:"+sender.GetType().ToString());
+			}
+			Logger.Debug("AI exit game. count="+AIs.Count);
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="client"></param>
+		/// <param name="msg"></param>
+		/// <returns>处理返回true，未处理返回false</returns>
+		public static bool OnChat(GameSession client, string msg){
+			if(msg == null){
+				return true;
+			}
+			if(client == null || client.Server==null||client.Server.Config==null){
+				return false;
+			}
+			msg = msg.Trim();
+			if(msg=="/ai"){
+				if(client.Server.Config.MaxAICount==0){
+					client.ServerMessage(Messages.MSG_NO_AI);
+				}
+				else if(client.Game!=null && AddAI(client.Server.Config, client.Game.Config.Name)){
+					client.ServerMessage(Messages.MSG_ADD_AI);
+				}else{
+					client.ServerMessage(Messages.MSG_NO_FREE_AI);
+				}
+				return false;
+			}
+			return false;
+		}
 		public static void OnCommand(GameServer Server, string cmd){
 			if(cmd==null){
 				return;
@@ -49,9 +126,34 @@ namespace YGOCore
 			cmd = cmd.ToLower();
 			string[] args = cmd.Split(new char[]{' '}, 2);
 			cmd = args[0];
+			bool isdo = true;
 			switch(cmd){
+				case "send":
+					if(args.Length>1){
+						switch(args[1]){
+							case "-t":
+							case "-to":
+								if(Server!=null){
+									//指定玩家
+								}
+								break;
+								default :
+									isdo = false;
+								break;
+						}
+					}
+					if(!isdo){
+						if(Server!=null){
+							//发送给所有玩家
+						}
+					}
+					break;
+				case "ai":
+					lock(AIs){
+						Console.WriteLine(""+AIs.Count);
+					}
+					break;
 				case "room":
-					bool isdo = true;
 					if(args.Length>1){
 						switch(args[1]){
 							case "-json":

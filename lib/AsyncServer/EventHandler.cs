@@ -14,11 +14,11 @@ namespace AsyncServer
 	/// <summary>
 	/// Description of Handler.
 	/// </summary>
-	public class EventHandler<T1,T2>
+	public class EventHandler<T1,T2,T3>
 	{
-		readonly SortedList<ushort, Action<T1, T2>> m_actions = new SortedList<ushort, Action<T1, T2>>();
+		readonly SortedList<T1, Action<T2, T3>> m_actions = new SortedList<T1, Action<T2, T3>>();
 		
-		public void Register(ushort id, Action<T1, T2> action){
+		public void Register(T1 id, Action<T2, T3> action){
 			if(m_actions.ContainsKey(id)){
 				m_actions[id] = action;
 				Logger.Warn("a same id action."+id);
@@ -27,15 +27,15 @@ namespace AsyncServer
 			}
 		}
 		
-		public Action<T1, T2> GetAction(ushort id){
+		public Action<T2, T3> GetAction(T1 id){
 			if(m_actions.ContainsKey(id)){
 				return m_actions[id];
 			}
 			return null;
 		}
 		
-		public void Do(ushort id, T1 a, T2 b){
-			Action<T1, T2> action= GetAction(id);
+		public void Do(T1 id, T2 a, T3 b){
+			Action<T2, T3> action= GetAction(id);
 			if(action != null){
 				action(a, b);
 			}else{
