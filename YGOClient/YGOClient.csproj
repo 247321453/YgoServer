@@ -61,12 +61,13 @@
     <Compile Include="..\lib\ConfigManager.cs">
       <Link>Common\ConfigManager.cs</Link>
     </Compile>
-    <Compile Include="..\YGOCore\Game\RoomInfo.cs">
+    <Compile Include="..\lib\RoomInfo.cs">
       <Link>Common\RoomInfo.cs</Link>
     </Compile>
-    <Compile Include="..\YGOCore\Plugin\Tool.cs">
+    <Compile Include="..\lib\Tool.cs">
       <Link>Common\Tool.cs</Link>
     </Compile>
+    <Compile Include="Common\GameRoom.cs" />
     <Compile Include="Common\Protocol.cs" />
     <Compile Include="Common\RoomTool.cs" />
     <Compile Include="CreateRoomForm.cs" />
