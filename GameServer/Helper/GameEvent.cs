@@ -304,13 +304,15 @@ namespace YGOCore.Net
 			if (!client.IsAuthentified){
 				return;
 			}
-			client.Game.MoveToDuelist(client);
+			if(client.Game!=null)
+				client.Game.MoveToDuelist(client);
 		}
 		public static void OnMoveToObserver(GameSession client, GameClientPacket packet){
 			if (!client.IsAuthentified){
 				return;
 			}
-			client.Game.MoveToObserver(client);
+			if(client.Game!=null)
+				client.Game.MoveToObserver(client);
 		}
 		public static void OnLeaveGame(GameSession client, GameClientPacket packet){
 			if(client.Game!=null)

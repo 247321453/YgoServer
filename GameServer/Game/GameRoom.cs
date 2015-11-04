@@ -223,6 +223,7 @@ namespace YGOCore.Game
 			if (player.Equals(HostPlayer) && State == GameState.Lobby){
 				//Logger.WriteLine("HostPlayer is leave", false);
 				Close(true);
+				HostPlayer = null;
 			}
 			else if (player.Type == (int)PlayerType.Observer)
 			{
@@ -353,30 +354,25 @@ namespace YGOCore.Game
 		#region 结果
 		public void Close(bool forceclose=false)
 		{
+			IsOpen = false;
 			if(forceclose){
 				foreach(GameSession plager in Players){
 					if(plager==null){
 						continue;
 					}
-					try{
-						plager.Close();
-					}catch(Exception){
-						
-					}
+					plager.Close();
+					
 				}
-				foreach(GameSession plager in Observers){
-					if(plager==null){
-						continue;
-					}
-					try{
+				lock(Observers){
+					foreach(GameSession plager in Observers){
+						if(plager==null){
+							continue;
+						}
 						plager.Close();
-					}catch(Exception){
-						
 					}
 				}
 			}
 			Server.OnLeaveRoom(this.GetRoomInfo(), null);
-			IsOpen = false;
 		}
 		public void EndDuel(bool force)
 		{

@@ -283,7 +283,7 @@ namespace YGOCore.Net
 				}
 			}
 			foreach(GameRoom room in rooms){
-				if(room!=null&& !room.IsEnd){
+				if(room!=null&& room.IsOpen){
 					room.ServerMessage(msg, color);
 				}
 			}
