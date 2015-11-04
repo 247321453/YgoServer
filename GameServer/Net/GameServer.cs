@@ -29,6 +29,7 @@ namespace YGOCore.Net
 		private System.Timers.Timer WinSaveTimer;
 		private RoomServer roomServer;
 		private TcpClient roomClient;
+		public TcpClient LocalClient {get{return roomClient;}}
 		public bool IsListening;
 		#endregion
 		

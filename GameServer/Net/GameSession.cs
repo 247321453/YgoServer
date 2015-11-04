@@ -12,6 +12,7 @@ namespace YGOCore.Net
 	/// </summary>
 	public class GameSession
 	{
+		MyTimer CheckTimer;
 		public GameSession(GameServer Server, Connection<GameSession> client)
 		{
 			this.Server = Server;
@@ -20,6 +21,19 @@ namespace YGOCore.Net
 			this.m_client.isAsync = Server.Config.AsyncMode;
 			this.Type = (int)PlayerType.Undefined;
 			this.State = PlayerState.None;
+			CheckTimer = new MyTimer(3000, 15*1000);
+			CheckTimer.AutoReset = true;
+			CheckTimer.Elapsed += delegate { 
+				if( !string.IsNullOrEmpty(Name) ){
+					CheckTimer.Stop();
+					CheckTimer.Close();
+				}
+				if(CheckTimer.CheckStop()){
+					//超时自动断开
+					Close();
+					CheckTimer.Close();
+				}
+			};
 		}
 		
 		#region Member

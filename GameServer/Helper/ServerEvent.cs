@@ -36,16 +36,7 @@ namespace YGOCore.Net
 				}
 			}
 			if(room !=null && room!=null && room.Players!=null){
-				foreach(GameSession pl in room.Players){
-					if(pl!=null && pl.Deck!=null){
-						List<int> _cards = pl.Deck.Alls;
-						foreach(int id in _cards){
-							if(!cards.Contains(id)){
-								cards.Add(id);
-							}
-						}
-					}
-				}
+				cards.AddRange(room.CardIds);
 			}
 			return cards;
 		}
@@ -77,61 +68,47 @@ namespace YGOCore.Net
 			}
 			return Tool.ToJson(infos);
 		}
-		public static void OnJoinRoom(this GameServer server,GameRoom room, GameSession client){
-			if(room == null||room.Config == null){
-				return;
-			}
-			string roomName = room.Name;
+		public static void OnJoinRoom(this GameServer server,RoomInfo info, GameSession client){
+			string roomName = info.RoomName;
 			string playerName = client.Name==null?"":client.Name;
+			bool isnew = false;
 			lock(server.Rooms){
 				if(server.Rooms.ContainsKey(roomName)){
 					//房间存在
-					RoomInfo info = null;
-					info =server.Rooms[roomName];
-					if(info != null && !string.IsNullOrEmpty(playerName)){
-						if(info.Room == null){
-							info.Room = room;
-						}
-						info.players.Add(playerName);
-					}
+					server.Rooms[roomName] = info;
 				}else{
 					//房间不存在
-					RoomInfo info= GameRoom.GetRoomInfo(room);
-					if(info!=null){
-						info.Room = room;
-						if(!string.IsNullOrEmpty(playerName)){
-							info.players.Add(playerName);
-						}
-						server.Rooms.Add(roomName, info);
-					}
+					server.Rooms.Add(roomName, info);
+					isnew = true;
 				}
 			}
+			server.OnRoomEvent(isnew?StoSMessage.RoomCreate:StoSMessage.RoomUpdate, info);
 		}
-		public static void OnLeaveRoom(this GameServer server,GameRoom room, GameSession client){
-			if(room == null||room.Config == null){
-				return;
-			}
-			string roomName = room.Name;
+		public static void OnLeaveRoom(this GameServer server,RoomInfo info, GameSession client){
+			string roomName = info.RoomName;
+			bool isclose = false;
 			lock(server.Rooms){
 				if(server.Rooms.ContainsKey(roomName)){
 					//房间存在
-					if(client==null){
-						Logger.Debug("remove room");
-						server.Rooms.Remove(roomName);
-						return;
-					}
-					RoomInfo info=server.Rooms[roomName];
-					string playerName = client.Name;
-					if(info.players.Contains(playerName))
-						info.players.Remove(playerName);
-					if(info.observers.Contains(playerName))
-						info.observers.Remove(playerName);
-					if(info.players.Count==0 && info.observers.Count==0){
+					if(client == null|| info.NeedClose()){
 						server.Rooms.Remove(roomName);
 						Logger.Debug("remove room");
+						isclose = true;
+					}else{
+						server.Rooms[roomName] = info;
 					}
 				}
 			}
+			if(client == null){
+				//所有人离开
+				foreach(string p in info.players){
+					server.OnPlayEvent(StoSMessage.PlayerLeave, p);
+				}
+				foreach(string p in info.observers){
+					server.OnPlayEvent(StoSMessage.PlayerLeave, p);
+				}
+			}
+			server.OnRoomEvent(isclose ? StoSMessage.RoomClose:StoSMessage.RoomUpdate, info);
 		}
 		#endregion
 		
@@ -184,7 +161,7 @@ namespace YGOCore.Net
 			//创建房间
 			GameRoom room = new GameRoom(config, server);
 			lock(server.Rooms){
-				RoomInfo info = GameRoom.GetRoomInfo(room);
+				RoomInfo info = room.GetRoomInfo();
 				info.Room = room;
 				server.Rooms.Add(room.Name, info);
 			}

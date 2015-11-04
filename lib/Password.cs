@@ -23,6 +23,16 @@ namespace YGOCore.Net
 			}
 			return namepassword.Split('$')[0];
 		}
+		public static string GetPwd(string namepassword){
+			if(string.IsNullOrEmpty(namepassword)){
+				return namepassword;
+			}
+			int i = namepassword.IndexOf('$');
+			if(i>0 && i+1 < namepassword.Length){
+				return namepassword.Substring(i+1);
+			}
+			return "";
+		}
 		public static bool CheckAuth(this GameSession client, string namepassword){
 			if(namepassword==null || client.Server == null){
 				return true;

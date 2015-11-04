@@ -35,8 +35,8 @@ namespace YGOCore.Game
 		/// <summary>
 		/// 是否需要密码
 		/// </summary>
-		[DataMember(Order = 3, Name="lock")]
-		public bool NeedPass{get; set;}
+		[DataMember(Order = 3, Name="pwd")]
+		public string Pwd{get; set;}
 		/// <summary>
 		/// 是否开始
 		/// </summary>
@@ -46,17 +46,18 @@ namespace YGOCore.Game
 		/// 禁卡表
 		/// </summary>
 		[DataMember(Order = 5, Name="banlist")]
-		public int Lflist{get; set;}
+		public string Lflist{get; set;}
 		/// <summary>
 		/// 玩家
 		/// </summary>
 		[DataMember(Order = 6, Name="players")]
-		public List<string> players = new List<string>();
+		public string[] players = null;
 		/// <summary>
 		/// 观战
 		/// </summary>
 		[DataMember(Order = 7, Name="watchs")]
 		public List<string> observers = new List<string>();
+		
 		[DataMember(Order = 8, Name="lp")]
 		public int StartLP{get; set;}
 		/// <summary>
@@ -64,37 +65,26 @@ namespace YGOCore.Game
 		/// </summary>
 		[DataMember(Order = 9, Name="warring")]
 		public bool Warring{get; set;}
-		/// <summary>
-		/// 玩家数
-		/// </summary>
+
 		[IgnoreDataMember()]
 		public GameRoom Room{get; set;}
+		[IgnoreDataMember()]
+		public bool NeedPass{get{return !string.IsNullOrEmpty(Pwd);}}
 		
 		public RoomInfo(){
+			players = new string[4];
 		}
 
-		public string toJson(){
-			return "{\"name\":\""+Tool.StringToUnicode(RoomName)+"\",\"Rule\":"+Rule+",\"Mode\":"+Mode+
-				",\"NeedPass\":"+(NeedPass?1:0)+",\"IsStart\":"+(IsStart?1:0)
-				+",\"Lflist\":\""+(Lflist==0?"o":"t")+"\","+"\"player\":"+Array2Json(players)+"}";
-		}
-		public string toJsonWithWatch(){
-			return "{\"name\":\""+Tool.StringToUnicode(RoomName)+"\",\"Rule\":"+Rule+",\"Mode\":"+Mode+
-				",\"NeedPass\":"+(NeedPass?1:0)+",\"IsStart\":"+(IsStart?1:0)
-				+",\"Lflist\":\""+(Lflist==0?"o":"t")+"\""+
-				",\"player\":"+Array2Json(players)+",\"watch\":"+Array2Json(observers)+"}";
-		}
-		private string Array2Json(List<string> arr){
-			if(arr.Count==0){
-				return "[]";
+		public bool NeedClose(){
+			if(observers.Count > 0){
+				return false;
 			}
-			int count=arr.Count;
-			string str="[";
-			for(int i=0;i<count-1;i++){
-				str+="\""+Tool.StringToUnicode(arr[i])+"\",";
+			foreach(string name in players){
+				if(!string.IsNullOrEmpty(name)){
+					return false;
+				}
 			}
-			str+="\""+Tool.StringToUnicode(arr[count-1])+"\"]";
-			return str;
+			return true;
 		}
 	}
 }

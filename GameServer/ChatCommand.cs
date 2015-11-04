@@ -136,9 +136,11 @@ namespace YGOCore
 				return;
 			}
 			cmd = cmd.ToLower();
-			string[] args = cmd.Split(new char[]{' '}, 2);
+			string[] args = cmd.Split(' ');
 			cmd = args[0];
-			bool isdo = true;
+			if(args.Length < 2){
+				args = new string[]{args[0], ""};
+			}
 			switch(cmd){
 //				case "sendto":
 //					//发送给所有玩家
@@ -148,29 +150,8 @@ namespace YGOCore
 					//发送给所有玩家
 					Server.OnWorldMessage(args[1]);
 					break;
-				case "ai":
-					lock(AIs){
-						Console.WriteLine(""+AIs.Count);
-					}
-					break;
 				case "room":
-					if(args.Length>1){
-						switch(args[1]){
-							case "-json":
-							case "-j":
-								
-								Console.WriteLine(""+Server.GetRoomJson(false, false));
-								break;
-								default :
-									isdo = false;
-								break;
-						}
-					}else{
-						isdo  =false;
-					}
-					if(!isdo){
-						Console.WriteLine(">>count="+Server.GetRoomCount());
-					}
+					RoomCmd(Server, args);
 					break;
 				case "cls":
 					Console.Clear();
@@ -184,23 +165,66 @@ namespace YGOCore
 						Console.ReadKey(true);
 					}
 					break;
-				case "addai":
-					string name = null;
-					GameRoom room = Server.CreateOrGetGame(GameConfig.Parse(Server, ""));
-					if(room == null && room.Config!=null){
-						name = Server.GetGuidString();
-					}else{
-						name = room.Config.Name;
-					}
-					if(AddAI(Server.Config, ""+name)){
-						Console.WriteLine(">>add ai to "+name);
-					}else{
-						Console.WriteLine(">>add ai fail");
-					}
+				case "ai":
+					AICmd(Server, args);
 					break;
 				default:
 					Console.WriteLine(">>invalid command:"+cmd);
 					break;
+			}
+		}
+		
+		private static void RoomCmd(GameServer Server, string[] args){
+			switch(args[1]){
+				case "-json":
+				case "-j":
+					Console.WriteLine(""+Server.GetRoomJson(false, false));
+					break;
+					default :
+						Console.WriteLine(">>count="+Server.GetRoomCount());
+					break;
+			}
+		}
+		
+		private static void AICmd(GameServer Server,string[] args){
+			switch(args[1]){
+				case "add":
+					AddAI(Server);
+					break;
+				case "kill":
+					KillAIs();
+					break;
+				default:
+					lock(AIs)
+						Console.WriteLine(">>AI count:"+AIs.Count);
+					break;
+			}
+		}
+		private static void KillAIs(){
+			lock(AIs){
+				foreach(Process p in AIs){
+					if(p != null){
+						if(!p.HasExited){
+							p.Kill();
+							p.Close();
+						}
+					}
+				}
+				AIs.Clear();
+			}
+		}
+		private static void AddAI(GameServer Server){
+			string name = null;
+			GameRoom room = Server.CreateOrGetGame(GameConfig.Parse(Server, ""));
+			if(room == null && room.Config!=null){
+				name = Server.GetGuidString();
+			}else{
+				name = room.Config.Name;
+			}
+			if(AddAI(Server.Config, ""+name)){
+				Console.WriteLine(">>add ai to "+name);
+			}else{
+				Console.WriteLine(">>add ai fail");
 			}
 		}
 		#endregion

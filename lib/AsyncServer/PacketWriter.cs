@@ -15,6 +15,12 @@ namespace AsyncServer
 		public byte[] Bytes{
 			get { return m_stream.ToArray(); }
 		}
+		public byte[] Content{
+			get{return content;}
+		}
+		private bool appendLength = false;
+		private byte[] content;
+		
 		public PacketWriter(int packetByteLength)
 		{
 			m_PacketByteLength = (packetByteLength == 2 )?2:4;
@@ -65,6 +71,9 @@ namespace AsyncServer
 
 		public void WriteUnicode(string text, int len)
 		{
+			if(text==null){
+				text="";
+			}
 			m_writer.WriteUnicode(text, len);
 		}
 
@@ -80,6 +89,22 @@ namespace AsyncServer
 			Close();
 			m_stream = null;
 			m_writer = null;
+		}
+		/// <summary>
+		/// 添加包长度
+		/// </summary>
+		public void Use(){
+			if(appendLength) return;
+			appendLength = true;
+			byte[] raw = Bytes;
+			using(MemoryStream stream = new MemoryStream(raw.Length + m_PacketByteLength)){
+				using(BinaryWriter writer = new BinaryWriter(stream)){
+					writer.Write((ushort)raw.Length);
+					writer.Write(raw);
+				}
+				content = stream.ToArray();
+			}
+			Close();
 		}
 	}
 }
