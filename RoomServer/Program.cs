@@ -11,6 +11,17 @@ using AsyncServer;
 
 namespace YGOCore
 {
+	/// <summary>
+	/// 1期
+	/// 多个服务端的房间列表
+	/// 玩家的状态（决斗，等待，还side，围观）
+	/// 大厅聊天
+	/// 房间密码验证
+	/// 2期
+	/// 指定玩家私聊，观战，邀请决斗
+	/// 3期
+	/// 游戏更新
+	/// </summary>
 	class Program
 	{
 		public static void Main(string[] args)

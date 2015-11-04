@@ -37,6 +37,10 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Json" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -61,12 +65,17 @@
     <Compile Include="..\lib\AsyncServer\PacketWriter.cs">
       <Link>AsyncServer\PacketWriter.cs</Link>
     </Compile>
+    <Compile Include="..\lib\RoomInfo.cs">
+      <Link>Common\RoomInfo.cs</Link>
+    </Compile>
     <Compile Include="ClientEvent.cs" />
     <Compile Include="Common\BinaryExtensions.cs" />
+    <Compile Include="Common\GameRoom.cs" />
     <Compile Include="LocalEvent.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoomServer.cs" />
+    <Compile Include="ServerSession.cs" />
     <Compile Include="Session.cs" />
   </ItemGroup>
   <ItemGroup>

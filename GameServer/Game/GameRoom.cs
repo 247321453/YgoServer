@@ -167,14 +167,14 @@ namespace YGOCore.Game
 				Players[pos] = player;
 				IsReady[pos] = false;
 				player.Type = pos;
-				Server.OnPlayEvent(StoSMessage.PlayerReady, player);
+				Server.OnPlayEvent(PlayerStatu.PlayerReady, player);
 			}
 			else
 			{
 				GameServerPacket watch = new GameServerPacket(StocMessage.HsWatchChange);
 				watch.Write((short)(Observers.Count + 1));
 				SendToAll(watch);
-				Server.OnPlayEvent(StoSMessage.PlayerWatch, player);
+				Server.OnPlayEvent(PlayerStatu.PlayerWatch, player);
 				player.Type = (int)PlayerType.Observer;
 				Observers.Add(player);
 //				if(player.IsAuthentified){
@@ -413,7 +413,7 @@ namespace YGOCore.Game
 				ServerMessage(Messages.MSG_SIDE);
 				State = GameState.Side;
 				GameTimer.StartSideTimer();
-				Server.OnPlayEvent(StoSMessage.PlayerSide, Players);
+				Server.OnPlayEvent(PlayerStatu.PlayerSide, Players);
 				SendToPlayers(new GameServerPacket(StocMessage.ChangeSide));
 				SendToObservers(new GameServerPacket(StocMessage.WaitingSide));
 			}
@@ -937,7 +937,7 @@ namespace YGOCore.Game
 					}
 				}
 			}
-			Server.OnPlayEvent(StoSMessage.PlayerDeul, Players);
+			Server.OnPlayEvent(PlayerStatu.PlayerDeul, Players);
 			State = GameState.Hand;
 			SendToAll(new GameServerPacket(StocMessage.DuelStart));
 			SendHand();

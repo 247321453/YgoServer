@@ -18,6 +18,30 @@ using System.Net.Sockets;
 
 namespace YGOCore.Net
 {
+	#region 服务2服务
+	public enum StoSMessage{
+		/// <summary>
+		/// 添加一个房间
+		/// </summary>
+		RoomCreate = 0x1,
+		/// <summary>
+		/// 关闭一个房间
+		/// </summary>
+		RoomClose  = 0x2,
+		/// <summary>
+		/// 更新房间信息
+		/// </summary>
+		RoomUpdate = 0x3,
+	}
+	public enum PlayerStatu{
+		PlayerReady = 0x1,
+		PlayerDeul,
+		PlayerSide,
+		PlayerLeave,
+		PlayerWatch,
+	}
+	#endregion
+	
 	public static class RoomHelper
 	{
 		#region 房间信息

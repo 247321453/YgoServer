@@ -106,7 +106,7 @@ namespace YGOCore.Net
 					names.Add(p);
 				}
 				names.AddRange(info.observers);
-				server.OnPlayNameEvent(StoSMessage.PlayerLeave, names.ToArray());
+				server.OnPlayNameEvent(PlayerStatu.PlayerLeave, names.ToArray());
 			}
 			server.OnRoomEvent(isclose ? StoSMessage.RoomClose:StoSMessage.RoomUpdate, info);
 		}

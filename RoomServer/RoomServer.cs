@@ -28,7 +28,7 @@ namespace YGOCore
 		/// <summary>
 		/// 服务端
 		/// </summary>
-		public readonly List<Connection<Session>> LocalClients=new List<Connection<Session>>();
+		public readonly List<Connection<ServerSession>> LocalClients=new List<Connection<ServerSession>>();
 		/// <summary>
 		/// 对外
 		/// </summary>
@@ -36,7 +36,7 @@ namespace YGOCore
 		/// <summary>
 		/// 本地
 		/// </summary>
-		AsyncTcpListener<Session> m_localListenr;
+		AsyncTcpListener<ServerSession> m_localListenr;
 		
 		bool isListening = false;
 		public RoomServer(int port = DEFAULT,int localport=DEFAULT_LOCAL)
@@ -54,11 +54,11 @@ namespace YGOCore
 			m_listener.OnDisconnect+=new AsyncTcpListener<Session>.DisconnectEventHandler(this.Client_OnDisconnect);
 			m_listener.OnTimeout +=new AsyncTcpListener<Session>.TimeoutEventHandler(this.Client_OnTimeout);
 			
-			m_localListenr = new AsyncTcpListener<Session>(IPAddress.Parse("127.0.0.1"), localport, 0,0);
-			m_localListenr.OnReceive += new AsyncTcpListener<Session>.ReceiveEventHandler(this.Local_OnReceive);
-			m_localListenr.OnConnect+=new AsyncTcpListener<Session>.ConnectEventHandler(this.Local_OnConnect);
-			m_localListenr.OnDisconnect +=new AsyncTcpListener<Session>.DisconnectEventHandler(this.Local_OnDisconnect);
-			m_localListenr.OnTimeout+=new AsyncTcpListener<Session>.TimeoutEventHandler(this.Local_OnTimeout);
+			m_localListenr = new AsyncTcpListener<ServerSession>(IPAddress.Parse("127.0.0.1"), localport, 0,0);
+			m_localListenr.OnReceive += new AsyncTcpListener<ServerSession>.ReceiveEventHandler(this.Local_OnReceive);
+			m_localListenr.OnConnect+=new AsyncTcpListener<ServerSession>.ConnectEventHandler(this.Local_OnConnect);
+			m_localListenr.OnDisconnect +=new AsyncTcpListener<ServerSession>.DisconnectEventHandler(this.Local_OnDisconnect);
+			m_localListenr.OnTimeout+=new AsyncTcpListener<ServerSession>.TimeoutEventHandler(this.Local_OnTimeout);
 		}
 		
 		public void Start(){

@@ -20,28 +20,28 @@ namespace YGOCore
 	/// </summary>
 	public static class LocalEvent
 	{
-		public static void Local_OnTimeout(this RoomServer server,Connection<Session> timeoutConnection, double time)
+		public static void Local_OnTimeout(this RoomServer server,Connection<ServerSession> timeoutConnection, double time)
 		{
 			server.Local_OnDisconnect(timeoutConnection);
 		}
 
-		public static void Local_OnDisconnect(this RoomServer server,Connection<Session> Client)
+		public static void Local_OnDisconnect(this RoomServer server,Connection<ServerSession> Client)
 		{
 			lock(server.LocalClients){
 				server.LocalClients.Remove(Client);
 			}
 		}
 
-		public static void Local_OnConnect(this RoomServer server,Connection<Session> Client)
+		public static void Local_OnConnect(this RoomServer server,Connection<ServerSession> Client)
 		{
-			Session session = new Session(Client);
+			ServerSession session = new ServerSession(Client);
 			Client.Tag = session;
 			lock(server.LocalClients){
 				server.LocalClients.Add(Client);
 			}
 		}
 
-		public static void Local_OnReceive(this RoomServer server,Connection<Session> Client)
+		public static void Local_OnReceive(this RoomServer server,Connection<ServerSession> Client)
 		{
 			/////保存
 			//服务端信息
