@@ -95,7 +95,7 @@ namespace YGOClient
 					#endif
 					fp_rooms.SetRooms(m_client, m_server, list.ToArray());
 				}
-				catch(Exception e){
+				catch(Exception){
 					#if DEBUG
 					MessageBox.Show(json);
 					#endif
