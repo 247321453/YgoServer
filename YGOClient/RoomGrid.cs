@@ -58,7 +58,7 @@ namespace System.Windows.Forms
 				this.Controls.Add(label);
 				
 				Label label2 = new Label();
-				label2.Text = "禁限卡表："+(room.Lflist==0?"OCG":"TCG");
+				label2.Text = "禁限卡表："+room.Lflist;
 				label2.TextAlign = ContentAlignment.MiddleLeft;
 				label2.Padding = new Padding(8, 2, 2, 2);
 				label2.Size = new Size(182, 26);
@@ -79,7 +79,7 @@ namespace System.Windows.Forms
 				this.Controls.Add(label4);
 				
 				Label label5 = new Label();
-				label5.Text = "玩家1："+((room.players!=null && room.players.Count>0)?room.players[0]:"--");
+				label5.Text = "玩家1："+((room.players!=null && room.players.Length>0)?room.players[0]:"--");
 				label5.TextAlign = ContentAlignment.MiddleLeft;
 				label5.Padding = new Padding(8, 2, 2, 2);
 				label5.Size = new Size(182, 26);
@@ -87,14 +87,14 @@ namespace System.Windows.Forms
 				
 				if(room.Mode==2){
 					Label label7 = new Label();
-					label7.Text = "玩家2："+((room.players!=null && room.players.Count>2)?room.players[2]:"--");
+					label7.Text = "玩家2："+((room.players!=null && room.players.Length>2)?room.players[2]:"--");
 					label7.TextAlign = ContentAlignment.MiddleLeft;
 					label7.Padding = new Padding(8, 2, 2, 2);
 					label7.Size = new Size(182, 26);
 					this.Controls.Add(label7);
 				}else{
 					Label label6 = new Label();
-					label6.Text = "玩家2："+((room.players!=null && room.players.Count>1)?room.players[1]:"--");
+					label6.Text = "玩家2："+((room.players!=null && room.players.Length>1)?room.players[1]:"--");
 					label6.TextAlign = ContentAlignment.MiddleLeft;
 					label6.Padding = new Padding(8, 2, 2, 2);
 					label6.Size = new Size(182, 26);

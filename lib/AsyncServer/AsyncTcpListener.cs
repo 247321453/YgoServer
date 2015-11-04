@@ -44,14 +44,6 @@ namespace AsyncServer{
 		/// </summary>
 		private int port;
 		/// <summary>
-		/// The client count lock.
-		/// </summary>
-		private object clients_l = new object();
-		/// <summary>
-		/// The clients number of clients on the server.
-		/// </summary>
-		private volatile int clients    = 0;
-		/// <summary>
 		/// The maximum clients the server will hold.
 		/// </summary>
 		private int capacity   = 0;
@@ -64,7 +56,7 @@ namespace AsyncServer{
 		/// </summary>
 		public bool Started = false;
 		
-		private List<Connection<T>> m_clients;
+		private readonly List<Connection<T>> m_clients = new List<Connection<T>>();
 		/// <summary>
 		/// Occurs when a packet has been received.
 		/// </summary>
@@ -106,7 +98,7 @@ namespace AsyncServer{
 		/// </summary>
 		/// <value>The count.</value>
 		public int Count {
-			get { return clients; }
+			get { return m_clients.Count; }
 		}
 		/// <summary>
 		/// Gets the client capacity of the server.
@@ -142,7 +134,6 @@ namespace AsyncServer{
 			this.timeout = timeout;
 			if(capacity != 0) this.capacity = capacity;
 			listener = new TcpListener(host, port);
-			m_clients = new List<Connection<T>>();
 		}
 		#endregion
 
@@ -193,12 +184,11 @@ namespace AsyncServer{
 			Connection<T> connection = new Connection<T>() {
 				Client = client,
 			};
-			lock(clients_l) {
-				if(capacity != 0 && clients >= capacity){
+			lock(m_clients) {
+				if(capacity!=0 && m_clients.Count >= capacity){
 					DisconnectClient(connection);
 					return;
 				}else{
-					clients++;
 					m_clients.Add(connection);
 				}
 			}
@@ -300,8 +290,7 @@ namespace AsyncServer{
 		/// <param name="connection">Disconnected connection.</param>
 		private void DisconnectHandler(Connection<T> connection) {
 			Logger.Debug("Disconnect client");
-			lock(clients_l) {
-				clients--;
+			lock(m_clients) {
 				m_clients.Remove(connection);
 			}
 			Disconnected(connection);
@@ -355,7 +344,7 @@ namespace AsyncServer{
 		}
 		public void Stop(){
 			Started =false;
-			lock(clients_l){
+			lock(m_clients){
 				foreach(Connection<T> client in m_clients){
 					client.Close();
 				}

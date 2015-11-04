@@ -83,6 +83,7 @@ namespace YGOCore.Net
 		public static void OnRoomEvent(this GameServer server, StoSMessage msg, RoomInfo info){
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((ushort)msg);
+				writer.Write((ushort)1);
 				writer.WriteUnicode(info.RoomName, 20);
 				writer.WriteUnicode(info.Pwd, 20);
 				writer.Write((short)info.Rule);
