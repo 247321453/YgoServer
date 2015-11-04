@@ -101,12 +101,12 @@ namespace YGOCore.Net
 			}
 			if(client == null){
 				//所有人离开
+				List<string> names = new List<string>();
 				foreach(string p in info.players){
-					server.OnPlayEvent(StoSMessage.PlayerLeave, p);
+					names.Add(p);
 				}
-				foreach(string p in info.observers){
-					server.OnPlayEvent(StoSMessage.PlayerLeave, p);
-				}
+				names.AddRange(info.observers);
+				server.OnPlayNameEvent(StoSMessage.PlayerLeave, names.ToArray());
 			}
 			server.OnRoomEvent(isclose ? StoSMessage.RoomClose:StoSMessage.RoomUpdate, info);
 		}

@@ -413,8 +413,7 @@ namespace YGOCore.Game
 				ServerMessage(Messages.MSG_SIDE);
 				State = GameState.Side;
 				GameTimer.StartSideTimer();
-				Server.OnPlayEvent(StoSMessage.PlayerSide, Players[0]);
-				Server.OnPlayEvent(StoSMessage.PlayerSide, Players[1]);
+				Server.OnPlayEvent(StoSMessage.PlayerSide, Players);
 				SendToPlayers(new GameServerPacket(StocMessage.ChangeSide));
 				SendToObservers(new GameServerPacket(StocMessage.WaitingSide));
 			}
@@ -931,7 +930,6 @@ namespace YGOCore.Game
 				if (Players[i] == null){
 					return;
 				}
-				Server.OnPlayEvent(StoSMessage.PlayerDeul, Players[i]);
 				List<int> _cards = Players[i].Deck.Alls;
 				foreach(int id in _cards){
 					if(!CardIds.Contains(id)){
@@ -939,7 +937,7 @@ namespace YGOCore.Game
 					}
 				}
 			}
-			
+			Server.OnPlayEvent(StoSMessage.PlayerDeul, Players);
 			State = GameState.Hand;
 			SendToAll(new GameServerPacket(StocMessage.DuelStart));
 			SendHand();
