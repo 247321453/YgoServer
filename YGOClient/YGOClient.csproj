@@ -67,6 +67,9 @@
     <Compile Include="..\lib\Tool.cs">
       <Link>Common\Tool.cs</Link>
     </Compile>
+    <Compile Include="..\lib\XmlTools.cs">
+      <Link>Common\XmlTools.cs</Link>
+    </Compile>
     <Compile Include="Common\GameRoom.cs" />
     <Compile Include="Common\Protocol.cs" />
     <Compile Include="Common\RoomTool.cs" />

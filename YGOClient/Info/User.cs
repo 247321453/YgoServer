@@ -94,7 +94,7 @@ namespace YGOClient
 				//加密
 				Password = Tool.Encrypt(Password, key, key2);// Convert.ToBase64String(Encoding.GetEncoding(KEY).GetBytes(Password));
 			}
-			string json=Tool.ToJson(this);
+			string json=JsonTool.ToJson(this);
 
 			if(!Directory.Exists(DIR)){
 				Directory.CreateDirectory(DIR);
@@ -115,7 +115,7 @@ namespace YGOClient
 			if(File.Exists(file)){
 				try{
 					string json=File.ReadAllText(file);
-					user=Tool.Parse<User>(json);
+					user=JsonTool.Parse<User>(json);
 					if(!string.IsNullOrEmpty(user.Password)){
 						user.Password = Tool.Decrypt(user.Password, key, key2);//Encoding.GetEncoding(KEY).GetString(Convert.FromBase64String(user.Password));
 					}

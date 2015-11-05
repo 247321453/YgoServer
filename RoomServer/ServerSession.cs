@@ -19,7 +19,6 @@ namespace YGOCore
 	public class ServerSession
 	{
 		public readonly  List<RoomInfo> Rooms = new List<RoomInfo>();
-		public readonly SortedList<string, PlayerStatu> Players=new SortedList<string, PlayerStatu>();
 		Connection<ServerSession> Client;
 		
 		public string Name;
@@ -27,7 +26,6 @@ namespace YGOCore
 		public int port;
 		public ServerSession(Connection<ServerSession> client)
 		{
-			Client = client;
 		}
 	}
 }

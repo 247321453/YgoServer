@@ -39,15 +39,15 @@ namespace System.Windows.Forms
 
 				if(room.Warring){
 					label.BackColor=Color.FromArgb(0xee, 0xdd, 0, 0);
-					label.Text = "[有坑]"+room.RoomName;
+					label.Text = "[有坑]"+room.Name;
 				}else{
 					if(room.NeedPass()){
 						//label.BackColor=Color.FromArgb(0xdd, 0, 0x68, 0x8b);
 						label.BackColor=Color.FromArgb(0xee, 0xee, 0xad, 0x0e);
-						label.Text = room.RoomName;
+						label.Text = room.Name;
 					}else{
 						label.BackColor=Color.FromArgb(0xdd, 0, 0x64, 0);
-						label.Text = room.RoomName;
+						label.Text = room.Name;
 					}
 				}
 				if(room.IsStart){
@@ -136,7 +136,7 @@ namespace System.Windows.Forms
 					}
 				}
 			}
-			RoomTool.Start(m_server, m_client.m_user, m_room.RoomName+pass);
+			RoomTool.Start(m_server, m_client.m_user, m_room.Name+pass);
 		}
 	}
 	public class RoomGrid : FlowLayoutPanel

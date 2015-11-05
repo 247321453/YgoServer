@@ -107,12 +107,12 @@ namespace YGOCore.Net
 				return;
 			}
 			int version = packet.ReadInt16();
-			if (version < client.Server.Config.ClientVersion)
+			if (version < Program.Config.ClientVersion)
 			{
 				client.LobbyError(Messages.ERR_LOW_VERSION);
 				return;
 			}
-			else if (version > client.Server.Config.ClientVersion){
+			else if (version > Program.Config.ClientVersion){
 				client.ServerMessage(Messages.MSG_HIGH_VERSION);
 			}
 			int gameid = packet.ReadInt32();//gameid
@@ -126,17 +126,12 @@ namespace YGOCore.Net
 				client.LobbyError(Messages.ERR_AUTH_FAIL);
 				return;
 			}
-			if(!client.Server.CheckRoomPassword(joinCommand)){
+			if(!RoomManager.CheckRoomPassword(joinCommand)){
 				client.LobbyError(Messages.ERR_PASSWORD);
 				return;
 			}
-			GameConfig config = GameConfig.Parse(client.Server, joinCommand);
-			if(string.IsNullOrEmpty(joinCommand) ||joinCommand.ToLower()=="random"){
-				room = client.Server.GetRandomGame();
-			}
-			if (room == null){
-				room =  client.Server.CreateOrGetGame(config);
-			}
+			GameConfig config = new GameConfig(joinCommand);
+			room =  RoomManager.CreateOrGetGame(config);
 			if (room == null){
 				client.LobbyError(Messages.MSG_FULL);
 				return;
@@ -168,8 +163,8 @@ namespace YGOCore.Net
 			if (string.IsNullOrEmpty(client.Name) || client.Type != (int)PlayerType.Undefined)
 				return;
 			GameRoom room = null;
-			GameConfig config =GameConfig.Parse(client.Server, packet);
-			room = client.Server.CreateOrGetGame(config);
+			GameConfig config = new GameConfig(packet);
+			room = RoomManager.CreateOrGetGame(config);
 
 			if (room == null)
 			{

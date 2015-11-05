@@ -45,8 +45,8 @@ namespace YGOCore.Game
 		/// </summary>
 		public bool IsOpen{get; private set;}
 		public bool IsEnd = false;
-		public bool IsTag{get;private set;}
-		public bool IsMatch{get;private set;}
+		public bool IsTag{get{return Config.IsTag;}}
+		public bool IsMatch{get{return Config.IsMatch;}}
 		public bool IsTpSelect { get; private set; }
 		public bool AutoEndTrun{get;private set;}
 		public Banlist Banlist{get; private set;}
@@ -60,19 +60,15 @@ namespace YGOCore.Game
 			get{return State==GameState.Lobby;}
 		}
 		
-		private GameServer Server;
 		private System.Timers.Timer DuleTimer;
 		private GameTimer GameTimer;
 		#endregion
 		
 		#region 初始化
-		public GameRoom(GameConfig config,GameServer server)
+		public GameRoom(GameConfig config)
 		{
 			Config = config;
-			Server = server;
 			State = GameState.Lobby;
-			IsMatch = config.Mode == 1;
-			IsTag = config.Mode == 2;
 			CurrentPlayer = 0;
 			LifePoints = new int[2];
 			Players = new GameSession[IsTag ? 4 : 2];
@@ -82,7 +78,7 @@ namespace YGOCore.Game
 			m_timelimit = new int[2];
 			m_bonustime = new int[2];
 			m_matchResult = new int[3];
-			AutoEndTrun = Server.Config.AutoEndTurn;
+			AutoEndTrun = Program.Config.AutoEndTurn;
 			if (config.LfList >= 0 && config.LfList < BanlistManager.Banlists.Count)
 				Banlist = BanlistManager.Banlists[config.LfList];
 			else if(BanlistManager.Banlists.Count>0){
@@ -147,11 +143,7 @@ namespace YGOCore.Game
 				}else if(State == GameState.Side){
 					player.ServerMessage(Messages.MSG_WATCH_SIDE);
 				}
-				if(player!=null){
-					if(player.Server!=null){
-						player.Server.OnJoinRoom(this.GetRoomInfo(), player);
-					}
-				}
+				RoomManager.OnPlayerJoin(player);
 				return;
 			}
 
@@ -168,14 +160,14 @@ namespace YGOCore.Game
 				enter.WriteUnicode(player.Name, 20);
 				enter.Write((byte)pos);
 				SendToAll(enter);
-				Server.OnPlayEvent(PlayerStatu.PlayerReady, player);
+				//	Server.OnPlayEvent(PlayerStatu.PlayerReady, player);
 			}
 			else
 			{
 				GameServerPacket watch = new GameServerPacket(StocMessage.HsWatchChange);
 				watch.Write((short)(Observers.Count + 1));
 				SendToAll(watch);
-				Server.OnPlayEvent(PlayerStatu.PlayerWatch, player);
+				//	Server.OnPlayEvent(PlayerStatu.PlayerWatch, player);
 				player.Type = (int)PlayerType.Observer;
 				Observers.Add(player);
 //				if(player.IsAuthentified){
@@ -207,11 +199,7 @@ namespace YGOCore.Game
 				nwatch.Write((short)Observers.Count);
 				player.Send(nwatch);
 			}
-			if(player!=null){
-				if(player.Server!=null){
-					player.Server.OnJoinRoom(this.GetRoomInfo(), player);
-				}
-			}
+			RoomManager.OnPlayerJoin(player);
 		}
 		#endregion
 		
@@ -220,7 +208,7 @@ namespace YGOCore.Game
 			if(player==null){
 				return;
 			}
-			bool issurrender = false;
+			RoomManager.OnPlayerLeave(player);
 			if (player.Equals(HostPlayer) && State == GameState.Lobby){
 				//Logger.WriteLine("HostPlayer is leave", false);
 				Close(true);
@@ -249,18 +237,10 @@ namespace YGOCore.Game
 				player.Close();
 			}
 			else{
-				issurrender = true;
-			}
-			if(issurrender){
 				if(IsEnd){
 					return;
 				}
 				Surrender(player, 4, true);
-			}else{
-				if(player.Server!=null){
-					player.Server.OnLeaveRoom(this.GetRoomInfo(), player);
-					//client.Close();
-				}
 			}
 		}
 		#endregion
@@ -368,6 +348,7 @@ namespace YGOCore.Game
 		public void Close(bool forceclose=false)
 		{
 			IsOpen = false;
+			RoomManager.Remove(this);
 			if(forceclose){
 				foreach(GameSession plager in Players){
 					if(plager==null){
@@ -385,7 +366,6 @@ namespace YGOCore.Game
 					}
 				}
 			}
-			Server.OnLeaveRoom(this.GetRoomInfo(), null);
 		}
 		public void EndDuel(bool force)
 		{
@@ -422,7 +402,7 @@ namespace YGOCore.Game
 				ServerMessage(Messages.MSG_SIDE);
 				State = GameState.Side;
 				GameTimer.StartSideTimer();
-				Server.OnPlayEvent(PlayerStatu.PlayerSide, Players);
+				//	Server.OnPlayEvent(PlayerStatu.PlayerSide, Players);
 				SendToPlayers(new GameServerPacket(StocMessage.ChangeSide));
 				SendToObservers(new GameServerPacket(StocMessage.WaitingSide));
 			}
@@ -450,7 +430,7 @@ namespace YGOCore.Game
 			return yrpName;
 		}
 		private static string GetYrpFileName(GameRoom room){
-			return Tool.Combine(room.Server.Config.replayFolder, GetYrpName(room));
+			return Tool.Combine(Program.Config.replayFolder, GetYrpName(room));
 		}
 		private static string GetGameTagName(GameRoom room){
 			string filename="";
@@ -481,7 +461,7 @@ namespace YGOCore.Game
 				string[] names=new string[]{Players[0].Name,Players[1].Name,
 					IsTag?Players[2].Name:"",IsTag?Players[3].Name:""};
 				//	Logger.WriteLine("onWin:"+team);
-				Server.OnWin(Config.Name, Config.Mode, team, reason, yrpName,
+				RoomManager.OnWin(Config.Name, Config.Mode, team, reason, yrpName,
 				             names,force);
 			}catch(Exception e){
 				Logger.Error(e);
@@ -494,7 +474,7 @@ namespace YGOCore.Game
 			}
 			IsEnd=true;
 			SendToAll(new GameServerPacket(StocMessage.DuelEnd));
-			Server.OnLeaveRoom(this.GetRoomInfo(), null);
+			RoomManager.Remove(this);
 		}
 
 		#endregion
@@ -947,10 +927,11 @@ namespace YGOCore.Game
 					}
 				}
 			}
-			Server.OnPlayEvent(PlayerStatu.PlayerDeul, Players);
+			//	Server.OnPlayEvent(PlayerStatu.PlayerDeul, Players);
 			State = GameState.Hand;
 			SendToAll(new GameServerPacket(StocMessage.DuelStart));
 			SendHand();
+			RoomManager.OnRoomStart(this);
 			DuleTimer.Start();
 		}
 		private void Process()
@@ -1122,7 +1103,7 @@ namespace YGOCore.Game
 			if (IsTag)
 				opt += 0x20;
 			Replay = new Replay(GetYrpFileName(this),
-			                    Server.Config.AutoReplay,Server.Config.ClientVersion,
+			                    Program.Config.AutoReplay, Program.Config.ClientVersion,
 			                    Config.Mode, (uint)seed, IsTag);
 			Replay.Writer.WriteUnicode(Players[0].Name, 20);
 			Replay.Writer.WriteUnicode(Players[1].Name, 20);

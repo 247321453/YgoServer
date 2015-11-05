@@ -7,12 +7,13 @@
  * 要改变这种模板请点击 工具|选项|代码编写|编辑标准头文件
  */
 using System;
-using YGOCore.Game;
-using YGOCore.Net;
-using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
+
 using AsyncServer;
+using YGOCore.Game;
+using YGOCore.Net;
 
 namespace YGOCore
 {
@@ -116,15 +117,15 @@ namespace YGOCore
 			if(msg == null){
 				return true;
 			}
-			if(client == null || client.Server==null||client.Server.Config==null){
+			if(client == null){
 				return false;
 			}
 			msg = msg.Trim();
 			if(msg=="/ai"){
-				if(client.Server.Config.MaxAICount==0){
+				if(Program.Config.MaxAICount==0){
 					client.ServerMessage(Messages.MSG_NO_AI);
 				}
-				else if(client.Game!=null && AddAI(client.Server.Config, client.Game.Config.Name)){
+				else if(client.Game!=null && AddAI(Program.Config, client.Game.Config.Name)){
 					client.ServerMessage(Messages.MSG_ADD_AI);
 				}else{
 					client.ServerMessage(Messages.MSG_NO_FREE_AI);
@@ -153,10 +154,10 @@ namespace YGOCore
 //					break;
 				case "sendall":
 					//发送给所有玩家
-					Server.OnWorldMessage(args[1]);
+					RoomManager.OnWorldMessage(args[1]);
 					break;
 				case "room":
-					RoomCmd(Server, args);
+					Console.WriteLine(">>count="+RoomManager.Count);
 					break;
 				case "cls":
 					Console.Clear();
@@ -175,18 +176,6 @@ namespace YGOCore
 					break;
 				default:
 					Console.WriteLine(">>invalid command:"+cmd);
-					break;
-			}
-		}
-		
-		private static void RoomCmd(GameServer Server, string[] args){
-			switch(args[1]){
-				case "-json":
-				case "-j":
-					Console.WriteLine(""+Server.GetRoomJson(false, false));
-					break;
-					default :
-						Console.WriteLine(">>count="+Server.GetRoomCount());
 					break;
 			}
 		}
@@ -220,9 +209,9 @@ namespace YGOCore
 		}
 		private static void AddAI(GameServer Server){
 			string name = null;
-			GameRoom room = Server.CreateOrGetGame(GameConfig.Parse(Server, ""));
+			GameRoom room = RoomManager.CreateOrGetGame(new GameConfig(""));
 			if(room == null && room.Config!=null){
-				name = Server.GetGuidString();
+				name = RoomManager.RandomRoomName();
 			}else{
 				name = room.Config.Name;
 			}

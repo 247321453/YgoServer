@@ -57,7 +57,7 @@ namespace YGOClient
 			this.RegisterUrl=regurl;
 		}
 		public void Save(string Name){
-			string json=Tool.ToJson(this);
+			string json=JsonTool.ToJson(this);
 
 			if(!Directory.Exists(DIR)){
 				Directory.CreateDirectory(DIR);
@@ -77,7 +77,7 @@ namespace YGOClient
 			if(File.Exists(file)){
 				try{
 					string json=File.ReadAllText(file);
-					user=Tool.Parse<Server>(json);
+					user=JsonTool.Parse<Server>(json);
 				}catch(Exception){
 				}
 			}else{

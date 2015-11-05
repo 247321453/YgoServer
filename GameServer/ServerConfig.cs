@@ -11,8 +11,6 @@ namespace YGOCore
 		/// </summary>
 		public int ServerPort { get; private set; }
 		
-		//	public string ApiIp{get;private set;}
-		public bool ApiIsLocal{get; private set;}
 		/// <summary>
 		/// api¶Ë¿Ú
 		/// </summary>
@@ -133,7 +131,6 @@ namespace YGOCore
 			AIPass="kenan123";
 			LoginUrl="http://127.0.0.1/login.php";
 			AIisHide=false;
-			ApiIsLocal=true;
 			AsyncMode=false;
 			BanMode = 0;
 			File_BanAccont = "namelist.txt";
@@ -256,9 +253,6 @@ namespace YGOCore
 					break;
 				case "serverdesc":
 					ServerDesc=value;
-					break;
-				case "apiislocal":
-					ApiIsLocal=(value.ToLower()=="true"||value=="1");
 					break;
 				case "asyncmode":
 					AsyncMode= (value.ToLower()=="true"||value=="1");

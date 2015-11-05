@@ -3,13 +3,15 @@ using System.Text;
 using System.Text.RegularExpressions;
 using AsyncServer;
 using YGOCore.Net;
+using System.Collections.Generic;
 
 namespace YGOCore.Game
 {
 	public class GameConfig
 	{
-		private static Regex NameRegex=new Regex("^[0-9A-Za-z_\\s.]+$");
+		//	private static Regex NameRegex=new Regex("^[0-9A-Za-z_\\s.]+$");
 		public int LfList { get; private set; }
+		public string BanList{get;private set;}
 		public int Rule { get; private set; }
 		public int Mode { get; private set; }
 		public bool EnablePriority { get; private set; }
@@ -20,11 +22,13 @@ namespace YGOCore.Game
 		public int DrawCount { get; private set; }
 		public int GameTimer { get; private set; }
 		public string Name { get; private set; }
-		public string Password{get;private set;}
-
-		private GameConfig(GameServer server,string gameinfo)
+		public bool IsMatch {get{return Mode == 1;}}
+		public bool IsTag {get{return  Mode == 2;}}
+		
+		public GameConfig(string gameinfo)
 		{
 			LfList = 0;
+			BanList = BanlistManager.Banlists[LfList].Name;
 			Rule = 2;
 			Mode = 0;
 			EnablePriority = false;
@@ -34,13 +38,15 @@ namespace YGOCore.Game
 			StartHand = 5;
 			DrawCount = 1;
 			GameTimer = 120;
+			
+			#region 解析
 			try{
 				if(!string.IsNullOrEmpty(gameinfo)){
 					gameinfo = gameinfo.Trim();
 				}
 				if(string.IsNullOrEmpty(gameinfo)||gameinfo=="random"){
 					//random
-					Name = server.RandomRoomName("");
+					Name = RoomManager.RandomRoomName();
 				}
 				else{
 					int head=gameinfo.IndexOf("#");
@@ -99,10 +105,10 @@ namespace YGOCore.Game
 						//M#
 						//head=1
 						if(head+1>=gameinfo.Length){
-							string _name=server.RandomRoomName(gameinfo);
+							string _name=RoomManager.RandomRoomName(gameinfo);
 							if(_name==null){
 								//条件#的随机房间名没找到，则创建一个
-								Name=gameinfo+server.GetGuidString();
+								Name=gameinfo + RoomManager.NewRandomRoomName();
 							}else{
 								//条件#的随机房间名存在，则进去，可能重复观战
 								Name=_name;
@@ -114,14 +120,16 @@ namespace YGOCore.Game
 				}
 			}
 			catch(Exception e){
-				Name = server.NewRandomRoomName();
+				Name = RoomManager.NewRandomRoomName();
 				Logger.Warn("gameinfo="+e);
 			}
+			#endregion
 		}
 
-		private GameConfig(GameServer server, GameClientPacket packet)
+		public GameConfig(GameClientPacket packet)
 		{
 			LfList = BanlistManager.GetIndex(packet.ReadUInt32());
+			BanList = BanlistManager.Banlists[LfList].Name;
 			Rule = packet.ReadByte();
 			Mode = packet.ReadByte();
 			EnablePriority = Convert.ToBoolean(packet.ReadByte());
@@ -137,18 +145,11 @@ namespace YGOCore.Game
 			packet.ReadUnicode(20);
 			Name = packet.ReadUnicode(30);
 			if (string.IsNullOrEmpty(Name))
-				Name = server.NewRandomRoomName();
+				Name = RoomManager.NewRandomRoomName();
 		}
 		
 		public bool HasPassword(){
 			return Name!=null && Name.IndexOf("$")>=0;
-		}
-
-		public static GameConfig Parse(GameServer server,GameClientPacket packet){
-			return new GameConfig(server, packet);
-		}
-		public static GameConfig Parse(GameServer server,string gameinfo){
-			return new GameConfig(server, gameinfo);
 		}
 	}
 }

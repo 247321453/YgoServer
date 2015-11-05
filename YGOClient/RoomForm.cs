@@ -89,7 +89,7 @@ namespace YGOClient
 				string json = Tool.GetHtmlContentByUrl(url.ToString());
 				try{
 					List<RoomInfo> list=new List<RoomInfo>();
-					list=Tool.Parse<List<RoomInfo>>(json);
+					list=JsonTool.Parse<List<RoomInfo>>(json);
 					#if DEBUG
 					MessageBox.Show("count:"+list.Count);
 					#endif

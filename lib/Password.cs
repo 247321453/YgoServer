@@ -34,20 +34,20 @@ namespace YGOCore.Net
 			return "";
 		}
 		public static bool CheckAuth(this GameSession client, string namepassword){
-			if(namepassword==null || client.Server == null){
+			if(namepassword==null){
 				return true;
 			}
-			if(!client.Server.CheckPlayerBan(namepassword)){
+			if(!RoomManager.CheckPlayerBan(namepassword)){
 				client.ServerMessage(Messages.MSG_PLAYER_BAN);
 				return false;
 			}
-			if(client.Server.Config.isNeedAuth || namepassword.StartsWith("[AI]")){
+			if(Program.Config.isNeedAuth || namepassword.StartsWith("[AI]")){
 				string[] _names=namepassword.Split(new char[]{'$'}, 2);
 				if(_names.Length==1){
 					client.ServerMessage(Messages.ERR_NO_PASS);
 					return false;
 				}else{
-					if(!client.Server.OnLogin(_names[0],_names[1])){
+					if(!RoomManager.OnLogin(_names[0],_names[1])){
 						//LobbyError("Auth Fail");
 						if(Encoding.Default.GetBytes(namepassword).Length>=20){
 							client.ServerMessage(Messages.ERR_NAME_PASSWORD_LONG);

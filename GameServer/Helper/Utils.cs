@@ -10,6 +10,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Runtime.Serialization.Json;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -272,7 +273,7 @@ namespace YGOCore
 			return dst;
 		}
 		#endregion
-
+				
 		#region des
 		public static string Encrypt(string sourceString, string key, string iv)
 		{

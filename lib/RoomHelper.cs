@@ -20,50 +20,17 @@ namespace YGOCore.Net
 {
 	public static class RoomHelper
 	{
-		#region 房间信息
-		public static RoomInfo GetRoomInfo(this GameRoom game){
-			if(game!=null&&game.Config!=null){
-				RoomInfo info=new RoomInfo();
-				info.RoomName = game.Name;
-				info.Pwd = Password.GetPwd(game.Config.Name);
-				info.StartLP=game.Config.StartLp;
-				info.Warring=game.Config.EnablePriority|game.Config.NoCheckDeck|game.Config.NoShuffleDeck;
-				info.Rule=game.Config.Rule;
-				info.Mode=game.Config.Mode;
-				info.Lflist=game.Banlist.Name;
-				info.IsStart= (game.State!=GameState.Lobby);
-				int count = game.Players.Length;
-				for(int i=0;i<count;i++){
-					if(game.Players[i]!=null){
-						info.players[i] = game.Players[i].Name;
-					}
-					if(info.players[i]==null){
-						info.players[i] = "";
-					}
-				}
-				
-				lock(game.Observers){
-					foreach(GameSession player in game.Observers){
-						if(player!=null){
-							info.observers.Add(player.Name);
-						}
-					}
-				}
-				return info;
-			}
-			return null;
-		}
-		#endregion
 		
 		#region room event
 		public static void OnRoomEvent(this GameServer server, StoSMessage msg, RoomInfo info){
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((ushort)msg);
+				//length
 				writer.Write((ushort)1);
-				writer.WriteUnicode(info.RoomName, 20);
+				writer.WriteUnicode(info.Name, 20);
 				writer.WriteUnicode(info.Pwd, 20);
-				writer.Write((short)info.Rule);
-				writer.Write((short)info.Mode);
+				writer.Write((byte)info.Rule);
+				writer.Write((byte)info.Mode);
 				writer.Write(info.IsStart);
 				writer.WriteUnicode(info.Lflist, 60);
 				writer.Write(info.Warring);
@@ -80,11 +47,12 @@ namespace YGOCore.Net
 				//byte[] bs = Encoding.Unicode.GetBytes(str);
 				//writer.Write(bs);
 				writer.Use();
-				Send(server.LocalClient, writer.Content);
+				//Send(server.LocalClient, writer.Content);
 			}
 		}
 		#endregion
 		
+		/*
 		#region player
 		public static void OnPlayNameEvent(this GameServer server, PlayerStatu msg,params string[] names){
 			if(names==null||names.Length==0){
@@ -138,5 +106,6 @@ namespace YGOCore.Net
 			}
 		}
 		#endregion
+		*/
 	}
 }

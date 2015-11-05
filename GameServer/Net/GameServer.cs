@@ -22,16 +22,7 @@ namespace YGOCore.Net
 	{
 		#region member
 		private AsyncTcpListener<GameSession> m_listener;
-		private static List<string> banNames=new List<string>();
 		public ServerConfig Config{get;private set;}
-		public readonly SortedList<string, RoomInfo> Rooms = new SortedList<string, RoomInfo>(32);
-		
-		public readonly SortedList<string, GameRoom> Games = new SortedList<string, GameRoom>();
-		public readonly Queue<WinInfo> WinInfos=new Queue<WinInfo>();
-		private System.Timers.Timer WinSaveTimer;
-		private RoomServer roomServer;
-		private TcpClient roomClient;
-		public TcpClient LocalClient {get{return roomClient;}}
 		public bool IsListening;
 		#endregion
 		
@@ -43,36 +34,20 @@ namespace YGOCore.Net
 		#region socket
 		public bool Start()
 		{
+			if(IsListening) return false;
 			try
 			{
 				Api.Init(Config.Path, Config.ScriptFolder, Config.CardCDB);
 				BanlistManager.Init(Config.BanlistFile);
 				MsgSystem.Init(Config.File_ServerMsgs);
 				WinInfo.Init(Config.WinDbName);
-				ReadBanNames();
-				if(Config.RecordWin){
-					SatrtWinTimer();
-				}
+				RoomManager.init();
 				m_listener = new AsyncTcpListener<GameSession>(IPAddress.Any, Config.ServerPort);
 				m_listener.OnConnect    += new AsyncTcpListener<GameSession>.ConnectEventHandler(Listener_OnConnect);
 				m_listener.OnReceive    += new AsyncTcpListener<GameSession>.ReceiveEventHandler(Listener_OnReceive);
 				m_listener.OnTimeout    += new AsyncTcpListener<GameSession>.TimeoutEventHandler(Listener_OnTimeout);
 				m_listener.OnDisconnect += new AsyncTcpListener<GameSession>.DisconnectEventHandler(Listener_OnDisconnect);
 				m_listener.Start();
-				if(Config.ApiIsLocal){
-					if(roomClient==null){
-						roomClient = new TcpClient();
-						try{
-							roomClient.Client.Connect(IPAddress.Parse("127.0.0.1"), Config.ApiPort);
-						}catch(Exception){
-						}
-					}
-				}else{
-					if(roomServer==null){
-						roomServer = new RoomServer(this, Config.ApiPort);
-					}
-					roomServer.Start();
-				}
 				IsListening = true;
 			}
 			catch (SocketException)
@@ -94,20 +69,7 @@ namespace YGOCore.Net
 		public void Stop(){
 			if(IsListening){
 				IsListening = false;
-				if(roomClient != null ){
-					try{
-						if(roomClient.Connected){
-							roomClient.Close();
-						}
-					}catch(Exception){
-						
-					}
-				}
 				m_listener.Stop();
-				if(Config.RecordWin){
-					WinSaveTimer.Close();
-				}
-				WinSaveTimer_Elapsed(null, null);
 			}
 		}
 		#endregion
@@ -144,85 +106,12 @@ namespace YGOCore.Net
 		{
 			if(Client!=null){
 				//绑定关系
-				GameSession session = new GameSession(this, Client);
+				GameSession session = new GameSession(Client, Config.ClientVersion);
+				Client.isAsync = Config.AsyncMode;
 				Client.Tag = session;
 			}
 		}
 		#endregion
-		
-		#region public method
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns>false=被禁止</returns>
-		public bool CheckPlayerBan(string name){
-			if(string.IsNullOrEmpty(name)){
-				return false;
-			}
-			name = name.Split('$')[0];
-			if(Config.BanMode==0){
-				return true;
-			}
-			else if(Config.BanMode==1){
-				return !banNames.Contains(name);
-			}
-			else{
-				return banNames.Contains(name);
-			}
-		}
-		#endregion
-		
-		#region private method
-		private void ReadBanNames()
-		{
-			if(File.Exists(Config.File_BanAccont)){
-				string[] lines = File.ReadAllLines(Config.File_BanAccont);
-				foreach(string line in lines){
-					if(string.IsNullOrEmpty(line)||line.StartsWith("#")){
-						continue;
-					}
-					string name=line.Trim();
-					if(!banNames.Contains(name)){
-						banNames.Add(name);
-					}
-				}
-			}
-		}
-		#endregion
-		
-		#region 比赛记录
-		private void SatrtWinTimer(){
-			//30s保存一次结果
-			WinSaveTimer = new System.Timers.Timer(30*1000);
-			WinSaveTimer.AutoReset=true;
-			WinSaveTimer.Enabled=true;
-			WinSaveTimer.Elapsed+=new System.Timers.ElapsedEventHandler(WinSaveTimer_Elapsed);
-			WinSaveTimer.Start();
-		}
-		private void WinSaveTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-		{
-			if(!Config.RecordWin){
-				return;
-			}
-			string[] sqls=null;
-			lock(WinInfos){
-				if(WinInfos.Count==0) return;
-				sqls=new string[WinInfos.Count];
-				int i=0;
-				foreach(WinInfo info in WinInfos){
-					sqls[i++]=info.GetSQL();
-				}
-			}
-			ThreadPool.QueueUserWorkItem(new WaitCallback(
-				delegate(object obj)
-				{
-					//string[] sqls = (string[])obj;
-					SQLiteTool.Command(Config.WinDbName, sqls);
-					Logger.Debug("save wins record:"+sqls.Length);
-				}
-			));
-		}
-		#endregion
+	
 	}
 }

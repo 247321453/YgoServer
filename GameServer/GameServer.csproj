@@ -55,21 +55,11 @@
     <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Runtime.Serialization">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization.Json" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\lib\Password.cs">
       <Link>Helper\Password.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\RoomHelper.cs">
-      <Link>Helper\RoomHelper.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\RoomInfo.cs">
-      <Link>Helper\RoomInfo.cs</Link>
     </Compile>
     <Compile Include="..\lib\SevenZip\Compress\LZ\LzOutWindow.cs">
       <Link>SevenZip\Compress\LZ\LzOutWindow.cs</Link>
@@ -225,16 +215,15 @@
     <Compile Include="Game\Info\Replay.cs" />
     <Compile Include="Game\Info\ReplayHeader.cs" />
     <Compile Include="Game\MsgSystem.cs" />
+    <Compile Include="Game\RoomManager.cs" />
+    <Compile Include="Game\StoSMessage.cs" />
     <Compile Include="Helper\BinaryExtensions.cs" />
     <Compile Include="Helper\GameEvent.cs" />
-    <Compile Include="Helper\ServerEvent.cs" />
     <Compile Include="Messages.cs" />
     <Compile Include="Net\GameClientPacket.cs" />
     <Compile Include="Net\GameServer.cs" />
     <Compile Include="Net\GameServerPacket.cs" />
     <Compile Include="Net\GameSession.cs" />
-    <Compile Include="Net\HttpServer.cs" />
-    <Compile Include="Net\RoomServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerConfig.cs" />
