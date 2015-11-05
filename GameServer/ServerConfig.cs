@@ -112,7 +112,7 @@ namespace YGOCore
 			ServerPort = 8911;
 			ServerName="YGOserver";
 			//	ApiIp="127.0.0.1";
-			ApiPort=18911;
+			ApiPort=ServerPort+1000;
 			Path = ".";
 			ScriptFolder = "script";
 			replayFolder="replay";
@@ -195,7 +195,7 @@ namespace YGOCore
 					File_ServerMsgs=value;
 					break;
 				case "apiport":
-					ApiPort = Convert.ToInt32(value);
+					ApiPort =  Convert.ToInt32(value);
 					break;
 				case "path":
 					Path = value;

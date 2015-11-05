@@ -12,6 +12,8 @@ using YGOCore.Net;
 using System.Text;
 using AsyncServer;
 using YGOCore.Game;
+using System.Net;
+using System.Net.Sockets;
 using OcgWrapper;
 using OcgWrapper.Enums;
 using System.IO;
@@ -26,7 +28,7 @@ namespace YGOCore.Game
 	{
 		#region member
 		private static readonly SortedList<string, GameRoom> Games = new SortedList<string, GameRoom>();
-		private  static readonly Random Random= new Random();
+		private static readonly Random Random= new Random();
 		private static readonly Queue<WinInfo> WinInfos = new Queue<WinInfo>();
 		private static System.Timers.Timer WinSaveTimer;
 		private static List<string> banNames=new List<string>();
@@ -65,14 +67,22 @@ namespace YGOCore.Game
 				SatrtWinTimer();
 			}
 			ReadBanNames();
+			if(client==null){
+				try{
+					client = new TcpClient();
+					client.Connect("127.0.0.1", Program.Config.ApiPort);
+				}catch(Exception e){
+					Logger.Warn(e);
+				}
+			}
 		}
 		#endregion
 		
 		#region 比赛记录
 		private static void SatrtWinTimer(){
-			//30s保存一次结果
+			//10s保存一次结果
 			if(WinSaveTimer==null){
-				WinSaveTimer = new System.Timers.Timer(30*1000);
+				WinSaveTimer = new System.Timers.Timer(10*1000);
 				WinSaveTimer.AutoReset=true;
 				WinSaveTimer.Enabled=true;
 				WinSaveTimer.Elapsed+=new System.Timers.ElapsedEventHandler(WinSaveTimer_Elapsed);
@@ -283,22 +293,84 @@ namespace YGOCore.Game
 		#endregion
 		
 		#region 事件
+		static TcpClient client;
+		private static void Send(byte[] data){
+			if(client.Client!=null && client.Client.Connected){
+				client.Client.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(EndSend), client);
+			}
+		}
+		private static void EndSend(IAsyncResult ar){
+			try{
+				client.Client.EndSend(ar);
+			}catch(Exception e){
+				Logger.Error(e);
+			}
+		}
 		public static void OnRoomCreate(GameRoom room){
-
+			GameConfig config = room.Config;
+			if(config==null) return;
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)StoSMessage.RoomCreate);
+				writer.WriteUnicode(config.BanList, 40);
+				writer.Write((ushort)config.Rule);
+				writer.Write((ushort)config.Mode);
+				writer.Write(config.EnablePriority);
+				writer.Write(config.NoCheckDeck);
+				writer.Write(config.NoShuffleDeck);
+				writer.Write(config.StartLp);
+				writer.Write(config.StartHand);
+				writer.Write(config.DrawCount);
+				writer.Write(config.GameTimer);
+				writer.WriteUnicode(config.Name, 40);
+				writer.Use();
+				//发送
+				Send(writer.Content);
+			}
+			
 		}
 		public static void OnRoomStart(GameRoom room){
-
+			GameConfig config = room.Config;
+			if(config==null) return;
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)StoSMessage.RoomStart);
+				writer.WriteUnicode(config.Name, 40);
+				writer.Use();
+				//发送
+				Send(writer.Content);
+			}
 		}
 		
 		public static void OnRoomClose(GameRoom room){
-
+			GameConfig config = room.Config;
+			if(config==null) return;
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)StoSMessage.RoomClose);
+				writer.WriteUnicode(config.Name, 40);
+				writer.Use();
+				//发送
+				Send(writer.Content);
+			}
 		}
 		
 		public static void OnPlayerJoin(GameSession player){
-			
+			if(player==null) return;
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)StoSMessage.PlayerJoin);
+				writer.WriteUnicode(player.Name, 40);
+				writer.Use();
+				//发送
+				Send(writer.Content);
+			}
 		}
 		public static void OnPlayerLeave(GameSession player){
-			
+			if(player==null) return;
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)StoSMessage.PlayerLeave);
+				writer.WriteUnicode(player.Name, 40);
+				writer.Use();
+				//发送
+				Send(writer.Content);
+			}
 		}
 		#endregion
 

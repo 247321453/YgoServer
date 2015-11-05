@@ -24,13 +24,18 @@ namespace YGOCore
 	/// </summary>
 	class Program
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="args">本地端口，对外端口</param>
 		public static void Main(string[] args)
 		{
 			RoomServer Server;
-			if(args.Length==0){
-				Server = new RoomServer();
+			if(args.Length >= 2){
+				Server = new RoomServer(int.Parse(args[0]), int.Parse(args[1]));
+				Server.Start();
 			}else{
-				Server = new RoomServer();
+				Console.Write("exe 本地空间名 对外端口");
 			}
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);

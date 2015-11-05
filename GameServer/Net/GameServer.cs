@@ -112,6 +112,6 @@ namespace YGOCore.Net
 			}
 		}
 		#endregion
-	
+		
 	}
 }
