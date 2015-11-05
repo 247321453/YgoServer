@@ -172,10 +172,6 @@
     <Compile Include="..\lib\Ocgcore\Network\DuelPhase.cs">
       <Link>Ocgcore\Network\DuelPhase.cs</Link>
     </Compile>
-	
-	<Compile Include="..\lib\Ocgcore\Network\StoSMessage.cs">
-      <Link>Ocgcore\Network\StoSMessage.cs</Link>
-    </Compile>
     <Compile Include="..\lib\Ocgcore\Network\Error.cs">
       <Link>Ocgcore\Network\Error.cs</Link>
     </Compile>

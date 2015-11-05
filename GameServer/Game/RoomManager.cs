@@ -310,7 +310,7 @@ namespace YGOCore.Game
 			GameConfig config = room.Config;
 			if(config==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)StoSMessage.RoomCreate);
+				writer.Write((byte)StocMessage.RoomCreate);
 				writer.WriteUnicode(config.BanList, 40);
 				writer.Write((ushort)config.Rule);
 				writer.Write((ushort)config.Mode);
@@ -332,7 +332,7 @@ namespace YGOCore.Game
 			GameConfig config = room.Config;
 			if(config==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)StoSMessage.RoomStart);
+				writer.Write((byte)StocMessage.RoomStart);
 				writer.WriteUnicode(config.Name, 40);
 				writer.Use();
 				//发送
@@ -344,7 +344,7 @@ namespace YGOCore.Game
 			GameConfig config = room.Config;
 			if(config==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)StoSMessage.RoomClose);
+				writer.Write((byte)StocMessage.RoomClose);
 				writer.WriteUnicode(config.Name, 40);
 				writer.Use();
 				//发送
@@ -355,7 +355,7 @@ namespace YGOCore.Game
 		public static void OnPlayerJoin(GameSession player){
 			if(player==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)StoSMessage.PlayerJoin);
+				writer.Write((byte)StocMessage.PlayerJoin);
 				writer.WriteUnicode(player.Name, 40);
 				writer.Use();
 				//发送
@@ -365,7 +365,7 @@ namespace YGOCore.Game
 		public static void OnPlayerLeave(GameSession player){
 			if(player==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)StoSMessage.PlayerLeave);
+				writer.Write((byte)StocMessage.PlayerLeave);
 				writer.WriteUnicode(player.Name, 40);
 				writer.Use();
 				//发送
