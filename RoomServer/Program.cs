@@ -8,6 +8,8 @@
  */
 using System;
 using AsyncServer;
+using System.IO;
+using System.Diagnostics;
 
 namespace YGOCore
 {
@@ -30,15 +32,44 @@ namespace YGOCore
 		/// <param name="args">本地端口，对外端口</param>
 		public static void Main(string[] args)
 		{
+			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
+			Logger.SetLogLevel(LogLevel.Info);
+			#if DEBUG
+			Logger.SetLogLevel(LogLevel.Debug);
+			#endif
 			RoomServer Server;
 			if(args.Length >= 2){
 				Server = new RoomServer(int.Parse(args[0]), int.Parse(args[1]));
-				Server.Start();
 			}else{
-				Console.Write("exe 本地空间名 对外端口");
+				Console.WriteLine("使用默认端口");
+				Server = new RoomServer();
 			}
+			Server.Start();
+			Command(Server);
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
+		}
+		private static void Command(RoomServer server){
+			string cmd="";
+			while(server.isStarted){
+				cmd = Console.ReadLine();
+				//server.OnCommand(cmd);
+			}
+		}
+		private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+		{
+			e.Cancel=true;
+			ConsoleColor color=Console.ForegroundColor;
+			Console.ForegroundColor=ConsoleColor.Cyan;
+			Console.WriteLine("Please input to close server.");
+			Console.ForegroundColor=color;
+		}
+
+		private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			File.WriteAllText("crash_room_" + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt", e.ExceptionObject.ToString());
+			Process.GetCurrentProcess().Kill();
 		}
 	}
 }

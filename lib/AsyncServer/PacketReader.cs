@@ -24,7 +24,10 @@ namespace AsyncServer
 		public BinaryReader Reader(){
 			return m_reader;
 		}
-		
+		public bool ReadBoolean()
+		{
+			return m_reader.ReadByte() ==1;
+		}
 		public byte ReadByte()
 		{
 			return m_reader.ReadByte();
@@ -39,7 +42,10 @@ namespace AsyncServer
 		{
 			return m_reader.ReadSByte();
 		}
-
+		public ushort ReadUInt16()
+		{
+			return m_reader.ReadUInt16();
+		}
 		public short ReadInt16()
 		{
 			return m_reader.ReadInt16();

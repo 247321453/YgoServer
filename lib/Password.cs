@@ -7,8 +7,6 @@
  * 要改变这种模板请点击 工具|选项|代码编写|编辑标准头文件
  */
 using System;
-using YGOCore.Game;
-using System.Text;
 
 namespace YGOCore.Net
 {
@@ -32,33 +30,6 @@ namespace YGOCore.Net
 				return namepassword.Substring(i+1);
 			}
 			return "";
-		}
-		public static bool CheckAuth(this GameSession client, string namepassword){
-			if(namepassword==null){
-				return true;
-			}
-			if(!RoomManager.CheckPlayerBan(namepassword)){
-				client.ServerMessage(Messages.MSG_PLAYER_BAN);
-				return false;
-			}
-			if(Program.Config.isNeedAuth || namepassword.StartsWith("[AI]")){
-				string[] _names=namepassword.Split(new char[]{'$'}, 2);
-				if(_names.Length==1){
-					client.ServerMessage(Messages.ERR_NO_PASS);
-					return false;
-				}else{
-					if(!RoomManager.OnLogin(_names[0],_names[1])){
-						//LobbyError("Auth Fail");
-						if(Encoding.Default.GetBytes(namepassword).Length>=20){
-							client.ServerMessage(Messages.ERR_NAME_PASSWORD_LONG);
-						}else{
-							client.ServerMessage(Messages.ERR_NAME_PASSWORD);
-						}
-						return false;
-					}
-				}
-			}
-			return true;
 		}
 	}
 }

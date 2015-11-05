@@ -1,6 +1,6 @@
 ﻿namespace OcgWrapper.Enums
 {
-	public enum StocMessage
+	public enum StocMessage : byte
 	{
 		GameMsg = 0x1,
 		ErrorMsg = 0x2,
@@ -23,6 +23,7 @@
 		HsPlayerChange = 0x21,
 		HsWatchChange = 0x22,
 		
+		ServerInfo = 0x40,
 		/// <summary>
 		/// 添加一个房间
 		/// </summary>

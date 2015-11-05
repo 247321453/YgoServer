@@ -15,6 +15,7 @@ namespace YGOCore
 	/// </summary>
 	public class Messages
 	{
+		public const string MSG_PLAYER_INGAME="玩家已经在游戏";
 		public const string MSG_CLOSE ="服务器将3分钟后关闭";
 		public const string MSG_HIGH_VERSION="你的游戏版本比服务器的高";
 		public const string MSG_FULL="房间满了";

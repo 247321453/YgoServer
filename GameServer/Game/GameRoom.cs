@@ -127,7 +127,27 @@ namespace YGOCore.Game
 			}
 			return -1;
 		}
+		public bool IsJoin(GameSession player)
+		{
+			if(player == null || player.Name == null){
+				return true;
+			}
+			for (int i = 0; i < Players.Length; i++)
+			{
+				if (Players[i] == null)
+					continue;
+				if(Players[i].Name == player.Name){
+					return true;
+				}
+			}
+			return false;
+		}
 		public void AddPlayer(GameSession player){
+			if(IsJoin(player)){
+//				/玩家已经在游戏
+				player.LobbyError(Messages.MSG_PLAYER_INGAME);
+				return;
+			}
 			if (State != GameState.Lobby)
 			{
 				if (State == GameState.End)
@@ -143,7 +163,7 @@ namespace YGOCore.Game
 				}else if(State == GameState.Side){
 					player.ServerMessage(Messages.MSG_WATCH_SIDE);
 				}
-				RoomManager.OnPlayerJoin(player);
+				RoomManager.OnPlayerJoin(player, this);
 				return;
 			}
 
@@ -199,7 +219,7 @@ namespace YGOCore.Game
 				nwatch.Write((short)Observers.Count);
 				player.Send(nwatch);
 			}
-			RoomManager.OnPlayerJoin(player);
+			RoomManager.OnPlayerJoin(player, this);
 		}
 		#endregion
 		
@@ -208,7 +228,7 @@ namespace YGOCore.Game
 			if(player==null){
 				return;
 			}
-			RoomManager.OnPlayerLeave(player);
+			RoomManager.OnPlayerLeave(player, this);
 			if (player.Equals(HostPlayer) && State == GameState.Lobby){
 				//Logger.WriteLine("HostPlayer is leave", false);
 				Close(true);
@@ -462,7 +482,7 @@ namespace YGOCore.Game
 					IsTag?Players[2].Name:"",IsTag?Players[3].Name:""};
 				//	Logger.WriteLine("onWin:"+team);
 				RoomManager.OnWin(Config.Name, Config.Mode, team, reason, yrpName,
-				             names,force);
+				                  names,force);
 			}catch(Exception e){
 				Logger.Error(e);
 			}

@@ -61,14 +61,23 @@
     <Compile Include="..\lib\AsyncServer\PacketWriter.cs">
       <Link>AsyncServer\PacketWriter.cs</Link>
     </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\StoSMessage.cs">
-      <Link>Common\StoSMessage.cs</Link>
+    <Compile Include="..\lib\Ocgcore\Network\CtosMessage.cs">
+      <Link>Common\CtosMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\StocMessage.cs">
+      <Link>Common\StocMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Password.cs">
+      <Link>Common\Password.cs</Link>
     </Compile>
     <Compile Include="ClientEvent.cs" />
     <Compile Include="Common\BinaryExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoomServer.cs" />
+    <Compile Include="Server.cs" />
+    <Compile Include="ServerEvent.cs" />
+    <Compile Include="Session.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common" />

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AsyncServer;
 using OcgWrapper.Enums;
 using YGOCore.Game;
+using System.Text;
 
 namespace YGOCore.Net
 {
@@ -101,6 +102,33 @@ namespace YGOCore.Net
 		#endregion
 		
 		#region 加入游戏
+		public static bool CheckAuth(this GameSession client, string namepassword){
+			if(namepassword==null){
+				return true;
+			}
+			if(!RoomManager.CheckPlayerBan(namepassword)){
+				client.ServerMessage(Messages.MSG_PLAYER_BAN);
+				return false;
+			}
+			if(Program.Config.isNeedAuth || namepassword.StartsWith("[AI]")){
+				string[] _names=namepassword.Split(new char[]{'$'}, 2);
+				if(_names.Length==1){
+					client.ServerMessage(Messages.ERR_NO_PASS);
+					return false;
+				}else{
+					if(!RoomManager.OnLogin(_names[0],_names[1])){
+						//LobbyError("Auth Fail");
+						if(Encoding.Default.GetBytes(namepassword).Length>=20){
+							client.ServerMessage(Messages.ERR_NAME_PASSWORD_LONG);
+						}else{
+							client.ServerMessage(Messages.ERR_NAME_PASSWORD);
+						}
+						return false;
+					}
+				}
+			}
+			return true;
+		}
 		public static void OnJoinGame(GameSession client, GameClientPacket packet){
 			if (string.IsNullOrEmpty(client.Name) || client.Type != (int)PlayerType.Undefined){
 				Logger.Debug("join room fail:"+client.Name);

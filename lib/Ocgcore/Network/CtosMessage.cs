@@ -20,21 +20,18 @@
         HsNotReady = 0x23,
         HsKick = 0x24,
         HsStart = 0x25,
-        /// <summary>
-        /// 所有房间
-        /// </summary>
-        RoomList = 0x41,
+        
         /// <summary>
         /// 进入房间，暂停刷新
         /// </summary>
-        RoomJoin = 0x42,
+        RoomJoin = 0x40,
         /// <summary>
         /// 离开房间，继续刷新
         /// </summary>
-        Roomleave = 0x43,
+        Roomleave = 0x41,
         /// <summary>
         /// 房间外聊天
         /// </summary>
-        OutRoomChat = 0x44,
+        OutRoomChat = 0x42,
     }
 }

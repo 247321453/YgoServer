@@ -305,6 +305,7 @@ namespace AsyncServer {
 			if(client!=null){
 				try{
 					client.Close();
+					client = null;
 				}catch{}
 			}
 			Dispose();

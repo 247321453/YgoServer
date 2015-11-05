@@ -71,6 +71,7 @@ namespace YGOCore.Game
 				try{
 					client = new TcpClient();
 					client.Connect("127.0.0.1", Program.Config.ApiPort);
+					OnServerIno();
 				}catch(Exception e){
 					Logger.Warn(e);
 				}
@@ -99,7 +100,8 @@ namespace YGOCore.Game
 				if(WinInfos.Count==0) return;
 				sqls=new string[WinInfos.Count];
 				int i=0;
-				foreach(WinInfo info in WinInfos){
+				while(WinInfos.Count >0){
+					WinInfo info = WinInfos.Dequeue();
 					sqls[i++]=info.GetSQL();
 				}
 			}
@@ -181,11 +183,12 @@ namespace YGOCore.Game
 				if(Games.Count >= Program.Config.MaxRoomCount){
 					return null;
 				}
-				GameRoom room = new GameRoom(config);
-				Add(room);
-				OnRoomCreate(room);
-				return room;
 			}
+			Logger.Info("create room");
+			GameRoom room = new GameRoom(config);
+			Add(room);
+			OnRoomCreate(room);
+			return room;
 		}
 		/// <summary>
 		/// 得到一个不存在的随机房间名
@@ -276,7 +279,7 @@ namespace YGOCore.Game
 		public  static void Add(GameRoom room){
 			if(room==null)return;
 			lock(Games){
-				if(Games.ContainsKey(room.Name)){
+				if(!Games.ContainsKey(room.Name)){
 					Games.Add(room.Name, room);
 				}
 			}
@@ -296,7 +299,19 @@ namespace YGOCore.Game
 		static TcpClient client;
 		private static void Send(byte[] data){
 			if(client.Client!=null && client.Client.Connected){
-				client.Client.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(EndSend), client);
+				try{
+					client.Client.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(EndSend), client);
+					return;
+				}catch(Exception e){
+					Logger.Warn(e);
+				}
+			}
+			try{
+				client  =new TcpClient();
+				client.Connect("127.0.0.1", Program.Config.ApiPort);
+				OnServerIno();
+			}catch(Exception e){
+				Logger.Warn(e);
 			}
 		}
 		private static void EndSend(IAsyncResult ar){
@@ -306,11 +321,26 @@ namespace YGOCore.Game
 				Logger.Error(e);
 			}
 		}
+		
+		private static void OnServerIno(){
+			Logger.Debug("OnServerIno");
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)StocMessage.ServerInfo);
+				writer.Write(Program.Config.ServerPort);
+				writer.WriteUnicode(Program.Config.ServerName, 20);
+				writer.WriteUnicode(Program.Config.ServerDesc, 256);
+				writer.Write((int)Program.Config.ClientVersion);
+				writer.Use();
+				//发送
+				Send(writer.Content);
+			}
+		}
 		public static void OnRoomCreate(GameRoom room){
 			GameConfig config = room.Config;
 			if(config==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.RoomCreate);
+				writer.WriteUnicode(config.Name, 40);
 				writer.WriteUnicode(config.BanList, 40);
 				writer.Write((ushort)config.Rule);
 				writer.Write((ushort)config.Mode);
@@ -321,7 +351,6 @@ namespace YGOCore.Game
 				writer.Write(config.StartHand);
 				writer.Write(config.DrawCount);
 				writer.Write(config.GameTimer);
-				writer.WriteUnicode(config.Name, 40);
 				writer.Use();
 				//发送
 				Send(writer.Content);
@@ -352,21 +381,23 @@ namespace YGOCore.Game
 			}
 		}
 		
-		public static void OnPlayerJoin(GameSession player){
+		public static void OnPlayerJoin(GameSession player, GameRoom room){
 			if(player==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.PlayerJoin);
 				writer.WriteUnicode(player.Name, 40);
+				writer.WriteUnicode(room.Name, 40);
 				writer.Use();
 				//发送
 				Send(writer.Content);
 			}
 		}
-		public static void OnPlayerLeave(GameSession player){
+		public static void OnPlayerLeave(GameSession player, GameRoom room){
 			if(player==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.PlayerLeave);
 				writer.WriteUnicode(player.Name, 40);
+				writer.WriteUnicode(room.Name, 40);
 				writer.Use();
 				//发送
 				Send(writer.Content);
