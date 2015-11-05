@@ -54,8 +54,9 @@ namespace YGOCore
 		public static void OnRoomCreate(this Server server, PacketReader reader){
 			RoomInfo info =new RoomInfo();
 			info.Name = reader.ReadUnicode(40);
+			string room  =Password.OnlyName(info.Name);
 			lock(server.Rooms){
-				if(server.Rooms.ContainsKey(info.Name)){
+				if(server.Rooms.ContainsKey(room)){
 					//房间存在
 					return;
 				}
@@ -71,15 +72,15 @@ namespace YGOCore
 			info.DrawCount = reader.ReadInt32();
 			info.GameTimer = reader.ReadInt32();
 			lock(server.Rooms){
-				if(!server.Rooms.ContainsKey(info.Name)){
+				if(!server.Rooms.ContainsKey(room)){
 					//房间创建
-					server.Rooms.Add(info.Name, info);
+					server.Rooms.Add(room, info);
 					server.RoomServer.OnRoomCreate(server, info);
 				}
 			}
 		}
 		public static void OnRoomClose(this Server server, PacketReader reader){
-			string room = reader.ReadUnicode(40);
+			string room =Password.OnlyName( reader.ReadUnicode(40));
 			lock(server.Rooms){
 				if(server.Rooms.ContainsKey(room)){
 					//房间关闭
@@ -89,7 +90,7 @@ namespace YGOCore
 			}
 		}
 		public static void OnRoomStart(this Server server, PacketReader reader){
-			string room = reader.ReadUnicode(40);
+			string room = Password.OnlyName( reader.ReadUnicode(40));
 			lock(server.Rooms){
 				if(server.Rooms.ContainsKey(room)){
 					//房间开始
@@ -100,7 +101,7 @@ namespace YGOCore
 		}
 		public static void OnPlayerJoin(this Server server, PacketReader reader){
 			string player = reader.ReadUnicode(20);
-			string room = reader.ReadUnicode(40);
+			string room = Password.OnlyName( reader.ReadUnicode(40));
 			lock(server.Rooms){
 				if(server.Rooms.ContainsKey(room)){
 					RoomInfo info = server.Rooms[room];
@@ -114,7 +115,7 @@ namespace YGOCore
 		}
 		public static void OnPlayerLeave(this Server server, PacketReader reader){
 			string player = reader.ReadUnicode(20);
-			string room = reader.ReadUnicode(40);
+			string room = Password.OnlyName( reader.ReadUnicode(40));
 			lock(server.Rooms){
 				if(server.Rooms.ContainsKey(room)){
 					RoomInfo info = server.Rooms[room];
