@@ -81,6 +81,7 @@ namespace WindBot.Game
 		private void RegisterPackets()
 		{
 			_packets.Add(StocMessage.JoinGame, OnJoinGame);
+			_packets.Add(StocMessage.ErrorMsg, OnErrorMsg);
 			_packets.Add(StocMessage.TypeChange, OnTypeChange);
 			_packets.Add(StocMessage.HsPlayerEnter, OnPlayerEnter);
 			_packets.Add(StocMessage.HsPlayerChange, OnPlayerChange);
@@ -130,6 +131,10 @@ namespace WindBot.Game
 			_messages.Add(GameMessage.AnnounceRace, OnAnnounceRace);
 		}
 
+		private void OnErrorMsg(GameServerPacket packet){
+			Logger.WriteLine("Err code:"+ packet.ReadByte());
+			Connection.Close();
+		}
 		private void OnJoinGame(GameServerPacket packet)
 		{
 			GameClientPacket deck = new GameClientPacket(CtosMessage.UpdateDeck);

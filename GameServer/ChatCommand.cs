@@ -79,7 +79,12 @@ namespace YGOCore
 			}
 			#endif
 			ai.Exited+=new EventHandler(ai_Exited);
-			ai.Start();
+			try{
+				ai.Start();
+			}catch(Exception e){
+				Logger.Error(e);
+				return false;
+			}
 			lock(AIs){
 				AIs.Add(ai);
 			}

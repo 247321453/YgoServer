@@ -131,11 +131,6 @@ namespace YGOCore.Game
 				SendDuelingPlayers(player);
 		}
 		public void AddPlayer(GameSession player){
-			if(player!=null){
-				if(player.Server!=null){
-					player.Server.OnJoinRoom(this.GetRoomInfo(), player);
-				}
-			}
 			if (State != GameState.Lobby)
 			{
 				if (State == GameState.End)
@@ -151,6 +146,11 @@ namespace YGOCore.Game
 				}else if(State == GameState.Side){
 					player.ServerMessage(Messages.MSG_WATCH_SIDE);
 				}
+				if(player!=null){
+					if(player.Server!=null){
+						player.Server.OnJoinRoom(this.GetRoomInfo(), player);
+					}
+				}
 				return;
 			}
 
@@ -160,14 +160,16 @@ namespace YGOCore.Game
 			int pos = GetAvailablePlayerPos();
 			if (pos != -1)
 			{
+				Players[pos] = player;
+				IsReady[pos] = false;
+				player.Type = pos;
 				GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
 				enter.WriteUnicode(player.Name, 20);
 				enter.Write((byte)pos);
 				SendToAll(enter);
-				Players[pos] = player;
-				IsReady[pos] = false;
-				player.Type = pos;
 				Server.OnPlayEvent(PlayerStatu.PlayerReady, player);
+				//
+				Logger.Debug("add duel "+ player.Name+" => "+pos);
 			}
 			else
 			{
@@ -206,6 +208,11 @@ namespace YGOCore.Game
 				nwatch.Write((short)Observers.Count);
 				player.Send(nwatch);
 			}
+			if(player!=null){
+				if(player.Server!=null){
+					player.Server.OnJoinRoom(this.GetRoomInfo(), player);
+				}
+			}
 		}
 		#endregion
 		
@@ -214,16 +221,10 @@ namespace YGOCore.Game
 			if(player==null){
 				return;
 			}
-			if(player.Server!=null){
-				player.Server.OnLeaveRoom(this.GetRoomInfo(), player);
-				player.Server.OnLogout(player);
-				//client.Close();
-			}
-			
+			bool issurrender = false;
 			if (player.Equals(HostPlayer) && State == GameState.Lobby){
 				//Logger.WriteLine("HostPlayer is leave", false);
 				Close(true);
-				HostPlayer = null;
 			}
 			else if (player.Type == (int)PlayerType.Observer)
 			{
@@ -248,10 +249,18 @@ namespace YGOCore.Game
 				player.Close();
 			}
 			else{
+				issurrender = true;
+			}
+			if(issurrender){
 				if(IsEnd){
 					return;
 				}
 				Surrender(player, 4, true);
+			}else{
+				if(player.Server!=null){
+					player.Server.OnLeaveRoom(this.GetRoomInfo(), player);
+					//client.Close();
+				}
 			}
 		}
 		#endregion
@@ -892,6 +901,7 @@ namespace YGOCore.Game
 						error.Write((byte)0);
 					error.Write(result);
 					player.Send(error);
+					Logger.Debug("check deck fail:"+player.Name);
 					return;
 				}
 			}
