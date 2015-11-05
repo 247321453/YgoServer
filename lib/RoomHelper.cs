@@ -35,9 +35,8 @@ namespace YGOCore.Net
 				int count = game.Players.Length;
 				info.players = new string[count];
 				for(int i=0;i<count;i++){
-					GameSession player =  game.Players[i];
-					if(player!=null){
-						info.players[i] = player.Name;
+					if(game.Players[i]!=null){
+						info.players[i] = game.Players[i].Name;
 					}
 					if(info.players[i]==null){
 						info.players[i] = "";

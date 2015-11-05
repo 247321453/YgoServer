@@ -100,15 +100,7 @@ namespace YGOCore.Game
 		#endregion
 		
 		#region 添加玩家
-		public int GetAvailablePlayerPos()
-		{
-			for (int i = 0; i < Players.Length; i++)
-			{
-				if (Players[i] == null)
-					return i;
-			}
-			return -1;
-		}
+
 		private void SendJoinGame(GameSession player)
 		{
 			GameServerPacket join = new GameServerPacket(StocMessage.JoinGame);
@@ -129,6 +121,15 @@ namespace YGOCore.Game
 
 			if (State != GameState.Lobby)
 				SendDuelingPlayers(player);
+		}
+		public int GetAvailablePlayerPos()
+		{
+			for (int i = 0; i < Players.Length; i++)
+			{
+				if (Players[i] == null)
+					return i;
+			}
+			return -1;
 		}
 		public void AddPlayer(GameSession player){
 			if (State != GameState.Lobby)
@@ -156,7 +157,7 @@ namespace YGOCore.Game
 
 			if (HostPlayer == null)
 				HostPlayer = player;
-
+			Logger.Debug("add duel "+(Players[0] == null));
 			int pos = GetAvailablePlayerPos();
 			if (pos != -1)
 			{
@@ -168,8 +169,6 @@ namespace YGOCore.Game
 				enter.Write((byte)pos);
 				SendToAll(enter);
 				Server.OnPlayEvent(PlayerStatu.PlayerReady, player);
-				//
-				Logger.Debug("add duel "+ player.Name+" => "+pos);
 			}
 			else
 			{
@@ -228,7 +227,8 @@ namespace YGOCore.Game
 			}
 			else if (player.Type == (int)PlayerType.Observer)
 			{
-				Observers.Remove(player);
+				lock(Observers)
+					Observers.Remove(player);
 				if (State == GameState.Lobby)
 				{
 					GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
@@ -300,9 +300,11 @@ namespace YGOCore.Game
 			foreach (GameSession player in Players)
 				if (player != null && !player.Equals(except))
 					player.Send(packet);
-			foreach (GameSession player in Observers)
-				if (!player.Equals(except))
-					player.Send(packet);
+			lock(Observers){
+				foreach (GameSession player in Observers)
+					if (!player.Equals(except))
+						player.Send(packet);
+			}
 		}
 
 		public void SendToAllBut(GameServerPacket packet, int except)
@@ -323,9 +325,11 @@ namespace YGOCore.Game
 
 		public void SendToObservers(GameServerPacket packet)
 		{
-			foreach (GameSession player in Observers){
-				if (player != null){
-					player.Send(packet);
+			lock(Observers){
+				foreach (GameSession player in Observers){
+					if (player != null){
+						player.Send(packet);
+					}
 				}
 			}
 		}

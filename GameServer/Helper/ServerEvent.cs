@@ -160,15 +160,6 @@ namespace YGOCore.Net
 			}
 			//创建房间
 			GameRoom room = new GameRoom(config, server);
-			lock(server.Rooms){
-				RoomInfo info = room.GetRoomInfo();
-				info.Room = room;
-				if(!server.Rooms.ContainsKey(room.Name)){
-					server.Rooms.Add(room.Name, info);
-				}else{
-					server.Rooms[room.Name] = info;
-				}
-			}
 			return room;
 		}
 		/// <summary>
