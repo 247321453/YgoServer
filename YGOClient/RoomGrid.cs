@@ -41,7 +41,7 @@ namespace System.Windows.Forms
 					label.BackColor=Color.FromArgb(0xee, 0xdd, 0, 0);
 					label.Text = "[有坑]"+room.RoomName;
 				}else{
-					if(room.NeedPass){
+					if(room.NeedPass()){
 						//label.BackColor=Color.FromArgb(0xdd, 0, 0x68, 0x8b);
 						label.BackColor=Color.FromArgb(0xee, 0xee, 0xad, 0x0e);
 						label.Text = room.RoomName;
@@ -105,7 +105,7 @@ namespace System.Windows.Forms
 				Button join=new Button();
 				join.FlatStyle = FlatStyle.Popup;
 				join.Size=new Size(180, 32);
-				if(room.NeedPass){
+				if(room.NeedPass()){
 					join.Text="输入密码";
 					join.ForeColor =Color.DarkRed;
 					join.BackColor = Color.Gray;
@@ -127,7 +127,7 @@ namespace System.Windows.Forms
 				return;
 			}
 			string pass="";
-			if(m_room.NeedPass){
+			if(m_room.NeedPass()){
 				using(InputDialog input=new InputDialog("请输入密码", true)){
 					if(input.ShowDialog()==DialogResult.OK){
 						pass +="$"+input.InputText;

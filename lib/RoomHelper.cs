@@ -33,7 +33,6 @@ namespace YGOCore.Net
 				info.Lflist=game.Banlist.Name;
 				info.IsStart= (game.State!=GameState.Lobby);
 				int count = game.Players.Length;
-				info.players = new string[count];
 				for(int i=0;i<count;i++){
 					if(game.Players[i]!=null){
 						info.players[i] = game.Players[i].Name;

@@ -39,6 +39,8 @@ namespace YGOCore.Game
 	[DataContract]
 	public class RoomInfo
 	{
+		public RoomInfo(){
+		}
 		/// <summary>
 		/// 房间名(需要去除$后面)
 		/// </summary>
@@ -74,7 +76,7 @@ namespace YGOCore.Game
 		/// 玩家
 		/// </summary>
 		[DataMember(Order = 6, Name="players")]
-		public string[] players = null;
+		public readonly string[] players = new string[4];
 		/// <summary>
 		/// 观战
 		/// </summary>
@@ -89,15 +91,9 @@ namespace YGOCore.Game
 		[DataMember(Order = 9, Name="warring")]
 		public bool Warring{get; set;}
 
-		[IgnoreDataMember()]
-		public GameRoom Room{get; set;}
-		[IgnoreDataMember()]
-		public bool NeedPass{get{return !string.IsNullOrEmpty(Pwd);}}
-		
-		public RoomInfo(){
-			players = new string[4];
+		public bool NeedPass(){
+			return !string.IsNullOrEmpty(Pwd);
 		}
-
 		public bool NeedClose(){
 			if(observers.Count > 0){
 				return false;

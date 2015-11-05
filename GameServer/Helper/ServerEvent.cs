@@ -29,10 +29,9 @@ namespace YGOCore.Net
 		public static List<int> GameCards(this GameServer server, string name){
 			List<int> cards =new List<int>();
 			GameRoom room = null;
-			lock(server.Rooms){
-				if(server.Rooms.ContainsKey(name)){
-					RoomInfo info = server.Rooms[name];
-					room = info.Room;
+			lock(server.Games){
+				if(server.Games.ContainsKey(name)){
+					room = server.Games[name];
 				}
 			}
 			if(room !=null && room!=null && room.Players!=null){
@@ -54,7 +53,7 @@ namespace YGOCore.Net
 			for(count--;count>=0;count--){
 				RoomInfo info = infos[count];
 				if(noPwd){
-					if(info.NeedPass){
+					if(info.NeedPass()){
 						infos.RemoveAt(count);
 						continue;
 					}
@@ -125,12 +124,12 @@ namespace YGOCore.Net
 		#region 房间
 		public static bool CheckRoomPassword(this GameServer server, string namepwd){
 			string name = Password.OnlyName(namepwd);
-			lock(server.Rooms){
-				if(server.Rooms.ContainsKey(name)){
+			lock(server.Games){
+				if(server.Games.ContainsKey(name)){
 					//存在这个房间
-					RoomInfo info = server.Rooms[name];
-					if(info!=null && info.Room!=null && info.Room.Config!=null){
-						string roomname = info.Room.Config.Name;
+					GameRoom room = server.Games[name];
+					if(room!=null && room.Config!=null){
+						string roomname = room.Config.Name;
 						return namepwd == roomname;
 					}
 				}
@@ -145,22 +144,26 @@ namespace YGOCore.Net
 		/// <returns></returns>
 		public static GameRoom CreateOrGetGame(this GameServer server,GameConfig config){
 			string roomname = Password.OnlyName(config.Name);
-			lock(server.Rooms){
-				if (server.Rooms.ContainsKey(roomname)){
-					RoomInfo info = server.Rooms[roomname];
-					if(info!=null && info.Room!=null){
-						return info.Room;
-					}
+			lock(server.Games){
+				if (server.Games.ContainsKey(roomname)){
+					return server.Games[roomname];
 				}
 			}
-			lock(server.Rooms){
-				if(server.Rooms.Count >= server.Config.MaxRoomCount){
+			lock(server.Games){
+				if(server.Games.Count >= server.Config.MaxRoomCount){
 					return null;
 				}
 			}
 			//创建房间
 			GameRoom room = new GameRoom(config, server);
-			return room;
+			lock(server.Games){
+				if (server.Games.ContainsKey(roomname)){
+					return server.Games[roomname];
+				}else{
+					server.Games.Add(roomname, room);
+					return room;
+				}
+			}
 		}
 		/// <summary>
 		/// 得到一个随机房间，不能带密码
@@ -169,8 +172,8 @@ namespace YGOCore.Net
 		/// <returns></returns>
 		public static GameRoom GetRandomGame(this GameServer server){
 			List<GameRoom> rooms = null;
-			lock(server.Rooms){
-				rooms = GetNoPwdRoom(server.Rooms);
+			lock(server.Games){
+				rooms = GetNoPwdRoom(server.Games);
 				if(rooms.Count>0){
 					int i = Program.Random.Next(rooms.Count);
 					return rooms[i];
@@ -214,8 +217,8 @@ namespace YGOCore.Net
 				tag+="#";
 			}
 			List<GameRoom> rooms = null;
-			lock(server.Rooms){
-				rooms = GetNoPwdRoom(server.Rooms, tag);
+			lock(server.Games){
+				rooms = GetNoPwdRoom(server.Games, tag);
 			}
 			if(rooms.Count == 0){
 				return server.GetGuidString();
@@ -229,22 +232,20 @@ namespace YGOCore.Net
 		}
 		
 		
-		private static List<GameRoom> GetNoPwdRoom(SortedList<string, RoomInfo> rooms, string tag=null)
+		private static List<GameRoom> GetNoPwdRoom(SortedList<string, GameRoom> rooms, string tag=null)
 		{
 			List<GameRoom> roomList=new List<GameRoom>();
-			foreach(RoomInfo info in rooms.Values){
-				if(!info.NeedPass && info.Room!=null){
-					if(info.Room.Name == null){
+			foreach(GameRoom room in rooms.Values){
+				if(room!=null && room.Config.Name != null && !room.Config.Name.Contains("$")){
+					//不为空，没有密码
+					if(!string.IsNullOrEmpty(tag) && !room.Name.StartsWith(tag)){
 						continue;
 					}
-					if(!string.IsNullOrEmpty(tag) && !info.Room.Name.StartsWith(tag)){
-						continue;
-					}
-					if(info.Room.IsOpen && info.Room.GetAvailablePlayerPos() >=0){
-						roomList.Add(info.Room);
+					if(room.IsOpen && room.GetAvailablePlayerPos() >=0){
+						roomList.Add(room);
 					}
 				}else{
-					Logger.Debug("null:"+(info.Room!=null));
+					Logger.Debug("room is null?"+(room!=null));
 				}
 			}
 			return roomList;
@@ -270,16 +271,11 @@ namespace YGOCore.Net
 		#region 公告
 		public static void OnWorldMessage(this GameServer server, string msg, PlayerType color= PlayerType.Yellow){
 			List<GameRoom> rooms = new List<GameRoom>();
-			lock(server.Rooms){
-				foreach(RoomInfo roominfo in server.Rooms.Values){
-					if(roominfo.Room!=null){
-						rooms.Add(roominfo.Room);
+			lock(server.Games){
+				foreach(GameRoom room in server.Games.Values){
+					if(room!=null&& room.IsOpen){
+						room.ServerMessage(msg, color);
 					}
-				}
-			}
-			foreach(GameRoom room in rooms){
-				if(room!=null&& room.IsOpen){
-					room.ServerMessage(msg, color);
 				}
 			}
 		}

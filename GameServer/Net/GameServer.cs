@@ -25,6 +25,8 @@ namespace YGOCore.Net
 		private static List<string> banNames=new List<string>();
 		public ServerConfig Config{get;private set;}
 		public readonly SortedList<string, RoomInfo> Rooms = new SortedList<string, RoomInfo>(32);
+		
+		public readonly SortedList<string, GameRoom> Games = new SortedList<string, GameRoom>();
 		public readonly Queue<WinInfo> WinInfos=new Queue<WinInfo>();
 		private System.Timers.Timer WinSaveTimer;
 		private RoomServer roomServer;
