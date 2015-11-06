@@ -24,10 +24,6 @@ namespace AsyncServer{
 		/// Disconnect event handler.
 		/// </summary>
 		public delegate void DisconnectEventHandler(Connection<T> Client);
-		/// <summary>
-		/// Timeout event handler.
-		/// </summary>
-		public delegate void TimeoutEventHandler(Connection<T> timeoutConnection, double time);
 		#endregion
 		
 		#region private member
@@ -43,10 +39,6 @@ namespace AsyncServer{
 		/// The port the server will listen on.
 		/// </summary>
 		private int port;
-		/// <summary>
-		/// The maximum clients the server will hold.
-		/// </summary>
-		private int capacity   = 0;
 		/// <summary>
 		/// Client timeout. The maximum amount of time a client is permitted not to send data for.
 		/// </summary>
@@ -69,10 +61,6 @@ namespace AsyncServer{
 		/// Occurs when a client disconnects.
 		/// </summary>
 		public event DisconnectEventHandler OnDisconnect;
-		/// <summary>
-		/// Occurs when a client times out.
-		/// </summary>
-		public event TimeoutEventHandler OnTimeout;
 		#endregion
 		
 		#region public member
@@ -101,13 +89,6 @@ namespace AsyncServer{
 			get { return m_clients.Count; }
 		}
 		/// <summary>
-		/// Gets the client capacity of the server.
-		/// </summary>
-		/// <value>The client capacity of the server.</value>
-		public int Capacity {
-			get { return capacity; }
-		}
-		/// <summary>
 		/// Gets the timeout time.
 		/// </summary>
 		/// <value>The timeout time.</value>
@@ -122,17 +103,15 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="host">Host to listen on.</param>
 		/// <param name="port">Port to listen on.</param>
-		/// <param name="capacity">Server capacity.</param>
 		/// <param name="timeout">Client timeout time.</param>
-		public AsyncTcpListener(IPAddress host, int port, int capacity = 0, int timeout = 0) {
-			Init(host, port, capacity, timeout);
+		public AsyncTcpListener(IPAddress host, int port, int timeout = 0) {
+			Init(host, port, timeout);
 		}
 		
-		internal void Init(IPAddress host, int port, int capacity, int timeout){
+		internal void Init(IPAddress host, int port,int timeout){
 			this.host = host;
 			this.port = port;
 			this.timeout = timeout;
-			if(capacity != 0) this.capacity = capacity;
 			listener = new TcpListener(host, port);
 		}
 		#endregion
@@ -185,12 +164,7 @@ namespace AsyncServer{
 				Client = client,
 			};
 			lock(m_clients) {
-				if(capacity!=0 && m_clients.Count >= capacity){
-					DisconnectClient(connection);
-					return;
-				}else{
-					m_clients.Add(connection);
-				}
+				m_clients.Add(connection);
 			}
 			if(timeout != 0) {
 				connection.Timer.Interval = timeout;
@@ -210,7 +184,7 @@ namespace AsyncServer{
 			TimeoutTimer timer = (TimeoutTimer) source;
 			timer.Stop();
 			Connection<T> connection = (Connection<T>) timer.Tag;
-			if(OnTimeout != null) OnTimeout(connection, timer.Interval);
+			DisconnectClient(connection);
 		}
 		/// <summary>
 		/// Begins reading from a connected client.
@@ -254,9 +228,7 @@ namespace AsyncServer{
 						Received(connection);
 					}
 				}
-				if(timeout >0){
-					if(connection.Timer.Interval != timeout)
-						connection.Timer.Interval = timeout;
+				if(timeout > 0){
 					connection.Timer.Restart();
 				}
 				if(!Started) return;

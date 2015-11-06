@@ -11,10 +11,34 @@ using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 using YGOCore;
+using System.Collections.Generic;
 using System.Xml;
+using System.Net;
+using YGOCore.Net;
+using OcgWrapper.Enums;
+using System.Net.Sockets;
+using YGOCore.Game;
 
 namespace YGOClient
 {
+	public class ServerInfo{
+		public ServerInfo(string val){
+			string[] vs= val.Split(':');
+			if(val.Length >= 3){
+				Name = vs[0];
+				Host = vs[1];
+				try{
+					Port = int.Parse(vs[2]);
+				}catch{Port = 0;}
+			}else{
+				Port = 0;
+			}
+		}
+		public bool isOk{get{return Port > 0;}}
+		public string Name{get;private set;}
+		public string Host{get;private set;}
+		public int Port{get;private set;}
+	}
 	/// <summary>
 	/// Description of UserForm.
 	/// </summary>
@@ -25,9 +49,11 @@ namespace YGOClient
 		/// </summary>
 		private bool NeedUser=false;
 		User m_User;
+		AsyncClient client;
 		private string m_dir;
 		bool ClickOK=false;
 		bool ShortPwd= false;
+		public readonly Dictionary<string, ServerInfo> Servers=new Dictionary<string, ServerInfo>();
 
 		public UserForm(bool needuser,bool shortpwd)
 		{
@@ -36,8 +62,48 @@ namespace YGOClient
 			this.ShortPwd = shortpwd;
 			m_dir=User.DIR;
 			loadUsers();
+			int i = 0;
+			for(i=1;i<99;i++){
+				string val = ConfigManager.readString("server"+i.ToString("00"));
+				if(string.IsNullOrEmpty(val))
+					break;
+				ServerInfo s = new ServerInfo(val);
+				if(s.isOk){
+					Servers.Add(s.Name, s);
+				}
+			}
+			string last = ConfigManager.readString("server");
+			i = 0;
+			int index = 0;
+			foreach(string str in Servers.Keys){
+				if(last == str){
+					index = 0;
+				}
+				i++;
+				cb_server.Items.Add(str);
+			}
+			if(cb_server.Items.Count>0){
+				cb_server.SelectedIndex = index;
+			}
 		}
 		
+		public void Connect(ServerInfo info, User user){
+			if(client!=null){
+				client.Close();
+			}
+			client = new AsyncClient();
+			try{
+				client.Connect(info.Host, info.Port);
+				using(GameServerPacket login = new GameServerPacket(StocMessage.Login)){
+					login.WriteUnicode(user.Name, 40);
+					login.WriteUnicode(user.Password, 16);
+					login.Use();
+					client.BeginSend(login.Content);
+				}
+			}catch(Exception){
+				
+			}
+		}
 		#region user
 		public User GetUser(){
 			if(string.IsNullOrEmpty(cb_username.Text)){

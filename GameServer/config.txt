@@ -3,7 +3,7 @@
 clientversion=1337
 #####################
 servername=菜菜服务器
-serverdesc=提供30只野生AI，房间数50，不支持私聊
+serverdesc=提供100只野生AI，房间数50，不支持私聊
 serverport=8910
 ###房间服务器端口
 apiport=18910

@@ -17,6 +17,10 @@
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <WarningLevel>4</WarningLevel>
+    <StartupObject>YGOClient.MyNotifyIcon</StartupObject>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\Hasee\AppData\Roaming\ICSharpCode/SharpDevelop4\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -33,6 +37,7 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <StartAction>Project</StartAction>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -58,8 +63,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GameServer\Helper\BinaryExtensions.cs">
+      <Link>Common\BinaryExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\GameServer\Net\GameClientPacket.cs">
+      <Link>Info\GameClientPacket.cs</Link>
+    </Compile>
+    <Compile Include="..\GameServer\Net\GameServerPacket.cs">
+      <Link>Info\GameServerPacket.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\AsyncServer\PacketReader.cs">
+      <Link>Info\PacketReader.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\AsyncServer\PacketWriter.cs">
+      <Link>Info\PacketWriter.cs</Link>
+    </Compile>
     <Compile Include="..\lib\ConfigManager.cs">
       <Link>Common\ConfigManager.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\CtosMessage.cs">
+      <Link>Info\CtosMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\GameMessage.cs">
+      <Link>Info\GameMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Ocgcore\Network\StocMessage.cs">
+      <Link>Info\StocMessage.cs</Link>
     </Compile>
     <Compile Include="..\lib\RoomInfo.cs">
       <Link>Common\RoomInfo.cs</Link>
@@ -70,13 +99,13 @@
     <Compile Include="..\lib\XmlTools.cs">
       <Link>Common\XmlTools.cs</Link>
     </Compile>
-    <Compile Include="Common\GameRoom.cs" />
     <Compile Include="Common\Protocol.cs" />
     <Compile Include="Common\RoomTool.cs" />
     <Compile Include="CreateRoomForm.cs" />
     <Compile Include="CreateRoomForm.Designer.cs">
       <DependentUpon>CreateRoomForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Info\AsyncClient.cs" />
     <Compile Include="Info\Client.cs" />
     <Compile Include="Info\Server.cs" />
     <Compile Include="Info\User.cs" />
@@ -110,9 +139,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="RoomForm.resx">
       <DependentUpon>RoomForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserForm.resx">
-      <DependentUpon>UserForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -94,6 +94,17 @@ namespace YGOCore
 		}
 		#endregion
 		#region MD5校验
+		
+		public static string  SubString(string str,int i,int len){
+			if(i > len) return str;
+			if(str.Length < i+len){
+				return str.Substring(i, len);
+			}
+			if(str.Length < i){
+				return str;
+			}
+			return str.Substring(i, str.Length-i);
+		}
 		/// <summary>
 		/// MD5　32位加密
 		/// </summary>

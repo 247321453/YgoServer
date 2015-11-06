@@ -51,6 +51,8 @@ namespace YGOClient
 			this.btn_delete = new System.Windows.Forms.Button();
 			this.chkb_record = new System.Windows.Forms.CheckBox();
 			this.btn_ok = new System.Windows.Forms.Button();
+			this.cb_server = new System.Windows.Forms.ComboBox();
+			this.label4 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// cb_username
@@ -169,7 +171,7 @@ namespace YGOClient
 			this.btn_ok.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.btn_ok.Enabled = false;
 			this.btn_ok.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.btn_ok.Location = new System.Drawing.Point(104, 176);
+			this.btn_ok.Location = new System.Drawing.Point(99, 243);
 			this.btn_ok.Name = "btn_ok";
 			this.btn_ok.Size = new System.Drawing.Size(120, 40);
 			this.btn_ok.TabIndex = 0;
@@ -177,14 +179,34 @@ namespace YGOClient
 			this.btn_ok.UseVisualStyleBackColor = true;
 			this.btn_ok.Click += new System.EventHandler(this.Btn_okClick);
 			// 
+			// cb_server
+			// 
+			this.cb_server.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cb_server.FormattingEnabled = true;
+			this.cb_server.Location = new System.Drawing.Point(72, 184);
+			this.cb_server.Name = "cb_server";
+			this.cb_server.Size = new System.Drawing.Size(238, 20);
+			this.cb_server.TabIndex = 6;
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(11, 188);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(41, 12);
+			this.label4.TabIndex = 6;
+			this.label4.Text = "服务器";
+			// 
 			// UserForm
 			// 
-			this.ClientSize = new System.Drawing.Size(322, 224);
+			this.ClientSize = new System.Drawing.Size(322, 295);
+			this.Controls.Add(this.cb_server);
 			this.Controls.Add(this.btn_ok);
 			this.Controls.Add(this.chkb_record);
 			this.Controls.Add(this.btn_delete);
 			this.Controls.Add(this.tb_password);
 			this.Controls.Add(this.tb_args);
+			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.btn_game);
@@ -204,6 +226,8 @@ namespace YGOClient
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.ComboBox cb_server;
 		private System.Windows.Forms.Button btn_ok;
 		private System.Windows.Forms.CheckBox chkb_record;
 		private System.Windows.Forms.Button btn_delete;

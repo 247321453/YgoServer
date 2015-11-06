@@ -32,6 +32,9 @@ namespace YGOCore.Game
 		private static readonly Queue<WinInfo> WinInfos = new Queue<WinInfo>();
 		private static System.Timers.Timer WinSaveTimer;
 		private static List<string> banNames=new List<string>();
+		private static readonly SortedList<string, GameSession> Users = new SortedList<string, GameSession>();
+		private static readonly SortedList<string, string> SPwds =new SortedList<string, string>();
+		private static System.Timers.Timer RefreshTimer;
 		public  static int Count{
 			get{lock(Games){return Games.Count;}}
 		}
@@ -56,26 +59,27 @@ namespace YGOCore.Game
 			}
 		}
 		public static bool OnLogin(string name, string pwd){
+			//长密码，短密码
 			if(name!=null&&name.StartsWith("[AI]")){
 				Logger.Debug("[AI]login:"+pwd+"=="+Program.Config.AIPass+"?");
 				return Program.Config.AIPass == pwd;
 			}
+			lock(SPwds){
+				if(SPwds.ContainsKey(name)){
+					if(SPwds[name] == pwd){
+						return true;
+					}
+				}
+			}
+			//服务器接口
 			return true;
 		}
 		public static void init(){
 			if(Program.Config.RecordWin){
 				SatrtWinTimer();
 			}
+			StartRefreshTimer();
 			ReadBanNames();
-			if(client==null){
-				try{
-					client = new TcpClient();
-					client.Connect("127.0.0.1", Program.Config.ApiPort);
-					OnServerIno();
-				}catch(Exception e){
-					Logger.Warn(e);
-				}
-			}
 		}
 		#endregion
 		
@@ -296,43 +300,28 @@ namespace YGOCore.Game
 		#endregion
 		
 		#region 事件
-		static TcpClient client;
-		private static void Send(byte[] data){
-			if(client.Client!=null && client.Client.Connected){
-				try{
-					client.Client.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(EndSend), client);
-					return;
-				}catch(Exception e){
-					Logger.Warn(e);
-				}
-			}
-			try{
-				client  =new TcpClient();
-				client.Connect("127.0.0.1", Program.Config.ApiPort);
-				OnServerIno();
-			}catch(Exception e){
-				Logger.Warn(e);
-			}
-		}
-		private static void EndSend(IAsyncResult ar){
-			try{
-				client.Client.EndSend(ar);
-			}catch(Exception e){
-				Logger.Error(e);
-			}
-		}
 		
-		private static void OnServerIno(){
-			Logger.Debug("OnServerIno");
-			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)StocMessage.ServerInfo);
-				writer.Write(Program.Config.ServerPort);
-				writer.WriteUnicode(Program.Config.ServerName, 20);
-				writer.WriteUnicode(Program.Config.ServerDesc, 256);
-				writer.Write((int)Program.Config.ClientVersion);
-				writer.Use();
-				//发送
-				Send(writer.Content);
+		private static void StartRefreshTimer(){
+			if(RefreshTimer==null){
+				//3秒发送一次包
+				RefreshTimer=new System.Timers.Timer(3000);
+				RefreshTimer.AutoReset = true;
+				RefreshTimer.Elapsed+= delegate { 
+					lock(Users){
+						foreach(GameSession user in Users.Values){
+							user.Client.PeekSend();
+						}
+					}
+				};
+			}
+			RefreshTimer.Start();
+		}
+		private static void SendAll(byte[] data,bool isNow = false){
+			//发送
+			lock(Users){
+				foreach(GameSession user in Users.Values){
+					user.Client.SendPackage(data, isNow);
+				}
 			}
 		}
 		public static void OnRoomCreate(GameRoom room){
@@ -353,7 +342,7 @@ namespace YGOCore.Game
 				writer.Write(config.GameTimer);
 				writer.Use();
 				//发送
-				Send(writer.Content);
+				SendAll(writer.Content);
 			}
 			
 		}
@@ -365,7 +354,7 @@ namespace YGOCore.Game
 				writer.WriteUnicode(config.Name, 40);
 				writer.Use();
 				//发送
-				Send(writer.Content);
+				SendAll(writer.Content);
 			}
 		}
 		
@@ -377,7 +366,7 @@ namespace YGOCore.Game
 				writer.WriteUnicode(config.Name, 40);
 				writer.Use();
 				//发送
-				Send(writer.Content);
+				SendAll(writer.Content);
 			}
 		}
 		
@@ -389,7 +378,7 @@ namespace YGOCore.Game
 				writer.WriteUnicode(room.Name, 40);
 				writer.Use();
 				//发送
-				Send(writer.Content);
+				SendAll(writer.Content);
 			}
 		}
 		public static void OnPlayerLeave(GameSession player, GameRoom room){
@@ -399,11 +388,76 @@ namespace YGOCore.Game
 				writer.WriteUnicode(player.Name, 40);
 				writer.WriteUnicode(room.Name, 40);
 				writer.Use();
+				OnLogout(player);
 				//发送
-				Send(writer.Content);
+				SendAll(writer.Content);
+				
 			}
 		}
-		#endregion
+		
+		public static void OnLogout(GameSession client){
+			if(client==null || client.Name ==null) return;
+			lock(Users){
+				if(Users.ContainsKey(client.Name)){
+					Users.Remove(client.Name);
+				}
+			}
+			lock(SPwds){
+				if(SPwds.ContainsKey(client.Name)){
+					SPwds.Remove(client.Name);
+				}
+			}
+		}
 
+		public static void OnLogin(GameSession client,GameClientPacket packet){
+			string name = packet.ReadUnicode(40);
+			string pwd = packet.ReadUnicode(16);
+			string namepwd = string.IsNullOrEmpty(pwd)?name:name+'$'+pwd;
+			client.Name = name;
+			client.IsAuthentified = client.CheckAuth(namepwd);
+			if(!client.IsAuthentified){
+				//登陆失败
+				client.Close();
+			}else{
+				lock(Users){
+					if(Users.ContainsKey(client.Name)){
+//						已经登陆
+						client.Close();
+					}else{
+						//必须开启异步
+						client.Client.isAsync = true;
+						//短密码
+						SPwds.Add(client.Name, Tool.SubString(Tool.GetMd5(pwd), 4, 4));
+						Users.Add(client.Name, client);
+					}
+				}
+			}
+		}
+		
+		public static bool OnChat(GameSession client, GameClientPacket packet){
+			if(client.Type != (int)PlayerType.Client){
+				return false;
+			}
+			string name = packet.ReadUnicode(40);
+			string msg = packet.ReadUnicode(255);
+			lock(Users){
+				using(GameServerPacket tomsg=new GameServerPacket(StocMessage.ClientChat)){
+					tomsg.WriteUnicode(client.Name, 40);
+					tomsg.WriteUnicode(msg, 255);
+					tomsg.Use();
+					if(string.IsNullOrEmpty(name)){
+						if(Users.ContainsKey(name)){
+							Users[name].Client.SendPackage(tomsg.Content, true);
+						}else{
+							//没有该玩家
+						}
+					}else{
+						SendAll(tomsg.Content, true);
+					}
+				}
+			}
+			return true;
+		}
+		#endregion
 	}
 }

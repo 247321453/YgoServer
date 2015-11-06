@@ -9,6 +9,8 @@
 using System;
 using System.Drawing;
 using System.Threading;
+using System.IO;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace YGOClient
@@ -29,7 +31,7 @@ namespace YGOClient
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MyNotifyIcon));
 			notifyIcon.Icon = (Icon)resources.GetObject("$this.Icon");
 			notifyIcon.ContextMenu = notificationMenu;
-		
+			
 			m_client = new Client(notifyIcon);
 		}
 		
@@ -55,6 +57,7 @@ namespace YGOClient
 		[STAThread]
 		public static void Main(string[] args)
 		{
+			AppDomain.CurrentDomain.UnhandledException +=new UnhandledExceptionEventHandler(AppDomain_CurrentDomain_UnhandledException);
 			if(args.Length >= 1){
 				switch(args[0]){
 					case "install":
@@ -94,6 +97,13 @@ namespace YGOClient
 				}
 			} // releases the Mutex
 		}
+
+		static void AppDomain_CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			File.WriteAllText("crash_" + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt", e.ExceptionObject.ToString());
+			Process.GetCurrentProcess().Kill();
+		}
+		
 		#endregion
 		
 		#region Event Handlers

@@ -8,10 +8,10 @@
  */
 using System;
 using System.IO;
-using System.Text;
 using System.Runtime.Serialization;
-using YGOCore;
 using System.Windows.Forms;
+
+using YGOCore;
 
 namespace YGOClient
 {
@@ -52,7 +52,6 @@ namespace YGOClient
 		}
 		
 		//	private static string KEY="IBM855";
-		
 		public static string DIR=Tool.Combine(Application.StartupPath, "data");
 		public static string EX=".user";
 		private static string key="caicai00";

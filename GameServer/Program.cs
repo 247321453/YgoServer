@@ -22,7 +22,10 @@ namespace YGOCore
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
+			System.Net.ServicePointManager.DefaultConnectionLimit = 512;
+			ThreadPool.SetMaxThreads(128, 256);
 			Console.ForegroundColor = ConsoleColor.White;
+			//
 			Config = new ServerConfig();
 			bool loaded = args.Length > 0 ? Config.Load(args[0]): Config.Load();
 			Logger.SetLogLevel(Config.LogLevel);
@@ -40,7 +43,6 @@ namespace YGOCore
 				Console.WriteLine("Server start fail.");
 				Console.ReadKey();
 			}else{
-				ThreadPool.SetMaxThreads(128, 256);
 				Command(Server);
 			}
 		}

@@ -23,7 +23,7 @@ namespace YGOCore.Net
 		#region member
 		private AsyncTcpListener<GameSession> m_listener;
 		public ServerConfig Config{get;private set;}
-		public bool IsListening;
+		public bool IsListening{get; private set;}
 		#endregion
 		
 		public GameServer(ServerConfig config)
@@ -45,7 +45,6 @@ namespace YGOCore.Net
 				m_listener = new AsyncTcpListener<GameSession>(IPAddress.Any, Config.ServerPort);
 				m_listener.OnConnect    += new AsyncTcpListener<GameSession>.ConnectEventHandler(Listener_OnConnect);
 				m_listener.OnReceive    += new AsyncTcpListener<GameSession>.ReceiveEventHandler(Listener_OnReceive);
-				m_listener.OnTimeout    += new AsyncTcpListener<GameSession>.TimeoutEventHandler(Listener_OnTimeout);
 				m_listener.OnDisconnect += new AsyncTcpListener<GameSession>.DisconnectEventHandler(Listener_OnDisconnect);
 				m_listener.Start();
 				IsListening = true;
@@ -75,15 +74,6 @@ namespace YGOCore.Net
 		#endregion
 		
 		#region listener
-		void Listener_OnTimeout(Connection<GameSession> Client, double time)
-		{
-			if(Client!=null){
-				if(Client.Tag!=null){
-					Client.Tag.Close();
-				}
-				m_listener.DisconnectClient(Client);
-			}
-		}
 
 		void Listener_OnDisconnect(Connection<GameSession> Client)
 		{
