@@ -216,7 +216,7 @@ namespace YGOCore.Net
 		#region 决斗事件
 		public static void OnTimeConfirm(GameSession client, GameClientPacket packet){
 			if(client!=null){
-				Logger.Debug("time out "+client.Name);
+				Logger.Debug("OnTimeConfirm "+client.Name);
 			}
 		}
 		public static void SendTypeChange(this GameSession client)

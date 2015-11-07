@@ -171,7 +171,6 @@ namespace YGOCore.Game
 
 			if (HostPlayer == null)
 				HostPlayer = player;
-			Logger.Debug("add duel "+(Players[0] == null));
 			int pos = GetAvailablePlayerPos();
 			if (pos != -1)
 			{

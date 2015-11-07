@@ -2,13 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 # SharpDevelop 4.4
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindBot", "windbot\WindBot.csproj", "{3E7FAF67-A27D-4A61-B161-93AD4414183E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YGOClient", "YGOClient\YGOClient.csproj", "{E7112A43-C35C-433E-9776-5AF5F38DC35A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer", "GameServer\GameServer.csproj", "{6C8BC22D-8B78-4802-8C20-230C03243B64}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "类库", "类库", "{E3E1139C-6416-4864-B005-AB5F6CF1C992}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{E3E1139C-6416-4864-B005-AB5F6CF1C992}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
 EndProject
@@ -17,6 +11,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenZip", "lib\SevenZip\SevenZip.csproj", "{2DD4BA6F-7849-48C3-9CC5-55D64DF9CAFA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCGWrapper", "lib\OCGWrapper\OCGWrapper.csproj", "{79E6FF24-453A-402C-B2CE-B7110B266121}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindBot", "windbot\WindBot.csproj", "{3E7FAF67-A27D-4A61-B161-93AD4414183E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YGOClient", "YGOClient\YGOClient.csproj", "{E7112A43-C35C-433E-9776-5AF5F38DC35A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer", "GameServer\GameServer.csproj", "{6C8BC22D-8B78-4802-8C20-230C03243B64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
