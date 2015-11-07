@@ -50,7 +50,7 @@ namespace OcgWrapper
 		public static extern Int32 query_field_card(IntPtr pduel, Byte playerid, Byte location, Int32 queryFlag, IntPtr buf, Int32 useCache);
 		[DllImport("ocgcore", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
 		public static extern Int32 query_field_info(IntPtr pduel, IntPtr buf);
-
+		
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		public delegate IntPtr ScriptReader(String scriptName, Int32* len);
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]

@@ -24,7 +24,13 @@ namespace OcgWrapper
 		{
 			m_errorHandler = errorHandler;
 		}
-
+		public byte[] QueryFieldInfo()
+        {
+            Api.query_field_info(_duelPtr,  _buffer);
+            byte[] result = new byte[256];
+            Marshal.Copy(_buffer, result, 0, 256);
+            return result;
+        }
 		public void InitPlayers(int startLp, int startHand, int drawCount)
 		{
 			Api.set_player_info(m_pDuel, 0, startLp, startHand, drawCount);

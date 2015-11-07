@@ -204,12 +204,12 @@ namespace YGOCore.Game
 					GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
 					enter.WriteUnicode(Players[i].Name, 20);
 					enter.Write((byte)i);
-					player.Send(enter);
+					player.Send(enter, false);
 					if (IsReady[i])
 					{
 						GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
 						change.Write((byte)((i << 4) + (int)PlayerChange.Ready));
-						player.Send(change);
+						player.Send(change, false);
 					}
 				}
 			}
@@ -217,8 +217,9 @@ namespace YGOCore.Game
 			{
 				GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
 				nwatch.Write((short)Observers.Count);
-				player.Send(nwatch);
+				player.Send(nwatch, false);
 			}
+			player.PeekSend();
 			RoomManager.OnPlayerJoin(player, this);
 		}
 		#endregion
@@ -658,13 +659,14 @@ namespace YGOCore.Game
 			RefreshHand(1);
 		}
 
-		public void RefreshMonsters(int player, int flag = 0x81fff, bool useCache = true)
+		public void RefreshMonsters(int player, int flag = 0x81fff, bool useCache = true, Player observer = null)
 		{
 			byte[] result = m_duel.QueryFieldCard(player, CardLocation.MonsterZone, flag, useCache);
 			GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
 			update.Write((byte)CardLocation.MonsterZone);
 			update.Write(result);
+			 if (observer == null)
 			SendToTeam(update, player);
 
 			update = new GameServerPacket(GameMessage.UpdateData);
@@ -689,18 +691,24 @@ namespace YGOCore.Game
 			}
 			update.Write(result);
 
-			SendToTeam(update, 1 - player);
-			SendToObservers(update);
+			if (observer == null){
+                SendToTeam(update, 1 - player);
+                SendToObservers(update);
+            }
+            else{
+                observer.Send(update);
+            }
 		}
 
-		public void RefreshSpells(int player, int flag = 0x681fff, bool useCache = true)
+		public void RefreshSpells(int player, int flag = 0x681fff, bool useCache = true, Player observer = null)
 		{
 			byte[] result = m_duel.QueryFieldCard(player, CardLocation.SpellZone, flag, useCache);
 			GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
 			update.Write((byte)CardLocation.SpellZone);
 			update.Write(result);
-			SendToTeam(update, player);
+			if (observer == null)
+				SendToTeam(update, player);
 
 			update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
@@ -723,19 +731,24 @@ namespace YGOCore.Game
 				}
 			}
 			update.Write(result);
-
-			SendToTeam(update, 1 - player);
-			SendToObservers(update);
+			if (observer == null){
+                SendToTeam(update, 1 - player);
+                SendToObservers(update);
+            }
+            else{
+                observer.Send(update);
+            }
 		}
 
-		public void RefreshHand(int player, int flag = 0x181fff, bool useCache = true)
+		public void RefreshHand(int player, int flag = 0x181fff, bool useCache = true, Player observer = null)
 		{
 			byte[] result = m_duel.QueryFieldCard(player, CardLocation.Hand, flag | 0x100000, useCache);
 			GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
 			update.Write((byte)CardLocation.Hand);
 			update.Write(result);
-			CurPlayers[player].Send(update);
+			if (observer == null)
+				CurPlayers[player].Send(update);
 
 			update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
@@ -758,18 +771,23 @@ namespace YGOCore.Game
 				}
 			}
 			update.Write(result);
-
-			SendToAllBut(update, player);
+			if (observer == null)
+                SendToAllBut(update, player);
+            else
+                observer.Send(update);
 		}
 
-		public void RefreshGrave(int player, int flag = 0x81fff, bool useCache = true)
+		public void RefreshGrave(int player, int flag = 0x81fff, bool useCache = true, Player observer = null)
 		{
 			byte[] result = m_duel.QueryFieldCard(player, CardLocation.Grave, flag, useCache);
 			GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
 			update.Write((byte)CardLocation.Grave);
 			update.Write(result);
-			SendToAll(update);
+			 if (observer == null)
+                SendToAll(update);
+            else
+                observer.Send(update);
 		}
 
 		public void RefreshExtra(int player, int flag = 0x81fff, bool useCache = true)
@@ -1317,11 +1335,11 @@ namespace YGOCore.Game
 		#region 观战
 		private void InitNewSpectator(GameSession player, int pos=-1)
 		{
-			int deck1 = m_duel.QueryFieldCount(0, CardLocation.Deck);
-			int deck2 = m_duel.QueryFieldCount(1, CardLocation.Deck);
+//			int deck1 = m_duel.QueryFieldCount(0, CardLocation.Deck);
+//			int deck2 = m_duel.QueryFieldCount(1, CardLocation.Deck);
 
-			int hand1 = m_duel.QueryFieldCount(0, CardLocation.Hand);
-			int hand2 = m_duel.QueryFieldCount(1, CardLocation.Hand);
+//			int hand1 = m_duel.QueryFieldCount(0, CardLocation.Hand);
+//			int hand2 = m_duel.QueryFieldCount(1, CardLocation.Hand);
 
 			GameServerPacket packet = new GameServerPacket(GameMessage.Start);
 			if(pos < 0){
@@ -1331,12 +1349,17 @@ namespace YGOCore.Game
 			}
 			packet.Write(LifePoints[0]);
 			packet.Write(LifePoints[1]);
-			packet.Write((short)(deck1 + hand1));
-			packet.Write((short)m_duel.QueryFieldCount(0, CardLocation.Extra));
-			packet.Write((short)(deck2 + hand2));
-			packet.Write((short)m_duel.QueryFieldCount(1, CardLocation.Extra));
+//			packet.Write((short)(deck1 + hand1));
+//			packet.Write((short)m_duel.QueryFieldCount(0, CardLocation.Extra));
+//			packet.Write((short)(deck2 + hand2));
+//			packet.Write((short)m_duel.QueryFieldCount(1, CardLocation.Extra));
+			packet.Write((short)0); // deck
+            packet.Write((short)0); // extra
+            packet.Write((short)0); // deck
+            packet.Write((short)0);  // extra
 			player.Send(packet);
 
+			/*
 			GameServerPacket draw = new GameServerPacket(GameMessage.Draw);
 			draw.Write((byte)0);
 			draw.Write((byte)hand1);
@@ -1368,7 +1391,30 @@ namespace YGOCore.Game
 			InitSpectatorLocation(player, CardLocation.SpellZone);
 			InitSpectatorLocation(player, CardLocation.Grave);
 			InitSpectatorLocation(player, CardLocation.Removed);
+			*/
+			//回合数
+			for(int i=0;i<TurnCount;i++){
+				GameServerPacket turn = new GameServerPacket(GameMessage.NewTurn);
+				turn.Write((byte)(i%2));
+				player.Send(turn, false);
+			}
+
+            GamePacketWriter reload = GamePacketFactory.Create(GameMessage.ReloadField);
+            byte[] fieldInfo = _duel.QueryFieldInfo();
+            reload.Write(fieldInfo, 1, fieldInfo.Length - 1);
+            player.Send(reload, false);
+			player.PeekSend();
+            RefreshAllObserver(player);
 		}
+		public void RefreshAllObserver(Player observer)
+        {
+            RefreshMonsters(0, useCache: false, observer: observer);
+            RefreshMonsters(1, useCache: false, observer: observer);
+            RefreshSpells(0, useCache: false, observer: observer);
+            RefreshSpells(1, useCache: false, observer: observer);
+            RefreshHand(0, useCache: false, observer: observer);
+            RefreshHand(1, useCache: false, observer: observer);
+        }
 		private void InitSpectatorLocation(GameSession player, CardLocation loc)
 		{
 			for (int index = 0; index < 2; index++)
@@ -1403,7 +1449,7 @@ namespace YGOCore.Game
 					move.Write((byte)card.Sequence);
 					move.Write((byte)card.Position);
 					move.Write(0);
-					player.Send(move);
+					player.Send(move, false);
 
 					foreach (ClientCard material in card.Overlay)
 					{
@@ -1415,7 +1461,7 @@ namespace YGOCore.Game
 						xyzcreate.Write((byte)0);
 						xyzcreate.Write((byte)0);
 						xyzcreate.Write(0);
-						player.Send(xyzcreate);
+						player.Send(xyzcreate, false);
 
 						GameServerPacket xyzmove = new GameServerPacket(GameMessage.Move);
 						xyzmove.Write(material.Code);
@@ -1428,7 +1474,7 @@ namespace YGOCore.Game
 						xyzmove.Write((byte)material.Sequence);
 						xyzmove.Write((byte)material.Position);
 						xyzmove.Write(0);
-						player.Send(xyzmove);
+						player.Send(xyzmove, false);
 					}
 
 					if (facedown)
@@ -1465,7 +1511,7 @@ namespace YGOCore.Game
 				update.Write((byte)index);
 				update.Write((byte)loc);
 				update.Write(result);
-				player.Send(update);
+				player.Send(update, true);
 			}
 		}
 		#endregion

@@ -118,7 +118,7 @@ namespace YGOCore.Net
 			GameEvent.Handler(this, packets);
 		}
 
-		public void Send(GameServerPacket packet){
+		public void Send(GameServerPacket packet,bool isNow){
 			if(m_close) return;
 			packet.Use();
 			//	Logger.Debug("send "+System.Text.Encoding.Default.GetString(packet.Content));
@@ -127,7 +127,13 @@ namespace YGOCore.Net
 			if(packet.GameMsg != GameMessage.Waiting){
 				Logger.Debug("game:"+packet.GameMsg);
 			}
-			m_client.SendPackage(packet.Content);
+			m_client.SendPackage(packet.Content, isNow);
+		}
+		
+		public void PeekSend(){
+			try{
+				m_client.PeekSend();
+			}catch{}
 		}
 		public void Close(){
 			if(m_close) return;

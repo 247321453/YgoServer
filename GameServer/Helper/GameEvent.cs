@@ -68,12 +68,12 @@ namespace YGOCore.Net
 			join.Write((byte)0);
 			join.Write((byte)0);
 			join.Write((short)0);
-			client.Send(join);
+			client.Send(join, false);
 
 			GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
 			enter.WriteUnicode("[err]" + message, 20);
 			enter.Write((byte)0);
-			client.Send(enter);
+			client.Send(enter, true);
 		}
 
 		public static void ServerMessage(this GameSession client, string msg, PlayerType type=PlayerType.Yellow, string head="[Server] ")
