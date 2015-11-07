@@ -22,12 +22,13 @@ namespace YGOCore.Game
 		public int DrawCount { get; private set; }
 		public int GameTimer { get; private set; }
 		public string Name { get; private set; }
-		
+		public bool IsRandom {get; private set;}
 		public bool IsMatch {get{return Mode == 1;}}
 		public bool IsTag {get{return  Mode == 2;}}
 		
 		public GameConfig(string gameinfo)
 		{
+			IsRandom = true;
 			LfList = 0;
 			BanList = BanlistManager.Banlists[LfList].Name;
 			Rule = 2;
@@ -115,6 +116,7 @@ namespace YGOCore.Game
 								Name=_name;
 							}
 						}else{
+							IsRandom = false;
 							Name=gameinfo;//.Substring(head+1);
 						}
 					}

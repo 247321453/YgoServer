@@ -251,7 +251,7 @@ namespace YGOCore.Game
 					if(!string.IsNullOrEmpty(tag) && !room.Name.StartsWith(tag)){
 						continue;
 					}
-					if(room.IsOpen && room.GetAvailablePlayerPos() >=0){
+					if(room.IsRandom && room.IsOpen && room.GetAvailablePlayerPos() >=0){
 						roomList.Add(room);
 					}
 				}else{
@@ -326,6 +326,10 @@ namespace YGOCore.Game
 		}
 		public static void OnRoomCreate(GameRoom room){
 			GameConfig config = room.Config;
+			if(room.IsRandom){
+				//随机房间不触发
+				return;
+			}
 			if(config==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.RoomCreate);
@@ -347,6 +351,10 @@ namespace YGOCore.Game
 			
 		}
 		public static void OnRoomStart(GameRoom room){
+			if(room.IsRandom){
+				//随机房间不触发
+				return;
+			}
 			GameConfig config = room.Config;
 			if(config==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
@@ -359,6 +367,10 @@ namespace YGOCore.Game
 		}
 		
 		public static void OnRoomClose(GameRoom room){
+			if(room.IsRandom){
+				//随机房间不触发
+				return;
+			}
 			GameConfig config = room.Config;
 			if(config==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
@@ -371,6 +383,10 @@ namespace YGOCore.Game
 		}
 		
 		public static void OnPlayerJoin(GameSession player, GameRoom room){
+			if(room.IsRandom){
+				//随机房间不触发
+				return;
+			}
 			if(player==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.PlayerJoin);
@@ -382,6 +398,10 @@ namespace YGOCore.Game
 			}
 		}
 		public static void OnPlayerLeave(GameSession player, GameRoom room){
+			if(room.IsRandom){
+				//随机房间不触发
+				return;
+			}
 			if(player==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.PlayerLeave);

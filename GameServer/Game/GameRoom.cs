@@ -26,6 +26,7 @@ namespace YGOCore.Game
 		public int TurnCount;
 		public int[] LifePoints;
 		private Duel m_duel;
+		public bool IsRandom{get;private set;}
 		public readonly List<int> CardIds = new List<int>();
 		/// <summary>
 		/// 录像
@@ -68,6 +69,7 @@ namespace YGOCore.Game
 		public GameRoom(GameConfig config)
 		{
 			Config = config;
+			IsRandom = config.IsRandom;
 			State = GameState.Lobby;
 			CurrentPlayer = 0;
 			LifePoints = new int[2];
