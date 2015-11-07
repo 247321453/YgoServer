@@ -53,6 +53,7 @@ namespace YGOCore.Game
 		{
 			if (Disabled)
 				return;
+			Disabled = true;
 			byte[] raw = m_stream.ToArray();
 			Header.DataSize = (uint)raw.Length;
 			Header.Flag |= FlagCompressed;
@@ -83,7 +84,7 @@ namespace YGOCore.Game
 				}
 				m_data = ms.ToArray();
 			}
-			Disabled = true;
+			
 			if(AutoReplay){
 				ThreadPool.QueueUserWorkItem(new WaitCallback(saveYrp));
 			}

@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YGOClient", "YGOClient\YGOC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer", "GameServer\GameServer.csproj", "{6C8BC22D-8B78-4802-8C20-230C03243B64}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameClient", "GameClient\GameClient.csproj", "{B08872F6-4B37-467D-B146-7AA0F413EF11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,18 @@ Global
 		{79E6FF24-453A-402C-B2CE-B7110B266121}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{79E6FF24-453A-402C-B2CE-B7110B266121}.Release|x86.Build.0 = Release|Any CPU
 		{79E6FF24-453A-402C-B2CE-B7110B266121}.Release|x86.ActiveCfg = Release|Any CPU
+		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Debug|x86.Build.0 = Debug|Any CPU
+		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Release|x86.Build.0 = Release|Any CPU
+		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
