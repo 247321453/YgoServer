@@ -2,13 +2,13 @@
 
 namespace OcgWrapper.Managers
 {
-    internal static class PathManager
+    public static class PathManager
     {
         private static string m_path;
         private static string m_scripts;
         private static string m_cards;
 
-        internal static void Init(string path, string scripts, string cards)
+        public static void Init(string path, string scripts, string cards)
         {
             m_path = path;
             m_scripts = scripts;

@@ -64,10 +64,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GameServer\Net\GameClientPacket.cs">
-      <Link>Info\GameClientPacket.cs</Link>
+      <Link>Common\GameClientPacket.cs</Link>
     </Compile>
     <Compile Include="..\GameServer\Net\GameServerPacket.cs">
-      <Link>Info\GameServerPacket.cs</Link>
+      <Link>Common\GameServerPacket.cs</Link>
     </Compile>
     <Compile Include="..\lib\AsyncServer\BinaryExtensions.cs">
       <Link>Common\BinaryExtensions.cs</Link>
@@ -81,14 +81,14 @@
     <Compile Include="..\lib\ConfigManager.cs">
       <Link>Common\ConfigManager.cs</Link>
     </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\CtosMessage.cs">
-      <Link>Info\CtosMessage.cs</Link>
+    <Compile Include="..\lib\OCGWrapper\Network\CtosMessage.cs">
+      <Link>Common\CtosMessage.cs</Link>
     </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\GameMessage.cs">
-      <Link>Info\GameMessage.cs</Link>
+    <Compile Include="..\lib\OCGWrapper\Network\GameMessage.cs">
+      <Link>Common\GameMessage.cs</Link>
     </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\StocMessage.cs">
-      <Link>Info\StocMessage.cs</Link>
+    <Compile Include="..\lib\OCGWrapper\Network\StocMessage.cs">
+      <Link>Common\StocMessage.cs</Link>
     </Compile>
     <Compile Include="..\lib\RoomInfo.cs">
       <Link>Common\RoomInfo.cs</Link>
@@ -99,14 +99,14 @@
     <Compile Include="..\lib\XmlTools.cs">
       <Link>Common\XmlTools.cs</Link>
     </Compile>
-    <Compile Include="Common\Protocol.cs" />
-    <Compile Include="Common\RoomTool.cs" />
     <Compile Include="CreateRoomForm.cs" />
     <Compile Include="CreateRoomForm.Designer.cs">
       <DependentUpon>CreateRoomForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Info\AsyncClient.cs" />
     <Compile Include="Info\Client.cs" />
+    <Compile Include="Info\Protocol.cs" />
+    <Compile Include="Info\RoomTool.cs" />
     <Compile Include="Info\Server.cs" />
     <Compile Include="Info\User.cs" />
     <Compile Include="InputDialog.cs" />

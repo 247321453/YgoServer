@@ -11,11 +11,11 @@ using System.Data.SQLite;
 
 namespace OcgWrapper.Managers
 {
-	internal static class CardsManager
+	public static class CardsManager
 	{
 		private static IDictionary<int, Card> m_cards;
 
-		internal static void Init()
+		public static void Init()
 		{
 			m_cards = new Dictionary<int, Card>();
 
