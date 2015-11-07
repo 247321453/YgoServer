@@ -661,7 +661,7 @@ namespace YGOCore.Game
 			RefreshHand(1);
 		}
 
-		public void RefreshMonsters(int player, int flag = 0x81fff, bool useCache = true, Player observer = null)
+		public void RefreshMonsters(int player, int flag = 0x81fff, bool useCache = true, GameSession observer = null)
 		{
 			byte[] result = m_duel.QueryFieldCard(player, CardLocation.MonsterZone, flag, useCache);
 			GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
@@ -702,7 +702,7 @@ namespace YGOCore.Game
             }
 		}
 
-		public void RefreshSpells(int player, int flag = 0x681fff, bool useCache = true, Player observer = null)
+		public void RefreshSpells(int player, int flag = 0x681fff, bool useCache = true, GameSession observer = null)
 		{
 			byte[] result = m_duel.QueryFieldCard(player, CardLocation.SpellZone, flag, useCache);
 			GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
@@ -742,7 +742,7 @@ namespace YGOCore.Game
             }
 		}
 
-		public void RefreshHand(int player, int flag = 0x181fff, bool useCache = true, Player observer = null)
+		public void RefreshHand(int player, int flag = 0x181fff, bool useCache = true, GameSession observer = null)
 		{
 			byte[] result = m_duel.QueryFieldCard(player, CardLocation.Hand, flag | 0x100000, useCache);
 			GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
@@ -779,7 +779,7 @@ namespace YGOCore.Game
                 observer.Send(update);
 		}
 
-		public void RefreshGrave(int player, int flag = 0x81fff, bool useCache = true, Player observer = null)
+		public void RefreshGrave(int player, int flag = 0x81fff, bool useCache = true, GameSession observer = null)
 		{
 			byte[] result = m_duel.QueryFieldCard(player, CardLocation.Grave, flag, useCache);
 			GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
@@ -1401,14 +1401,14 @@ namespace YGOCore.Game
 				player.Send(turn, false);
 			}
 
-            GamePacketWriter reload = GamePacketFactory.Create(GameMessage.ReloadField);
-            byte[] fieldInfo = _duel.QueryFieldInfo();
+            GameServerPacket reload = new GameServerPacket(GameMessage.ReloadField);
+            byte[] fieldInfo = m_duel.QueryFieldInfo();
             reload.Write(fieldInfo, 1, fieldInfo.Length - 1);
             player.Send(reload, false);
 			player.PeekSend();
             RefreshAllObserver(player);
 		}
-		public void RefreshAllObserver(Player observer)
+		public void RefreshAllObserver(GameSession observer)
         {
             RefreshMonsters(0, useCache: false, observer: observer);
             RefreshMonsters(1, useCache: false, observer: observer);

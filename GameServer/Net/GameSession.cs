@@ -118,7 +118,7 @@ namespace YGOCore.Net
 			GameEvent.Handler(this, packets);
 		}
 
-		public void Send(GameServerPacket packet,bool isNow){
+		public void Send(GameServerPacket packet,bool isNow = true){
 			if(m_close) return;
 			packet.Use();
 			//	Logger.Debug("send "+System.Text.Encoding.Default.GetString(packet.Content));

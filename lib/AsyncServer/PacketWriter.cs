@@ -38,7 +38,10 @@ namespace AsyncServer
 		{
 			m_writer.Write(array);
 		}
-
+		public void Write(byte[] array, int index, int count)
+		{
+			m_writer.Write(array, index, count);
+		}
 		public void Write(bool value)
 		{
 			m_writer.Write((byte)(value ? 1 : 0));

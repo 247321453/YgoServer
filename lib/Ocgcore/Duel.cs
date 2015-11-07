@@ -26,9 +26,9 @@ namespace OcgWrapper
 		}
 		public byte[] QueryFieldInfo()
         {
-            Api.query_field_info(_duelPtr,  _buffer);
+            Api.query_field_info(m_pDuel,  m_buffer);
             byte[] result = new byte[256];
-            Marshal.Copy(_buffer, result, 0, 256);
+            Marshal.Copy(m_buffer, result, 0, 256);
             return result;
         }
 		public void InitPlayers(int startLp, int startHand, int drawCount)
