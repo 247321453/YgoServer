@@ -269,7 +269,7 @@ namespace YGOCore.Game
 		#endregion
 		
 		#region 消息发送
-		private void SendDuelingPlayers(GameSession player)
+		private void SendDuelingPlayers(GameSession player,bool isNow=true)
 		{
 			for (int i = 0; i < Players.Length; i++)
 			{
@@ -289,80 +289,80 @@ namespace YGOCore.Game
 				}
 				enter.WriteUnicode(Players[id]==null?"???":Players[id].Name, 20);
 				enter.Write((byte)i);
-				player.Send(enter);
+				player.Send(enter, isNow);
 			}
 		}
-		public void SendToAll(GameServerPacket packet)
+		public void SendToAll(GameServerPacket packet,bool isNow=true)
 		{
-			SendToPlayers(packet);
-			SendToObservers(packet);
+			SendToPlayers(packet, isNow);
+			SendToObservers(packet,isNow);
 		}
 		
-		public void SendToAllBut(GameServerPacket packet, GameSession except)
+		public void SendToAllBut(GameServerPacket packet, GameSession except,bool isNow=true)
 		{
 			foreach (GameSession player in Players)
 				if (player != null && !player.Equals(except))
-					player.Send(packet);
+					player.Send(packet, isNow);
 			lock(Observers){
 				foreach (GameSession player in Observers)
 					if (!player.Equals(except))
-						player.Send(packet);
+						player.Send(packet, isNow);
 			}
 		}
 
-		public void SendToAllBut(GameServerPacket packet, int except)
+		public void SendToAllBut(GameServerPacket packet, int except,bool isNow=true)
 		{
 			if(except < CurPlayers.Length)
-				SendToAllBut(packet, CurPlayers[except]);
+				SendToAllBut(packet, CurPlayers[except], isNow);
 			else
-				SendToAll(packet);
+				SendToAll(packet, isNow);
 		}
-		public void SendToPlayers(GameServerPacket packet)
+		public void SendToPlayers(GameServerPacket packet,bool isNow=true)
 		{
 			foreach (GameSession player in Players){
 				if (player != null){
-					player.Send(packet);
+					player.Send(packet, isNow);
 				}
 			}
 		}
 
-		public void SendToObservers(GameServerPacket packet)
+		public void SendToObservers(GameServerPacket packet,bool isNow=true)
 		{
 			lock(Observers){
 				foreach (GameSession player in Observers){
 					if (player != null){
-						player.Send(packet);
+						player.Send(packet, isNow);
 					}
 				}
 			}
 		}
-		public void ServerMessage(string msg, PlayerType color = PlayerType.Yellow)
+		public void ServerMessage(string msg, PlayerType color = PlayerType.Yellow,bool isNow=true)
 		{
 			string finalmsg = "[Server] " + msg;
 			GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
 			packet.Write((short)color);
 			packet.WriteUnicode(finalmsg, finalmsg.Length + 1);
-			SendToAll(packet);
+			SendToAll(packet, isNow);
 		}
-		public void SendToTeam(GameServerPacket packet, int team)
+		public void SendToTeam(GameServerPacket packet, int team,bool isNow=true)
 		{
 			if (!IsTag){
 				if(Players[team]!=null)
-					Players[team].Send(packet);
+					Players[team].Send(packet, isNow);
 			}
 			else if (team == 0)
 			{
 				if(Players[0]!=null)
-					Players[0].Send(packet);
+					Players[0].Send(packet, isNow);
 				if(Players[1]!=null)
-					Players[1].Send(packet);
+					Players[1].Send(packet, isNow);
 			}
 			else
 			{
 				if(Players[2]!=null)
-					Players[2].Send(packet);
+					Players[2].Send(packet, isNow);
 				if(Players[3]!=null)
-					Players[3].Send(packet);
+					Players[3].Send(packet, isNow);
 			}
 		}
 		#endregion
@@ -661,135 +661,125 @@ namespace YGOCore.Game
 			RefreshHand(1);
 		}
 
-		public void RefreshMonsters(int player, int flag = 0x81fff, bool useCache = true, GameSession observer = null)
+		public void RefreshMonsters(int player, int flag = 0x81fff, bool useCache = true)
 		{
 			byte[] result = m_duel.QueryFieldCard(player, CardLocation.MonsterZone, flag, useCache);
 			GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
 			update.Write((byte)CardLocation.MonsterZone);
 			update.Write(result);
-			 if (observer == null)
 			SendToTeam(update, player);
 
 			update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
 			update.Write((byte)CardLocation.MonsterZone);
 
-			MemoryStream ms = new MemoryStream(result);
-			BinaryReader reader = new BinaryReader(ms);
-			BinaryWriter writer = new BinaryWriter(ms);
-			for (int i = 0; i < 5; i++)
-			{
-				int len = reader.ReadInt32();
-				if (len == 4)
-					continue;
-				long pos = ms.Position;
-				byte[] raw = reader.ReadBytes(len - 4);
-				if ((raw[11] & (int)CardPosition.FaceDown) != 0)
+			using(MemoryStream ms = new MemoryStream(result)){
+				BinaryReader reader = new BinaryReader(ms);
+				BinaryWriter writer = new BinaryWriter(ms);
+				for (int i = 0; i < 5; i++)
 				{
-					ms.Position = pos;
-					writer.Write(new byte[len - 4]);
+					int len = reader.ReadInt32();
+					if (len == 4)
+						continue;
+					long pos = ms.Position;
+					byte[] raw = reader.ReadBytes(len - 4);
+					if ((raw[11] & (int)CardPosition.FaceDown) != 0)
+					{
+						ms.Position = pos;
+						writer.Write(new byte[len - 4]);
+					}
 				}
+				reader.Close();
+				writer.Close();
 			}
 			update.Write(result);
 
-			if (observer == null){
-                SendToTeam(update, 1 - player);
-                SendToObservers(update);
-            }
-            else{
-                observer.Send(update);
-            }
+			SendToTeam(update, 1 - player);
+			SendToObservers(update);
 		}
 
-		public void RefreshSpells(int player, int flag = 0x681fff, bool useCache = true, GameSession observer = null)
+		public void RefreshSpells(int player, int flag = 0x681fff, bool useCache = true)
 		{
 			byte[] result = m_duel.QueryFieldCard(player, CardLocation.SpellZone, flag, useCache);
 			GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
 			update.Write((byte)CardLocation.SpellZone);
 			update.Write(result);
-			if (observer == null)
-				SendToTeam(update, player);
+			SendToTeam(update, player);
 
 			update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
 			update.Write((byte)CardLocation.SpellZone);
 
-			MemoryStream ms = new MemoryStream(result);
-			BinaryReader reader = new BinaryReader(ms);
-			BinaryWriter writer = new BinaryWriter(ms);
-			for (int i = 0; i < 8; i++)
-			{
-				int len = reader.ReadInt32();
-				if (len == 4)
-					continue;
-				long pos = ms.Position;
-				byte[] raw = reader.ReadBytes(len - 4);
-				if ((raw[11] & (int)CardPosition.FaceDown) != 0)
+			using(MemoryStream ms = new MemoryStream(result)){
+				BinaryReader reader = new BinaryReader(ms);
+				BinaryWriter writer = new BinaryWriter(ms);
+				for (int i = 0; i < 8; i++)
 				{
-					ms.Position = pos;
-					writer.Write(new byte[len - 4]);
+					int len = reader.ReadInt32();
+					if (len == 4)
+						continue;
+					long pos = ms.Position;
+					byte[] raw = reader.ReadBytes(len - 4);
+					if ((raw[11] & (int)CardPosition.FaceDown) != 0)
+					{
+						ms.Position = pos;
+						writer.Write(new byte[len - 4]);
+					}
 				}
+				reader.Close();
+				writer.Close();
 			}
 			update.Write(result);
-			if (observer == null){
-                SendToTeam(update, 1 - player);
-                SendToObservers(update);
-            }
-            else{
-                observer.Send(update);
-            }
+			SendToTeam(update, 1 - player);
+			SendToObservers(update);
 		}
 
-		public void RefreshHand(int player, int flag = 0x181fff, bool useCache = true, GameSession observer = null)
+		public void RefreshHand(int player, int flag = 0x181fff, bool useCache = true)
 		{
 			byte[] result = m_duel.QueryFieldCard(player, CardLocation.Hand, flag | 0x100000, useCache);
 			GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
 			update.Write((byte)CardLocation.Hand);
 			update.Write(result);
-			if (observer == null)
-				CurPlayers[player].Send(update);
+			CurPlayers[player].Send(update);
 
 			update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
 			update.Write((byte)CardLocation.Hand);
 
-			MemoryStream ms = new MemoryStream(result);
-			BinaryReader reader = new BinaryReader(ms);
-			BinaryWriter writer = new BinaryWriter(ms);
-			while (ms.Position < ms.Length)
-			{
-				int len = reader.ReadInt32();
-				if (len == 4)
-					continue;
-				long pos = ms.Position;
-				byte[] raw = reader.ReadBytes(len - 4);
-				if (raw[len - 8] == 0)
+			using(MemoryStream ms = new MemoryStream(result)){
+				BinaryReader reader = new BinaryReader(ms);
+				BinaryWriter writer = new BinaryWriter(ms);
+				while (ms.Position < ms.Length)
 				{
-					ms.Position = pos;
-					writer.Write(new byte[len - 4]);
+					int len = reader.ReadInt32();
+					if (len == 4)
+						continue;
+					long pos = ms.Position;
+					byte[] raw = reader.ReadBytes(len - 4);
+					if (raw[len - 8] == 0)
+					{
+						ms.Position = pos;
+						writer.Write(new byte[len - 4]);
+					}
 				}
+				writer.Close();
+				reader.Close();
 			}
 			update.Write(result);
-			if (observer == null)
-                SendToAllBut(update, player);
-            else
-                observer.Send(update);
+			SendToAllBut(update, player);
 		}
 
-		public void RefreshGrave(int player, int flag = 0x81fff, bool useCache = true, GameSession observer = null)
+		public void RefreshGrave(int player, int flag = 0x81fff, bool useCache = true)
 		{
 			byte[] result = m_duel.QueryFieldCard(player, CardLocation.Grave, flag, useCache);
 			GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
 			update.Write((byte)player);
 			update.Write((byte)CardLocation.Grave);
 			update.Write(result);
-			 if (observer == null)
-                SendToAll(update);
-            else
-                observer.Send(update);
+			SendToAll(update);
 		}
 
 		public void RefreshExtra(int player, int flag = 0x81fff, bool useCache = true)
@@ -1337,11 +1327,11 @@ namespace YGOCore.Game
 		#region 观战
 		private void InitNewSpectator(GameSession player, int pos=-1)
 		{
-//			int deck1 = m_duel.QueryFieldCount(0, CardLocation.Deck);
-//			int deck2 = m_duel.QueryFieldCount(1, CardLocation.Deck);
+			int deck1 = m_duel.QueryFieldCount(0, CardLocation.Deck);
+			int deck2 = m_duel.QueryFieldCount(1, CardLocation.Deck);
 
-//			int hand1 = m_duel.QueryFieldCount(0, CardLocation.Hand);
-//			int hand2 = m_duel.QueryFieldCount(1, CardLocation.Hand);
+			int hand1 = m_duel.QueryFieldCount(0, CardLocation.Hand);
+			int hand2 = m_duel.QueryFieldCount(1, CardLocation.Hand);
 
 			GameServerPacket packet = new GameServerPacket(GameMessage.Start);
 			if(pos < 0){
@@ -1351,17 +1341,12 @@ namespace YGOCore.Game
 			}
 			packet.Write(LifePoints[0]);
 			packet.Write(LifePoints[1]);
-//			packet.Write((short)(deck1 + hand1));
-//			packet.Write((short)m_duel.QueryFieldCount(0, CardLocation.Extra));
-//			packet.Write((short)(deck2 + hand2));
-//			packet.Write((short)m_duel.QueryFieldCount(1, CardLocation.Extra));
-			packet.Write((short)0); // deck
-            packet.Write((short)0); // extra
-            packet.Write((short)0); // deck
-            packet.Write((short)0);  // extra
+			packet.Write((short)(deck1 + hand1));
+			packet.Write((short)m_duel.QueryFieldCount(0, CardLocation.Extra));
+			packet.Write((short)(deck2 + hand2));
+			packet.Write((short)m_duel.QueryFieldCount(1, CardLocation.Extra));
 			player.Send(packet);
-
-			/*
+			
 			GameServerPacket draw = new GameServerPacket(GameMessage.Draw);
 			draw.Write((byte)0);
 			draw.Write((byte)hand1);
@@ -1388,35 +1373,13 @@ namespace YGOCore.Game
 //				turn.Write((byte)0);
 //				player.Send(turn);
 //			}
-
 			InitSpectatorLocation(player, CardLocation.MonsterZone);
 			InitSpectatorLocation(player, CardLocation.SpellZone);
 			InitSpectatorLocation(player, CardLocation.Grave);
 			InitSpectatorLocation(player, CardLocation.Removed);
-			*/
-			//回合数
-			for(int i=0;i<TurnCount;i++){
-				GameServerPacket turn = new GameServerPacket(GameMessage.NewTurn);
-				turn.Write((byte)(i%2));
-				player.Send(turn, false);
-			}
-
-            GameServerPacket reload = new GameServerPacket(GameMessage.ReloadField);
-            byte[] fieldInfo = m_duel.QueryFieldInfo();
-            reload.Write(fieldInfo, 1, fieldInfo.Length - 1);
-            player.Send(reload, false);
 			player.PeekSend();
-            RefreshAllObserver(player);
 		}
-		public void RefreshAllObserver(GameSession observer)
-        {
-            RefreshMonsters(0, useCache: false, observer: observer);
-            RefreshMonsters(1, useCache: false, observer: observer);
-            RefreshSpells(0, useCache: false, observer: observer);
-            RefreshSpells(1, useCache: false, observer: observer);
-            RefreshHand(0, useCache: false, observer: observer);
-            RefreshHand(1, useCache: false, observer: observer);
-        }
+
 		private void InitSpectatorLocation(GameSession player, CardLocation loc)
 		{
 			for (int index = 0; index < 2; index++)
@@ -1424,97 +1387,102 @@ namespace YGOCore.Game
 				int flag = loc == CardLocation.MonsterZone ? 0x91fff : 0x81fff;
 				byte[] result = m_duel.QueryFieldCard(index, loc, flag, false);
 
-				MemoryStream ms = new MemoryStream(result);
-				BinaryReader reader = new BinaryReader(ms);
-				BinaryWriter writer = new BinaryWriter(ms);
-				while (ms.Position < ms.Length)
-				{
-					int len = reader.ReadInt32();
-					if (len == 4)
-						continue;
-					long pos = ms.Position;
-					reader.ReadBytes(len - 4);
-					long endPos = ms.Position;
-
-					ms.Position = pos;
-					ClientCard card = new ClientCard();
-					card.Update(reader);
-					ms.Position = endPos;
-
-					bool facedown = ((card.Position & (int)CardPosition.FaceDown) != 0);
-
-					GameServerPacket move = new GameServerPacket(GameMessage.Move);
-					move.Write(facedown ? 0 : card.Code);
-					move.Write(0);
-					move.Write((byte)card.Controler);
-					move.Write((byte)card.Location);
-					move.Write((byte)card.Sequence);
-					move.Write((byte)card.Position);
-					move.Write(0);
-					player.Send(move, false);
-
-					foreach (ClientCard material in card.Overlay)
-					{
-						GameServerPacket xyzcreate = new GameServerPacket(GameMessage.Move);
-						xyzcreate.Write(material.Code);
-						xyzcreate.Write(0);
-						xyzcreate.Write((byte)index);
-						xyzcreate.Write((byte)CardLocation.Grave);
-						xyzcreate.Write((byte)0);
-						xyzcreate.Write((byte)0);
-						xyzcreate.Write(0);
-						player.Send(xyzcreate, false);
-
-						GameServerPacket xyzmove = new GameServerPacket(GameMessage.Move);
-						xyzmove.Write(material.Code);
-						xyzmove.Write((byte)index);
-						xyzmove.Write((byte)CardLocation.Grave);
-						xyzmove.Write((byte)0);
-						xyzmove.Write((byte)0);
-						xyzmove.Write((byte)material.Controler);
-						xyzmove.Write((byte)material.Location);
-						xyzmove.Write((byte)material.Sequence);
-						xyzmove.Write((byte)material.Position);
-						xyzmove.Write(0);
-						player.Send(xyzmove, false);
-					}
-
-					if (facedown)
-					{
-						ms.Position = pos;
-						writer.Write(new byte[len - 4]);
-					}
-				}
-
-				if (loc == CardLocation.MonsterZone)
-				{
-					result = m_duel.QueryFieldCard(index, loc, 0x81fff, false);
-					ms = new MemoryStream(result);
-					reader = new BinaryReader(ms);
-					writer = new BinaryWriter(ms);
+				using(MemoryStream ms = new MemoryStream(result)){
+					BinaryReader reader = new BinaryReader(ms);
+					BinaryWriter writer = new BinaryWriter(ms);
 					while (ms.Position < ms.Length)
 					{
 						int len = reader.ReadInt32();
 						if (len == 4)
 							continue;
 						long pos = ms.Position;
-						byte[] raw = reader.ReadBytes(len - 4);
+						reader.ReadBytes(len - 4);
+						long endPos = ms.Position;
 
-						bool facedown = ((raw[11] & (int)CardPosition.FaceDown) != 0);
+						ms.Position = pos;
+						ClientCard card = new ClientCard();
+						card.Update(reader);
+						ms.Position = endPos;
+
+						bool facedown = ((card.Position & (int)CardPosition.FaceDown) != 0);
+
+						GameServerPacket move = new GameServerPacket(GameMessage.Move);
+						move.Write(facedown ? 0 : card.Code);
+						move.Write(0);
+						move.Write((byte)card.Controler);
+						move.Write((byte)card.Location);
+						move.Write((byte)card.Sequence);
+						move.Write((byte)card.Position);
+						move.Write(0);
+						player.Send(move, false);
+
+						foreach (ClientCard material in card.Overlay)
+						{
+							GameServerPacket xyzcreate = new GameServerPacket(GameMessage.Move);
+							xyzcreate.Write(material.Code);
+							xyzcreate.Write(0);
+							xyzcreate.Write((byte)index);
+							xyzcreate.Write((byte)CardLocation.Grave);
+							xyzcreate.Write((byte)0);
+							xyzcreate.Write((byte)0);
+							xyzcreate.Write(0);
+							player.Send(xyzcreate, false);
+
+							GameServerPacket xyzmove = new GameServerPacket(GameMessage.Move);
+							xyzmove.Write(material.Code);
+							xyzmove.Write((byte)index);
+							xyzmove.Write((byte)CardLocation.Grave);
+							xyzmove.Write((byte)0);
+							xyzmove.Write((byte)0);
+							xyzmove.Write((byte)material.Controler);
+							xyzmove.Write((byte)material.Location);
+							xyzmove.Write((byte)material.Sequence);
+							xyzmove.Write((byte)material.Position);
+							xyzmove.Write(0);
+							player.Send(xyzmove, false);
+						}
+
 						if (facedown)
 						{
 							ms.Position = pos;
 							writer.Write(new byte[len - 4]);
 						}
 					}
+					writer.Close();
+					reader.Close();
 				}
+				if (loc == CardLocation.MonsterZone)
+				{
+					result = m_duel.QueryFieldCard(index, loc, 0x81fff, false);
+					using(MemoryStream ms = new MemoryStream(result)){
+						BinaryReader reader = new BinaryReader(ms);
+						BinaryWriter writer = new BinaryWriter(ms);
+						while (ms.Position < ms.Length)
+						{
+							int len = reader.ReadInt32();
+							if (len == 4)
+								continue;
+							long pos = ms.Position;
+							byte[] raw = reader.ReadBytes(len - 4);
 
+							bool facedown = ((raw[11] & (int)CardPosition.FaceDown) != 0);
+							if (facedown)
+							{
+								ms.Position = pos;
+								writer.Write(new byte[len - 4]);
+							}
+						}
+						reader.Close();
+						writer.Close();
+					}
+				}
 				GameServerPacket update = new GameServerPacket(GameMessage.UpdateData);
 				update.Write((byte)index);
 				update.Write((byte)loc);
 				update.Write(result);
-				player.Send(update, true);
+				player.Send(update, false);
 			}
+			player.PeekSend();
 		}
 		#endregion
 		

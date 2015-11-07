@@ -123,10 +123,10 @@ namespace YGOCore.Net
 			packet.Use();
 			//	Logger.Debug("send "+System.Text.Encoding.Default.GetString(packet.Content));
 			//发送大量数据可能会卡
-			Logger.Debug("packet:"+packet.PacketMsg);
-			if(packet.GameMsg != GameMessage.Waiting){
-				Logger.Debug("game:"+packet.GameMsg);
-			}
+//			Logger.Debug("packet:"+packet.PacketMsg);
+//			if(packet.GameMsg != GameMessage.Waiting){
+//				Logger.Debug("game:"+packet.GameMsg);
+//			}
 			m_client.SendPackage(packet.Content, isNow);
 		}
 		

@@ -28,6 +28,7 @@ namespace YGOCore.Game
 		
 		public GameConfig(string gameinfo)
 		{
+			//默认值
 			IsRandom = true;
 			LfList = 0;
 			BanList = BanlistManager.Banlists[LfList].Name;
@@ -49,77 +50,81 @@ namespace YGOCore.Game
 				if(string.IsNullOrEmpty(gameinfo)||gameinfo=="random"){
 					//random
 					Name = RoomManager.RandomRoomName();
+					return;
 				}
-				else{
-					int head=gameinfo.IndexOf("#");
-					if(head<0){
-						Name=gameinfo;
-					}else if(head==0){
-						Name=gameinfo.Substring(1);
-					}else{
-						int index=0;
-						string tmp=gameinfo.Substring(index++,1);
-						int tmpInt=0;
-						Mode = ("t"==tmp||"T"==tmp)?2:(("m"==tmp||"M"==tmp)?1:0);
-						if(Mode==2){
-							StartLp=16000;
-						}
-						if(index < head){
-							tmp=gameinfo.Substring(index++,1);
-							Rule = ("1"==tmp||"t"==tmp||"T"==tmp)?1:(("0"==tmp||"o"==tmp||"O"==tmp)?0:2);
-						}
-						if(index < head){
-							tmp=gameinfo.Substring(index++,1);
-							LfList = Convert.ToInt32(tmp);//("1"==tmp||"t"==tmp||"T"==tmp)?1:0;
-						}
-						if(index < head){
-							tmp=gameinfo.Substring(index++,1);
-							int.TryParse(tmp, out tmpInt);
-							GameTimer = tmpInt>0?tmpInt*60:120;
-						}
-						if(index < head){
-							tmp=gameinfo.Substring(index++,1);
-							EnablePriority=(tmp=="t"||tmp=="1"||"T"==tmp);
-						}
-						if(index < head){
-							tmp=gameinfo.Substring(index++,1);
-							NoCheckDeck=(tmp=="t"||tmp=="1"||tmp=="T");
-						}
-						if(index < head){
-							tmp=gameinfo.Substring(index++,1);
-							NoShuffleDeck=(tmp=="t"||tmp=="1"||"T"==tmp);
-						}
-						if(index < head){
-							tmp=gameinfo.Substring(index++,1);
-							int.TryParse(tmp, out tmpInt);
-							StartLp = tmpInt>0?tmpInt*4000:(Mode==2?16000:8000);
-						}
-						if(index < head){
-							tmp=gameinfo.Substring(index++,1);
-							int.TryParse(tmp, out tmpInt);
-							StartHand = tmpInt>0?tmpInt:5;
-						}
-						if(index < head){
-							tmp=gameinfo.Substring(index++,1);
-							int.TryParse(tmp, out tmpInt);
-							DrawCount = tmpInt>0?tmpInt:1;
-						}
-						//M#
-						//head=1
-						if(head+1>=gameinfo.Length){
-							string _name=RoomManager.RandomRoomName(gameinfo);
-							if(_name==null){
-								//条件#的随机房间名没找到，则创建一个
-								Name=gameinfo + RoomManager.NewRandomRoomName();
-							}else{
-								//条件#的随机房间名存在，则进去，可能重复观战
-								Name=_name;
-							}
-						}else{
-							IsRandom = false;
-							Name=gameinfo;//.Substring(head+1);
-						}
+				int head=gameinfo.IndexOf("#");
+				if(head<0){
+					IsRandom = false;
+					Name=gameinfo;
+					return;
+				}else if(head==0){
+					Name = gameinfo.Substring(1);
+					if(!string.IsNullOrEmpty(Name)){
+						IsRandom = false;
+						return;
 					}
+				}
+				int index=0;
+				string tmp=gameinfo.Substring(index++,1);
+				int tmpInt=0;
+				Mode = ("t"==tmp||"T"==tmp)?2:(("m"==tmp||"M"==tmp)?1:0);
+				if(Mode==2){
+					StartLp=16000;
+				}
+				if(index < head){
+					tmp=gameinfo.Substring(index++,1);
+					Rule = ("1"==tmp||"t"==tmp||"T"==tmp)?1:(("0"==tmp||"o"==tmp||"O"==tmp)?0:2);
+				}
+				if(index < head){
+					tmp=gameinfo.Substring(index++,1);
+					LfList = Convert.ToInt32(tmp);//("1"==tmp||"t"==tmp||"T"==tmp)?1:0;
+				}
+				if(index < head){
+					tmp=gameinfo.Substring(index++,1);
+					int.TryParse(tmp, out tmpInt);
+					GameTimer = tmpInt>0?tmpInt*60:120;
+				}
+				if(index < head){
+					tmp=gameinfo.Substring(index++,1);
+					EnablePriority=(tmp=="t"||tmp=="1"||"T"==tmp);
+				}
+				if(index < head){
+					tmp=gameinfo.Substring(index++,1);
+					NoCheckDeck=(tmp=="t"||tmp=="1"||tmp=="T");
+				}
+				if(index < head){
+					tmp=gameinfo.Substring(index++,1);
+					NoShuffleDeck=(tmp=="t"||tmp=="1"||"T"==tmp);
+				}
+				if(index < head){
+					tmp=gameinfo.Substring(index++,1);
+					int.TryParse(tmp, out tmpInt);
+					StartLp = tmpInt>0?tmpInt*4000:(Mode==2?16000:8000);
+				}
+				if(index < head){
+					tmp=gameinfo.Substring(index++,1);
+					int.TryParse(tmp, out tmpInt);
+					StartHand = tmpInt>0?tmpInt:5;
+				}
+				if(index < head){
+					tmp=gameinfo.Substring(index++,1);
+					int.TryParse(tmp, out tmpInt);
+					DrawCount = tmpInt>0?tmpInt:1;
+				}
+				//M#
+				//head=1
+				if(head+1>=gameinfo.Length){
+					string _name=RoomManager.RandomRoomName(gameinfo);
+					if(_name==null){
+						//条件#的随机房间名没找到，则创建一个
+						Name=gameinfo + RoomManager.NewRandomRoomName();
+					}else{
+						//条件#的随机房间名存在，则进去，可能重复观战
+						Name=_name;
+					}
+				}else{
+					IsRandom = false;
+					Name=gameinfo;//.Substring(head+1);
 				}
 			}
 			catch(Exception e){

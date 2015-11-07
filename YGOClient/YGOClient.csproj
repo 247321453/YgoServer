@@ -63,20 +63,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\GameServer\Helper\BinaryExtensions.cs">
-      <Link>Common\BinaryExtensions.cs</Link>
-    </Compile>
     <Compile Include="..\GameServer\Net\GameClientPacket.cs">
       <Link>Info\GameClientPacket.cs</Link>
     </Compile>
     <Compile Include="..\GameServer\Net\GameServerPacket.cs">
       <Link>Info\GameServerPacket.cs</Link>
     </Compile>
+    <Compile Include="..\lib\AsyncServer\BinaryExtensions.cs">
+      <Link>Common\BinaryExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\lib\AsyncServer\PacketReader.cs">
-      <Link>Info\PacketReader.cs</Link>
+      <Link>Common\PacketReader.cs</Link>
     </Compile>
     <Compile Include="..\lib\AsyncServer\PacketWriter.cs">
-      <Link>Info\PacketWriter.cs</Link>
+      <Link>Common\PacketWriter.cs</Link>
     </Compile>
     <Compile Include="..\lib\ConfigManager.cs">
       <Link>Common\ConfigManager.cs</Link>

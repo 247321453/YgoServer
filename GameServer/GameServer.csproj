@@ -37,7 +37,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
     <DebugSymbols>False</DebugSymbols>
-    <DebugType>None</DebugType>
+    <DebugType>PdbOnly</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE;__MonoCS__</DefineConstants>
@@ -58,143 +58,8 @@
     <Compile Include="..\lib\Password.cs">
       <Link>Helper\Password.cs</Link>
     </Compile>
-    <Compile Include="..\lib\SevenZip\Compress\LZ\LzOutWindow.cs">
-      <Link>SevenZip\Compress\LZ\LzOutWindow.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Compress\LZ\LzInWindow.cs">
-      <Link>SevenZip\Compress\LZ\LzInWindow.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Compress\LZ\LzBinTree.cs">
-      <Link>SevenZip\Compress\LZ\LzBinTree.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Compress\LZ\IMatchFinder.cs">
-      <Link>SevenZip\Compress\LZ\IMatchFinder.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Compress\RangeCoder\RangeCoder.cs">
-      <Link>SevenZip\Compress\RangeCoder\RangeCoder.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Compress\RangeCoder\RangeCoderBit.cs">
-      <Link>SevenZip\Compress\RangeCoder\RangeCoderBit.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Compress\RangeCoder\RangeCoderBitTree.cs">
-      <Link>SevenZip\Compress\RangeCoder\RangeCoderBitTree.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Compress\LZMA\LzmaBase.cs">
-      <Link>SevenZip\Compress\LZMA\LzmaBase.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Compress\LZMA\LzmaDecoder.cs">
-      <Link>SevenZip\Compress\LZMA\LzmaDecoder.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Compress\LZMA\LzmaEncoder.cs">
-      <Link>SevenZip\Compress\LZMA\LzmaEncoder.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Common\CommandLineParser.cs">
-      <Link>SevenZip\Common\CommandLineParser.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Common\OutBuffer.cs">
-      <Link>SevenZip\Common\OutBuffer.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Common\CRC.cs">
-      <Link>SevenZip\Common\CRC.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\Common\InBuffer.cs">
-      <Link>SevenZip\Common\InBuffer.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\SevenZip\ICoder.cs">
-      <Link>SevenZip\ICoder.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\AsyncServer\EventHandler.cs">
-      <Link>AsyncServer\EventHandler.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\AsyncServer\ArrayQueue.cs">
-      <Link>AsyncServer\ArrayQueue.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\AsyncServer\AsyncTcpListener.cs">
-      <Link>AsyncServer\AsyncTcpListener.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\AsyncServer\Connection.cs">
-      <Link>AsyncServer\Connection.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\AsyncServer\Logger.cs">
-      <Link>AsyncServer\Logger.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\AsyncServer\PacketReader.cs">
-      <Link>AsyncServer\PacketReader.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\AsyncServer\PacketWriter.cs">
-      <Link>AsyncServer\PacketWriter.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Api.cs">
-      <Link>Ocgcore\Api.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Card.cs">
-      <Link>Ocgcore\Card.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Duel.cs">
-      <Link>Ocgcore\Duel.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Enums\CardAttribute.cs">
-      <Link>Ocgcore\Enums\CardAttribute.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Enums\CardLocation.cs">
-      <Link>Ocgcore\Enums\CardLocation.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Enums\CardPosition.cs">
-      <Link>Ocgcore\Enums\CardPosition.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Enums\CardRace.cs">
-      <Link>Ocgcore\Enums\CardRace.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Enums\CardType.cs">
-      <Link>Ocgcore\Enums\CardType.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Enums\Query.cs">
-      <Link>Ocgcore\Enums\Query.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Helpers\BigInteger.cs">
-      <Link>Ocgcore\Helpers\BigInteger.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Helpers\MtRandom.cs">
-      <Link>Ocgcore\Helpers\MtRandom.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Managers\CardsManager.cs">
-      <Link>Ocgcore\Managers\CardsManager.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Managers\PathManager.cs">
-      <Link>Ocgcore\Managers\PathManager.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\CtosMessage.cs">
-      <Link>Ocgcore\Network\CtosMessage.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\DuelPhase.cs">
-      <Link>Ocgcore\Network\DuelPhase.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\Error.cs">
-      <Link>Ocgcore\Network\Error.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\GameMessage.cs">
-      <Link>Ocgcore\Network\GameMessage.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\GameState.cs">
-      <Link>Ocgcore\Network\GameState.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\PlayerChange.cs">
-      <Link>Ocgcore\Network\PlayerChange.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\PlayerState.cs">
-      <Link>Ocgcore\Network\PlayerState.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\PlayerType.cs">
-      <Link>Ocgcore\Network\PlayerType.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\Network\StocMessage.cs">
-      <Link>Ocgcore\Network\StocMessage.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\SQLiteTool.cs">
-      <Link>Ocgcore\SQLiteTool.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\Ocgcore\WinInfo.cs">
-      <Link>Game\Info\WinInfo.cs</Link>
+    <Compile Include="..\lib\SQLiteTool.cs">
+      <Link>Helper\SQLiteTool.cs</Link>
     </Compile>
     <Compile Include="..\lib\Tool.cs">
       <Link>Helper\Tool.cs</Link>
@@ -204,17 +69,17 @@
     <Compile Include="Game\CoreMessage.cs" />
     <Compile Include="Game\GameAnalyser.cs" />
     <Compile Include="Game\GameConfig.cs" />
+    <Compile Include="Game\GameEvent.cs" />
     <Compile Include="Game\GameRoom.cs" />
     <Compile Include="Game\GameTimer.cs" />
-    <Compile Include="Game\Info\Banlist.cs" />
-    <Compile Include="Game\Info\ClientCard.cs" />
-    <Compile Include="Game\Info\Deck.cs" />
-    <Compile Include="Game\Info\Replay.cs" />
-    <Compile Include="Game\Info\ReplayHeader.cs" />
+    <Compile Include="Info\Banlist.cs" />
+    <Compile Include="Info\ClientCard.cs" />
+    <Compile Include="Info\Deck.cs" />
+    <Compile Include="Info\Replay.cs" />
+    <Compile Include="Info\ReplayHeader.cs" />
     <Compile Include="Game\MsgSystem.cs" />
     <Compile Include="Game\RoomManager.cs" />
-    <Compile Include="Helper\BinaryExtensions.cs" />
-    <Compile Include="Helper\GameEvent.cs" />
+    <Compile Include="Info\WinInfo.cs" />
     <Compile Include="Messages.cs" />
     <Compile Include="Net\GameClientPacket.cs" />
     <Compile Include="Net\GameServer.cs" />
@@ -225,15 +90,9 @@
     <Compile Include="ServerConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Game\Info" />
+    <Folder Include="Info" />
     <Folder Include="Net" />
-    <Folder Include="AsyncServer" />
-    <Folder Include="Ocgcore\Enums" />
-    <Folder Include="Ocgcore\Helpers" />
-    <Folder Include="Ocgcore\Managers" />
-    <Folder Include="Ocgcore\Network" />
     <Folder Include="Game" />
-    <Folder Include="Ocgcore" />
     <Folder Include="Helper" />
   </ItemGroup>
   <ItemGroup>
@@ -248,6 +107,20 @@
     <None Include="config.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\lib\AsyncServer\AsyncServer.csproj">
+      <Project>{BE77806E-951A-4F6E-9F51-4E7F57A8FE6F}</Project>
+      <Name>AsyncServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\lib\OCGWrapper\OCGWrapper.csproj">
+      <Project>{79E6FF24-453A-402C-B2CE-B7110B266121}</Project>
+      <Name>OCGWrapper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\lib\SevenZip\SevenZip.csproj">
+      <Project>{2DD4BA6F-7849-48C3-9CC5-55D64DF9CAFA}</Project>
+      <Name>SevenZip</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

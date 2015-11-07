@@ -27,20 +27,20 @@
 		/// 登录
 		/// </summary>
 		Login = 0x40,
-		ClientChat = 0x40,
+		ClientChat = 0x41,
 		/// <summary>
 		/// 添加一个房间
 		/// </summary>
-		RoomCreate = 0x41,
+		RoomCreate = 0x42,
 		/// <summary>
 		/// 关闭一个房间
 		/// </summary>
-		RoomClose  = 0x42,
+		RoomClose  = 0x43,
 		/// <summary>
 		/// 更新房间信息
 		/// </summary>
-		RoomStart = 0x43,
-		PlayerJoin= 0x44,
-		PlayerLeave = 0x45,
+		RoomStart = 0x44,
+		PlayerJoin= 0x45,
+		PlayerLeave = 0x46,
 	}
 }

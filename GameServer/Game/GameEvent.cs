@@ -52,7 +52,7 @@ namespace YGOCore.Net
 		#endregion
 		
 		#region 消息
-		public static void LobbyError(this GameSession client, string message)
+		public static void LobbyError(this GameSession client, string message,bool isNow=true)
 		{
 			GameServerPacket join = new GameServerPacket(StocMessage.JoinGame);
 			join.Write(0U);
@@ -73,16 +73,16 @@ namespace YGOCore.Net
 			GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
 			enter.WriteUnicode("[err]" + message, 20);
 			enter.Write((byte)0);
-			client.Send(enter, true);
+			client.Send(enter, isNow);
 		}
 
-		public static void ServerMessage(this GameSession client, string msg, PlayerType type=PlayerType.Yellow, string head="[Server] ")
+		public static void ServerMessage(this GameSession client, string msg, PlayerType type=PlayerType.Yellow,bool isNow=true)
 		{
-			string finalmsg = head + msg;
+			string finalmsg = "[Server] " + msg;
 			GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
 			packet.Write((short)type);
 			packet.WriteUnicode(finalmsg, finalmsg.Length + 1);
-			client.Send(packet);
+			client.Send(packet, isNow);
 		}
 		#endregion
 		
