@@ -37,8 +37,7 @@ namespace YGOCore.Net
 			EventHandler.Register((ushort)CtosMessage.Response,		OnResponse);
 			EventHandler.Register((ushort)CtosMessage.Surrender,	OnSurrender);
 			EventHandler.Register((ushort)CtosMessage.TimeConfirm,  OnTimeConfirm);
-			EventHandler.Register((ushort)StocMessage.Login,	OnLogin);
-			EventHandler.Register((ushort)StocMessage.ClientChat,	OnChat);
+			EventHandler.Register((ushort)CtosMessage.Login,	OnLogin);
 		}
 		public static void Handler(GameSession player, List<GameClientPacket> packets){
 			foreach(GameClientPacket packet in packets){
@@ -87,9 +86,6 @@ namespace YGOCore.Net
 		#endregion
 		
 		#region 玩家信息/登录
-		public static void OnLogin(GameSession client, GameClientPacket packet){
-			RoomManager.OnLogin(client, packet);
-		}
 		public static void OnPlayerInfo(GameSession client, GameClientPacket packet){
 			if (client.Name != null)
 				return;
@@ -213,6 +209,11 @@ namespace YGOCore.Net
 		}
 		#endregion
 		
+		#region client
+		public static void OnLogin(GameSession client, GameClientPacket packet){
+			RoomManager.OnLogin(client, packet);
+		}
+		#endregion
 		#region 决斗事件
 		public static void OnTimeConfirm(GameSession client, GameClientPacket packet){
 			if(client!=null){

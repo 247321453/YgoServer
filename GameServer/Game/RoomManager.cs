@@ -397,6 +397,7 @@ namespace YGOCore.Game
 				SendAll(writer.Content);
 			}
 		}
+
 		public static void OnPlayerLeave(GameSession player, GameRoom room){
 			if(room.IsRandom){
 				//随机房间不触发
@@ -411,7 +412,6 @@ namespace YGOCore.Game
 				OnLogout(player);
 				//发送
 				SendAll(writer.Content);
-				
 			}
 		}
 		
@@ -437,12 +437,14 @@ namespace YGOCore.Game
 			client.IsAuthentified = client.CheckAuth(namepwd);
 			if(!client.IsAuthentified){
 				//登陆失败
-				client.Close();
+				client.ServerMessage("认证失败");
+				return;
 			}else{
 				lock(Users){
 					if(Users.ContainsKey(client.Name)){
 //						已经登陆
-						client.Close();
+						client.ServerMessage("用户已经登录");
+						return;
 					}else{
 						//必须开启异步
 						client.Client.isAsync = true;
@@ -451,6 +453,14 @@ namespace YGOCore.Game
 						Users.Add(client.Name, client);
 					}
 				}
+			}
+			using(GameServerPacket writer=new GameServerPacket(StocMessage.ServerInfo)){
+				writer.WriteUnicode(Program.Config.ServerName, 40);
+				writer.Write((int)Program.Config.ServerPort);
+				writer.WriteUnicode(Program.Config.ServerDesc,255);
+				writer.Write(Program.Config.isNeedAuth);
+				writer.Use();
+				client.Send(writer, true);
 			}
 		}
 		

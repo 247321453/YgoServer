@@ -23,10 +23,7 @@
 		HsPlayerChange = 0x21,
 		HsWatchChange = 0x22,
 		
-		/// <summary>
-		/// 登录
-		/// </summary>
-		Login = 0x40,
+		ServerInfo = 0x40,
 		ClientChat = 0x41,
 		/// <summary>
 		/// 添加一个房间
