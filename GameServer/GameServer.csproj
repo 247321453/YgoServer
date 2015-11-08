@@ -69,6 +69,7 @@
     <Compile Include="Game\CoreMessage.cs" />
     <Compile Include="Game\GameAnalyser.cs" />
     <Compile Include="Game\GameConfig.cs" />
+    <Compile Include="Game\GameConfigBuilder.cs" />
     <Compile Include="Game\GameEvent.cs" />
     <Compile Include="Game\GameRoom.cs" />
     <Compile Include="Game\GameTimer.cs" />

@@ -21,14 +21,24 @@ namespace GameClient
 	/// </summary>
 	public partial class LoginForm : Form
 	{
+		#region init
 		MainForm m_main;
-		public Client m_client{get;private set;}
+		public Client Client{get;private set;}
 		private ServerInfo m_server;
 		readonly SortedList<string, ServerInfo> ServerInfos = new SortedList<string, ServerInfo>();
 		public LoginForm()
 		{
 			m_main = new MainForm(this);
-			m_client = new Client();
+			Client = new Client();
+			Client.OnLoginHandler += delegate {
+				BeginInvoke(new Action(()=>{
+				                       	this.Hide();
+				                       	m_main.Show();
+				                       })
+				           );
+				
+			};
+			Client.OnServerChatHandler +=new OnServerChat(m_main.OnServerChat);
 			InitializeComponent();
 		}
 
@@ -49,11 +59,13 @@ namespace GameClient
 				cb_serverlist.SelectedIndex = index;
 			}
 		}
+		#endregion
 		
-		void Button1Click(object sender, EventArgs e)
+		#region login
+		void Button_Login_Click(object sender, EventArgs e)
 		{
 			string username = tb_username.Text;
-			string pwd = Tool.GetMd5(tb_password.Text);
+			string pwd = tb_password.Text;
 			if(string.IsNullOrEmpty(username)){
 				MessageBox.Show("用户名不能为空");
 				return;
@@ -66,17 +78,11 @@ namespace GameClient
 				MessageBox.Show("没有服务器信息");
 				return;
 			}
-			if(!m_client.Connect(m_server)){
+			if(!Client.Connect(m_server)){
 				MessageBox.Show("无法连接服务器");
 				return;
 			}
-			if(m_client.OnLogin(username, pwd)){
-				//登陆成功
-				m_main.Show();
-				this.Hide();
-			}else{
-				MessageBox.Show("登陆失败");
-			}
+			Client.OnLogin(username, pwd);
 		}
 		
 		void Do_RegisterButton_Click(object sender, EventArgs e)
@@ -94,5 +100,7 @@ namespace GameClient
 				}
 			}catch{}
 		}
+
+		#endregion
 	}
 }

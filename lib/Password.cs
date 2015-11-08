@@ -8,7 +8,7 @@
  */
 using System;
 
-namespace YGOCore.Net
+namespace YGOCore
 {
 	/// <summary>
 	/// Description of Password.

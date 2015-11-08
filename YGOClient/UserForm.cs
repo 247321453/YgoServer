@@ -94,9 +94,9 @@ namespace YGOClient
 			client = new AsyncClient();
 			try{
 				client.Connect(info.Host, info.Port);
-				using(GameServerPacket login = new GameServerPacket(StocMessage.Login)){
-					login.WriteUnicode(user.Name, 40);
-					login.WriteUnicode(user.Password, 16);
+				using(GameServerPacket login = new GameServerPacket()){
+					login.WriteUnicode(user.Name, 20);
+					login.WriteUnicode(user.Password, 32);
 					login.Use();
 					client.BeginSend(login.Content);
 				}

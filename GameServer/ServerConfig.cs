@@ -10,7 +10,7 @@ namespace YGOCore
 		/// 服务端口
 		/// </summary>
 		public int ServerPort { get; private set; }
-		
+		public string ServerIp{get;private set;}
 		/// <summary>
 		/// api端口
 		/// </summary>
@@ -109,6 +109,7 @@ namespace YGOCore
 		public ServerConfig()
 		{
 			ClientVersion = 0x1335;
+			ServerIp="127.0.0.1";
 			ServerPort = 8911;
 			ServerName="YGOserver";
 			//	ApiIp="127.0.0.1";
@@ -179,6 +180,9 @@ namespace YGOCore
 			variable=variable.ToLower();
 			switch (variable)
 			{
+				case "serverip":
+					ServerIp = value;
+					break;
 				case "aipassword":
 					AIPass=value;
 					break;

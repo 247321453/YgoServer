@@ -960,6 +960,7 @@ namespace YGOCore.Game
 			State = GameState.Hand;
 			SendToAll(new GameServerPacket(StocMessage.DuelStart));
 			SendHand();
+			Config.IsStart = true;
 			RoomManager.OnRoomStart(this);
 			DuleTimer.Start();
 		}

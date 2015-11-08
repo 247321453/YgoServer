@@ -60,6 +60,9 @@ namespace YGOCore.Game
 		}
 		public static bool OnLogin(string name, string pwd){
 			//长密码，短密码
+			if(string.IsNullOrEmpty(name)){
+				return false;
+			}
 			if(name!=null&&name.StartsWith("[AI]")){
 				Logger.Debug("[AI]login:"+pwd+"=="+Program.Config.AIPass+"?");
 				return Program.Config.AIPass == pwd;
@@ -306,7 +309,7 @@ namespace YGOCore.Game
 				//3秒发送一次包
 				RefreshTimer=new System.Timers.Timer(3000);
 				RefreshTimer.AutoReset = true;
-				RefreshTimer.Elapsed+= delegate { 
+				RefreshTimer.Elapsed+= delegate {
 					lock(Users){
 						foreach(GameSession user in Users.Values){
 							user.Client.PeekSend();
@@ -333,17 +336,19 @@ namespace YGOCore.Game
 			if(config==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.RoomCreate);
-				writer.WriteUnicode(config.Name, 40);
-				writer.WriteUnicode(config.BanList, 40);
-				writer.Write((ushort)config.Rule);
-				writer.Write((ushort)config.Mode);
+				writer.WriteUnicode(config.Name, 20);
+				writer.WriteUnicode(config.BanList, 20);
+				writer.Write((short)config.LfList);
+				writer.Write((short)config.Rule);
+				writer.Write((short)config.Mode);
 				writer.Write(config.EnablePriority);
 				writer.Write(config.NoCheckDeck);
 				writer.Write(config.NoShuffleDeck);
 				writer.Write(config.StartLp);
-				writer.Write(config.StartHand);
-				writer.Write(config.DrawCount);
+				writer.Write((short)config.StartHand);
+				writer.Write((short)config.DrawCount);
 				writer.Write(config.GameTimer);
+				writer.Write(config.IsStart);
 				writer.Use();
 				//发送
 				SendAll(writer.Content);
@@ -359,7 +364,7 @@ namespace YGOCore.Game
 			if(config==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.RoomStart);
-				writer.WriteUnicode(config.Name, 40);
+				writer.WriteUnicode(config.Name, 20);
 				writer.Use();
 				//发送
 				SendAll(writer.Content);
@@ -375,7 +380,7 @@ namespace YGOCore.Game
 			if(config==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.RoomClose);
-				writer.WriteUnicode(config.Name, 40);
+				writer.WriteUnicode(config.Name, 20);
 				writer.Use();
 				//发送
 				SendAll(writer.Content);
@@ -390,8 +395,8 @@ namespace YGOCore.Game
 			if(player==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.PlayerJoin);
-				writer.WriteUnicode(player.Name, 40);
-				writer.WriteUnicode(room.Name, 40);
+				writer.WriteUnicode(player.Name, 20);
+				writer.WriteUnicode(room.Name, 20);
 				writer.Use();
 				//发送
 				SendAll(writer.Content);
@@ -406,17 +411,19 @@ namespace YGOCore.Game
 			if(player==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.PlayerLeave);
-				writer.WriteUnicode(player.Name, 40);
-				writer.WriteUnicode(room.Name, 40);
+				writer.WriteUnicode(player.Name, 20);
+				writer.WriteUnicode(room.Name, 20);
 				writer.Use();
-				OnLogout(player);
+				OnClientLogout(player);
 				//发送
 				SendAll(writer.Content);
 			}
 		}
 		
-		public static void OnLogout(GameSession client){
+		public static void OnClientLogout(GameSession client){
 			if(client==null || client.Name ==null) return;
+			if(client.Type != (int)PlayerType.Client) return;
+			if(!client.IsAuthentified) return;
 			lock(Users){
 				if(Users.ContainsKey(client.Name)){
 					Users.Remove(client.Name);
@@ -429,36 +436,43 @@ namespace YGOCore.Game
 			}
 		}
 
-		public static void OnLogin(GameSession client,GameClientPacket packet){
-			string name = packet.ReadUnicode(40);
-			string pwd = packet.ReadUnicode(16);
+		public static void OnClientLogin(GameSession client,string name,string pwd){
 			string namepwd = string.IsNullOrEmpty(pwd)?name:name+'$'+pwd;
 			client.Name = name;
+			client.Type = (int)PlayerType.Client;
 			client.IsAuthentified = client.CheckAuth(namepwd);
+			//必须开启异步
+			client.Client.isAsync = true;
+			Logger.Debug("client");
+			string token = Tool.SubString(Tool.GetMd5(pwd+DateTime.Now.ToString()), 4, 4);
 			if(!client.IsAuthentified){
 				//登陆失败
-				client.ServerMessage("认证失败");
+				Logger.Debug("client "+name+" login fail");
+				client.LobbyError(Messages.ERR_AUTH_FAIL);
 				return;
 			}else{
 				lock(Users){
 					if(Users.ContainsKey(client.Name)){
 //						已经登陆
-						client.ServerMessage("用户已经登录");
+						Logger.Debug("client "+name+" is logined");
+						client.IsAuthentified = false;
+						client.LobbyError(Messages.ERR_IS_LOGIN);
 						return;
 					}else{
-						//必须开启异步
-						client.Client.isAsync = true;
+						Logger.Debug("client login ok");
 						//短密码
-						SPwds.Add(client.Name, Tool.SubString(Tool.GetMd5(pwd), 4, 4));
+						SPwds.Add(client.Name, token);
 						Users.Add(client.Name, client);
 					}
 				}
 			}
 			using(GameServerPacket writer=new GameServerPacket(StocMessage.ServerInfo)){
-				writer.WriteUnicode(Program.Config.ServerName, 40);
+				writer.WriteUnicode(Program.Config.ServerName, 20);
+				writer.WriteUnicode(Program.Config.ServerIp, 20);
 				writer.Write((int)Program.Config.ServerPort);
-				writer.WriteUnicode(Program.Config.ServerDesc,255);
 				writer.Write(Program.Config.isNeedAuth);
+				writer.WriteUnicode(token, 20);
+				writer.WriteUnicode(Program.Config.ServerDesc, Program.Config.ServerDesc.Length+1);
 				writer.Use();
 				client.Send(writer, true);
 			}
@@ -468,20 +482,26 @@ namespace YGOCore.Game
 			if(client.Type != (int)PlayerType.Client){
 				return false;
 			}
-			string name = packet.ReadUnicode(40);
+			string name = packet.ReadUnicode(20);
+			string toname = packet.ReadUnicode(20);
 			string msg = packet.ReadUnicode(255);
 			lock(Users){
 				using(GameServerPacket tomsg=new GameServerPacket(StocMessage.ClientChat)){
-					tomsg.WriteUnicode(client.Name, 40);
-					tomsg.WriteUnicode(msg, 255);
+					tomsg.WriteUnicode(client.Name, 20);
+					tomsg.WriteUnicode(toname, 20);
+					tomsg.WriteUnicode(msg, msg.Length + 1);
 					tomsg.Use();
-					if(string.IsNullOrEmpty(name)){
-						if(Users.ContainsKey(name)){
-							Users[name].Client.SendPackage(tomsg.Content, true);
+					if(!string.IsNullOrEmpty(toname)){
+						if(Users.ContainsKey(toname)){
+							Logger.Debug("private chat:"+toname);
+							Users[toname].Client.SendPackage(tomsg.Content, true);
+							client.Client.SendPackage(tomsg.Content, true);
 						}else{
 							//没有该玩家
+							client.LobbyError(string.Format(Messages.ERR_NO_CLIENT, toname));
 						}
 					}else{
+						Logger.Debug("send :" +Users.Count);
 						SendAll(tomsg.Content, true);
 					}
 				}

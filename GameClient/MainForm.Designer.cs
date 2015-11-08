@@ -37,13 +37,13 @@ namespace GameClient
 		private void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-			this.button1 = new System.Windows.Forms.Button();
-			this.button2 = new System.Windows.Forms.Button();
-			this.button3 = new System.Windows.Forms.Button();
+			this.btn_single = new System.Windows.Forms.Button();
+			this.btn_match = new System.Windows.Forms.Button();
+			this.tbn_tag = new System.Windows.Forms.Button();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-			this.richTextBox2 = new System.Windows.Forms.RichTextBox();
-			this.button5 = new System.Windows.Forms.Button();
+			this.rb_allmsg = new System.Windows.Forms.RichTextBox();
+			this.rb_msg = new System.Windows.Forms.RichTextBox();
+			this.btn_send = new System.Windows.Forms.Button();
 			this.listView1 = new System.Windows.Forms.ListView();
 			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
@@ -54,33 +54,36 @@ namespace GameClient
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// button1
+			// btn_single
 			// 
-			this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.button1.Location = new System.Drawing.Point(6, 21);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(125, 41);
-			this.button1.TabIndex = 0;
-			this.button1.Text = "单局模式";
-			this.button1.UseVisualStyleBackColor = true;
+			this.btn_single.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.btn_single.Location = new System.Drawing.Point(6, 21);
+			this.btn_single.Name = "btn_single";
+			this.btn_single.Size = new System.Drawing.Size(125, 41);
+			this.btn_single.TabIndex = 0;
+			this.btn_single.Text = "单局模式";
+			this.btn_single.UseVisualStyleBackColor = true;
+			this.btn_single.Click += new System.EventHandler(this.Btn_singleClick);
 			// 
-			// button2
+			// btn_match
 			// 
-			this.button2.Location = new System.Drawing.Point(137, 21);
-			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(125, 41);
-			this.button2.TabIndex = 0;
-			this.button2.Text = "比赛模式";
-			this.button2.UseVisualStyleBackColor = true;
+			this.btn_match.Location = new System.Drawing.Point(137, 21);
+			this.btn_match.Name = "btn_match";
+			this.btn_match.Size = new System.Drawing.Size(125, 41);
+			this.btn_match.TabIndex = 0;
+			this.btn_match.Text = "比赛模式";
+			this.btn_match.UseVisualStyleBackColor = true;
+			this.btn_match.Click += new System.EventHandler(this.Btn_matchClick);
 			// 
-			// button3
+			// tbn_tag
 			// 
-			this.button3.Location = new System.Drawing.Point(268, 20);
-			this.button3.Name = "button3";
-			this.button3.Size = new System.Drawing.Size(125, 41);
-			this.button3.TabIndex = 0;
-			this.button3.Text = "双打模式(单人)";
-			this.button3.UseVisualStyleBackColor = true;
+			this.tbn_tag.Location = new System.Drawing.Point(268, 20);
+			this.tbn_tag.Name = "tbn_tag";
+			this.tbn_tag.Size = new System.Drawing.Size(125, 41);
+			this.tbn_tag.TabIndex = 0;
+			this.tbn_tag.Text = "双打模式";
+			this.tbn_tag.UseVisualStyleBackColor = true;
+			this.tbn_tag.Click += new System.EventHandler(this.Tbn_tagClick);
 			// 
 			// flowLayoutPanel1
 			// 
@@ -89,33 +92,36 @@ namespace GameClient
 			this.flowLayoutPanel1.Size = new System.Drawing.Size(184, 598);
 			this.flowLayoutPanel1.TabIndex = 1;
 			// 
-			// richTextBox1
+			// rb_allmsg
 			// 
-			this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.richTextBox1.Location = new System.Drawing.Point(202, 86);
-			this.richTextBox1.Name = "richTextBox1";
-			this.richTextBox1.Size = new System.Drawing.Size(397, 430);
-			this.richTextBox1.TabIndex = 2;
-			this.richTextBox1.Text = "";
+			this.rb_allmsg.BackColor = System.Drawing.SystemColors.Window;
+			this.rb_allmsg.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.rb_allmsg.Location = new System.Drawing.Point(202, 86);
+			this.rb_allmsg.Name = "rb_allmsg";
+			this.rb_allmsg.ReadOnly = true;
+			this.rb_allmsg.Size = new System.Drawing.Size(397, 430);
+			this.rb_allmsg.TabIndex = 2;
+			this.rb_allmsg.Text = "";
 			// 
-			// richTextBox2
+			// rb_msg
 			// 
-			this.richTextBox2.BackColor = System.Drawing.SystemColors.Window;
-			this.richTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.richTextBox2.Location = new System.Drawing.Point(202, 522);
-			this.richTextBox2.Name = "richTextBox2";
-			this.richTextBox2.Size = new System.Drawing.Size(397, 52);
-			this.richTextBox2.TabIndex = 3;
-			this.richTextBox2.Text = "";
+			this.rb_msg.BackColor = System.Drawing.SystemColors.Window;
+			this.rb_msg.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.rb_msg.Location = new System.Drawing.Point(202, 522);
+			this.rb_msg.Name = "rb_msg";
+			this.rb_msg.Size = new System.Drawing.Size(397, 52);
+			this.rb_msg.TabIndex = 3;
+			this.rb_msg.Text = "";
 			// 
-			// button5
+			// btn_send
 			// 
-			this.button5.Location = new System.Drawing.Point(517, 581);
-			this.button5.Name = "button5";
-			this.button5.Size = new System.Drawing.Size(75, 33);
-			this.button5.TabIndex = 4;
-			this.button5.Text = "发送";
-			this.button5.UseVisualStyleBackColor = true;
+			this.btn_send.Location = new System.Drawing.Point(517, 581);
+			this.btn_send.Name = "btn_send";
+			this.btn_send.Size = new System.Drawing.Size(75, 33);
+			this.btn_send.TabIndex = 4;
+			this.btn_send.Text = "发送";
+			this.btn_send.UseVisualStyleBackColor = true;
+			this.btn_send.Click += new System.EventHandler(this.Btn_Send_Click);
 			// 
 			// listView1
 			// 
@@ -159,9 +165,9 @@ namespace GameClient
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Controls.Add(this.button1);
-			this.groupBox1.Controls.Add(this.button2);
-			this.groupBox1.Controls.Add(this.button3);
+			this.groupBox1.Controls.Add(this.btn_single);
+			this.groupBox1.Controls.Add(this.btn_match);
+			this.groupBox1.Controls.Add(this.tbn_tag);
 			this.groupBox1.Location = new System.Drawing.Point(202, 12);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(397, 68);
@@ -177,15 +183,16 @@ namespace GameClient
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.pictureBox1);
 			this.Controls.Add(this.listView1);
-			this.Controls.Add(this.button5);
-			this.Controls.Add(this.richTextBox2);
-			this.Controls.Add(this.richTextBox1);
+			this.Controls.Add(this.btn_send);
+			this.Controls.Add(this.rb_msg);
+			this.Controls.Add(this.rb_allmsg);
 			this.Controls.Add(this.flowLayoutPanel1);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "游戏大厅";
+			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainFormFormClosed);
 			this.Load += new System.EventHandler(this.MainFormLoad);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.groupBox1.ResumeLayout(false);
@@ -197,12 +204,12 @@ namespace GameClient
 		private System.Windows.Forms.ColumnHeader columnHeader2;
 		private System.Windows.Forms.ColumnHeader columnHeader1;
 		private System.Windows.Forms.ListView listView1;
-		private System.Windows.Forms.Button button5;
-		private System.Windows.Forms.RichTextBox richTextBox2;
-		private System.Windows.Forms.RichTextBox richTextBox1;
+		private System.Windows.Forms.Button btn_send;
+		private System.Windows.Forms.RichTextBox rb_msg;
+		private System.Windows.Forms.RichTextBox rb_allmsg;
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-		private System.Windows.Forms.Button button3;
-		private System.Windows.Forms.Button button2;
-		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.Button tbn_tag;
+		private System.Windows.Forms.Button btn_match;
+		private System.Windows.Forms.Button btn_single;
 	}
 }

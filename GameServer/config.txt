@@ -2,6 +2,7 @@
 #客户端版本1033.7
 clientversion=1337
 #####################
+serverip=127.0.0.1
 servername=菜菜服务器
 serverdesc=提供100只野生AI，房间数50，不支持私聊
 serverport=8910

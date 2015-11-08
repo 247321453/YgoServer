@@ -2,6 +2,7 @@
 {
 	public enum StocMessage : byte
 	{
+		Unknown = 0,
 		GameMsg = 0x1,
 		ErrorMsg = 0x2,
 		SelectHand = 0x3,

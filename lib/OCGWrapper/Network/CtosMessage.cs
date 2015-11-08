@@ -20,17 +20,5 @@
 		HsNotReady = 0x23,
 		HsKick = 0x24,
 		HsStart = 0x25,
-		/// <summary>
-		/// 登录
-		/// </summary>
-		Login = 0x40,
-		/// <summary>
-		/// 加入房间
-		/// </summary>
-		PlayerJoin= 0x42,
-		/// <summary>
-		/// 离开房间
-		/// </summary>
-		PlayerLeave = 0x43,
 	}
 }

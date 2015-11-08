@@ -37,7 +37,6 @@ namespace YGOCore.Net
 			EventHandler.Register((ushort)CtosMessage.Response,		OnResponse);
 			EventHandler.Register((ushort)CtosMessage.Surrender,	OnSurrender);
 			EventHandler.Register((ushort)CtosMessage.TimeConfirm,  OnTimeConfirm);
-			EventHandler.Register((ushort)CtosMessage.Login,	OnLogin);
 		}
 		public static void Handler(GameSession player, List<GameClientPacket> packets){
 			foreach(GameClientPacket packet in packets){
@@ -90,6 +89,12 @@ namespace YGOCore.Net
 			if (client.Name != null)
 				return;
 			string name = packet.ReadUnicode(20);
+			if(name == "client"){
+				name = packet.ReadUnicode(20);
+				string pwd = packet.ReadUnicode(32);
+				RoomManager.OnClientLogin(client, name, pwd);
+				return;
+			}
 			Logger.Debug("player name:"+name);
 			if (string.IsNullOrEmpty(name)){
 				client.LobbyError(Messages.ERR_NO_NAME);
@@ -159,7 +164,7 @@ namespace YGOCore.Net
 				client.LobbyError(Messages.ERR_PASSWORD);
 				return;
 			}
-			GameConfig config = new GameConfig(joinCommand);
+			GameConfig config = GameConfigBuilder.Build(joinCommand);
 			room =  RoomManager.CreateOrGetGame(config);
 			if (room == null){
 				client.LobbyError(Messages.MSG_FULL);
@@ -192,7 +197,7 @@ namespace YGOCore.Net
 			if (string.IsNullOrEmpty(client.Name) || client.Type != (int)PlayerType.Undefined)
 				return;
 			GameRoom room = null;
-			GameConfig config = new GameConfig(packet);
+			GameConfig config = GameConfigBuilder.Build(packet);
 			room = RoomManager.CreateOrGetGame(config);
 
 			if (room == null)
@@ -209,11 +214,6 @@ namespace YGOCore.Net
 		}
 		#endregion
 		
-		#region client
-		public static void OnLogin(GameSession client, GameClientPacket packet){
-			RoomManager.OnLogin(client, packet);
-		}
-		#endregion
 		#region 决斗事件
 		public static void OnTimeConfirm(GameSession client, GameClientPacket packet){
 			if(client!=null){

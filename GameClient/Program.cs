@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
+using AsyncServer;
 
 namespace GameClient
 {
@@ -27,6 +28,10 @@ namespace GameClient
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
+			Logger.SetLogLevel(LogLevel.Info);
+			#if DEBUG
+			Logger.SetLogLevel(LogLevel.Debug);
+			#endif
 			Application.Run(new LoginForm());
 		}
 		

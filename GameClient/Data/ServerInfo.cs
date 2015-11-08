@@ -13,6 +13,9 @@ using System.Collections.Generic;
 namespace GameClient.Data
 {
 	public class ServerInfo{
+		public ServerInfo(){
+			
+		}
 		public ServerInfo(string val){
 			string[] vs= val.Split(':');
 			if(val.Length >= 3){
@@ -26,10 +29,12 @@ namespace GameClient.Data
 			}
 		}
 		public bool isOk{get{return Port > 0;}}
-		public string Name{get;private set;}
-		public string Host{get;private set;}
-		public int Port{get;private set;}
-		
+		public string Name{get; set;}
+		public string Host{get; set;}
+		public int Port{get; set;}
+		public bool NeedAuth{get;set;}
+		public string Desc{get;set;}
+		public string Token{get;set;}
 		
 		public static void GetServerInfos(SortedList<string, ServerInfo> list){
 			for(int i=1;i<10;i++){

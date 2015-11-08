@@ -57,7 +57,7 @@ namespace GameClient
 			this.btn_login.TabIndex = 0;
 			this.btn_login.Text = "登录";
 			this.btn_login.UseVisualStyleBackColor = true;
-			this.btn_login.Click += new System.EventHandler(this.Button1Click);
+			this.btn_login.Click += new System.EventHandler(this.Button_Login_Click);
 			// 
 			// label1
 			// 

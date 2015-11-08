@@ -10,6 +10,7 @@ using System;
 using System.Net;
 using System.Collections.Generic;
 using AsyncServer;
+using OcgWrapper.Enums;
 using OcgWrapper;
 using System.Net.Sockets;
 using YGOCore.Game;
@@ -79,6 +80,9 @@ namespace YGOCore.Net
 		{
 			if(Client!=null){
 				if(Client.Tag!=null){
+					if(Client.Tag.Type == (int)PlayerType.Client){
+						RoomManager.OnClientLogout(Client.Tag);
+					}
 					Client.Tag.Close();
 				}
 				m_listener.DisconnectClient(Client);

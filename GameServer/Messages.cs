@@ -39,7 +39,9 @@ namespace YGOCore
 		public const string ERR_NO_NAME="名字不能为空";
 		public const string ERR_NO_PASS="密码不能为空";
 		public const string ERR_AUTH_FAIL="登录失败";
+		public const string ERR_IS_LOGIN="已经登录";
 		public const string ERR_LOW_VERSION="游戏版本太低";
 		public const string ERR_PASSWORD="房间密码错误";
+		public const string ERR_NO_CLIENT ="用户:{0}未在线";
 	}
 }

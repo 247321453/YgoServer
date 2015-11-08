@@ -209,7 +209,7 @@ namespace YGOCore
 		}
 		private static void AddAI(GameServer Server){
 			string name = null;
-			GameRoom room = RoomManager.CreateOrGetGame(new GameConfig(""));
+			GameRoom room = RoomManager.CreateOrGetGame(GameConfigBuilder.Build(""));
 			if(room == null && room.Config!=null){
 				name = RoomManager.RandomRoomName();
 			}else{

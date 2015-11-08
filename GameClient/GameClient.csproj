@@ -47,8 +47,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GameServer\Game\GameConfig.cs">
+      <Link>Data\GameConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\AsyncServer\ArrayQueue.cs">
+      <Link>Data\ArrayQueue.cs</Link>
+    </Compile>
     <Compile Include="..\lib\AsyncServer\BinaryExtensions.cs">
       <Link>Common\BinaryExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\AsyncServer\EventHandler.cs">
+      <Link>Common\EventHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\AsyncServer\Logger.cs">
+      <Link>Common\Logger.cs</Link>
     </Compile>
     <Compile Include="..\lib\AsyncServer\PacketReader.cs">
       <Link>Common\PacketReader.cs</Link>
@@ -60,16 +72,21 @@
       <Link>Common\ConfigManager.cs</Link>
     </Compile>
     <Compile Include="..\lib\OCGWrapper\Network\CtosMessage.cs">
-      <Link>Common\CtosMessage.cs</Link>
+      <Link>Data\CtosMessage.cs</Link>
     </Compile>
     <Compile Include="..\lib\OCGWrapper\Network\StocMessage.cs">
-      <Link>Common\StocMessage.cs</Link>
+      <Link>Data\StocMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\Password.cs">
+      <Link>Common\Password.cs</Link>
     </Compile>
     <Compile Include="..\lib\Tool.cs">
       <Link>Common\Tool.cs</Link>
     </Compile>
     <Compile Include="Client.cs" />
+    <Compile Include="ClientEvent.cs" />
     <Compile Include="Data\ServerInfo.cs" />
+    <Compile Include="GameUtil.cs" />
     <Compile Include="LoginForm.cs" />
     <Compile Include="LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>

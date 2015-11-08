@@ -21,7 +21,6 @@ namespace YGOCore.Net
         		return (CtosMessage)ctos;
         	}
         	return CtosMessage.Unknown;
-            
         }
     }
 }
