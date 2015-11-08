@@ -30,7 +30,7 @@ namespace GameClient
 		{
 			m_main = new MainForm(this);
 			Client = new Client();
-			Client.OnLoginHandler += delegate {
+			Client.OnLogin += delegate {
 				BeginInvoke(new Action(()=>{
 				                       	this.Hide();
 				                       	m_main.Show();
@@ -38,7 +38,6 @@ namespace GameClient
 				           );
 				
 			};
-			Client.OnServerChatHandler +=new OnServerChat(m_main.OnServerChat);
 			InitializeComponent();
 		}
 
@@ -82,7 +81,7 @@ namespace GameClient
 				MessageBox.Show("无法连接服务器");
 				return;
 			}
-			Client.OnLogin(username, pwd);
+			Client.Login(username, pwd);
 		}
 		
 		void Do_RegisterButton_Click(object sender, EventArgs e)

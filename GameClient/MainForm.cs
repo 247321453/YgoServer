@@ -18,22 +18,34 @@ namespace GameClient
 	/// </summary>
 	public partial class MainForm : Form
 	{
+		#region ...
 		LoginForm m_login;
+		CreateRoomForm m_create;
 		public MainForm(LoginForm parent)
 		{
 			InitializeComponent();
 			m_login = parent;
+			m_create = new CreateRoomForm(this);
+			panel_rooms.SetParent(this);
 		}
 		void MainFormLoad(object sender, EventArgs e)
 		{
-
+			m_login.Client.OnServerChat += new OnServerChatHandler(OnServerChat);
+			m_login.Client.OnRoomClose+=new OnRoomCloseHandler(panel_rooms.OnClose);
+			m_login.Client.OnRoomStart+=new OnRoomStartHandler(panel_rooms.OnStart);
+			m_login.Client.OnRoomCreate+=new OnRoomCreateHandler(panel_rooms.OnCreate);
+			m_login.Client.OnRoomList +=new OnRoomListHandler(panel_rooms.OnRoomList);
+			m_login.Client.GetRooms();
 		}
 		
 		void MainFormFormClosed(object sender, FormClosedEventArgs e)
 		{
+			m_login.Client.Close();
 			m_login.Close();
 		}
+		#endregion
 
+		#region chat
 		private void SendMsg(string toname, string msg){
 			try{
 				m_login.Client.OnChat(msg, toname);
@@ -42,6 +54,7 @@ namespace GameClient
 			}
 		}
 		public void OnServerChat(string pname, string tname, string msg){
+			if(chb_closemsg.Checked) return;
 			string time = DateTime.Now.ToString("HH:mm:ss");
 			if(pname==null)pname = "";
 			if(msg==null) return;
@@ -69,7 +82,10 @@ namespace GameClient
 			                       })
 			           );
 		}
-		
+		void Btn_Clean_Click(object sender, EventArgs e)
+		{
+			rb_allmsg.Text="";
+		}
 		void Btn_Send_Click(object sender, EventArgs e)
 		{
 			string toname="";
@@ -94,7 +110,10 @@ namespace GameClient
 			rb_msg.Text = "";
 			SendMsg(toname, msg);
 		}
-		private void JoinRoom(string room){
+		#endregion
+		
+		#region quick mode
+		public void JoinRoom(string room){
 			if(m_login.Client.GameServerInfo==null){
 				MessageBox.Show("服务器信息错误");
 				return;
@@ -122,6 +141,12 @@ namespace GameClient
 		void Tbn_tagClick(object sender, EventArgs e)
 		{
 			JoinRoom("T#");
+		}
+		#endregion
+		
+		void Btn_otherClick(object sender, EventArgs e)
+		{
+			m_create.ShowDialog();
 		}
 	}
 }

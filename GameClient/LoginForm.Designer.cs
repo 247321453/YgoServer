@@ -51,6 +51,7 @@ namespace GameClient
 			// 
 			// btn_login
 			// 
+			this.btn_login.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.btn_login.Location = new System.Drawing.Point(229, 66);
 			this.btn_login.Name = "btn_login";
 			this.btn_login.Size = new System.Drawing.Size(75, 54);
@@ -95,9 +96,11 @@ namespace GameClient
 			// chb_record
 			// 
 			this.chb_record.AutoSize = true;
+			this.chb_record.Enabled = false;
+			this.chb_record.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.chb_record.Location = new System.Drawing.Point(61, 100);
 			this.chb_record.Name = "chb_record";
-			this.chb_record.Size = new System.Drawing.Size(72, 16);
+			this.chb_record.Size = new System.Drawing.Size(70, 16);
 			this.chb_record.TabIndex = 4;
 			this.chb_record.Text = "记住密码";
 			this.chb_record.UseVisualStyleBackColor = true;
@@ -105,15 +108,19 @@ namespace GameClient
 			// chb_autologin
 			// 
 			this.chb_autologin.AutoSize = true;
+			this.chb_autologin.Enabled = false;
+			this.chb_autologin.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.chb_autologin.Location = new System.Drawing.Point(151, 100);
 			this.chb_autologin.Name = "chb_autologin";
-			this.chb_autologin.Size = new System.Drawing.Size(72, 16);
+			this.chb_autologin.Size = new System.Drawing.Size(70, 16);
 			this.chb_autologin.TabIndex = 4;
 			this.chb_autologin.Text = "自动登录";
 			this.chb_autologin.UseVisualStyleBackColor = true;
 			// 
 			// btn_register
 			// 
+			this.btn_register.Enabled = false;
+			this.btn_register.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.btn_register.Location = new System.Drawing.Point(229, 24);
 			this.btn_register.Name = "btn_register";
 			this.btn_register.Size = new System.Drawing.Size(75, 23);

@@ -328,6 +328,7 @@ namespace YGOCore.Game
 			}
 		}
 		public static void OnRoomCreate(GameRoom room){
+			Logger.Debug("room create");
 			GameConfig config = room.Config;
 			if(room.IsRandom){
 				//随机房间不触发
@@ -356,6 +357,7 @@ namespace YGOCore.Game
 			
 		}
 		public static void OnRoomStart(GameRoom room){
+			Logger.Debug("room start");
 			if(room.IsRandom){
 				//随机房间不触发
 				return;
@@ -364,7 +366,7 @@ namespace YGOCore.Game
 			if(config==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.RoomStart);
-				writer.WriteUnicode(config.Name, 20);
+				writer.WriteUnicode(Password.OnlyName(config.Name), 20);
 				writer.Use();
 				//发送
 				SendAll(writer.Content);
@@ -372,6 +374,7 @@ namespace YGOCore.Game
 		}
 		
 		public static void OnRoomClose(GameRoom room){
+			Logger.Debug("room close");
 			if(room.IsRandom){
 				//随机房间不触发
 				return;
@@ -380,46 +383,47 @@ namespace YGOCore.Game
 			if(config==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)StocMessage.RoomClose);
-				writer.WriteUnicode(config.Name, 20);
+				writer.WriteUnicode(Password.OnlyName(config.Name), 20);
 				writer.Use();
 				//发送
 				SendAll(writer.Content);
 			}
 		}
 		
-		public static void OnPlayerJoin(GameSession player, GameRoom room){
-			if(room.IsRandom){
-				//随机房间不触发
-				return;
+		#region room
+		public static void OnRoomList(GameSession client, GameClientPacket packet){
+			List<GameConfig> rooms=new List<GameConfig>();
+			lock(Games){
+				foreach(GameRoom room in Games.Values){
+					if(room !=null && room.IsOpen && !room.IsRandom && !room.Config.IsStart){
+						//没有结束，非随机房间,未开始决斗
+						rooms.Add(room.Config);
+					}
+				}
 			}
-			if(player==null) return;
 			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)StocMessage.PlayerJoin);
-				writer.WriteUnicode(player.Name, 20);
-				writer.WriteUnicode(room.Name, 20);
+				writer.Write((byte)StocMessage.RoomList);
+				writer.Write((int)rooms.Count);
+				foreach(GameConfig config in rooms){
+					writer.WriteUnicode(config.Name, 20);
+					writer.WriteUnicode(config.BanList, 20);
+					writer.Write((short)config.LfList);
+					writer.Write((short)config.Rule);
+					writer.Write((short)config.Mode);
+					writer.Write(config.EnablePriority);
+					writer.Write(config.NoCheckDeck);
+					writer.Write(config.NoShuffleDeck);
+					writer.Write(config.StartLp);
+					writer.Write((short)config.StartHand);
+					writer.Write((short)config.DrawCount);
+					writer.Write(config.GameTimer);
+					writer.Write(config.IsStart);
+				}
 				writer.Use();
-				//发送
-				SendAll(writer.Content);
+				client.Client.SendPackage(writer.Content, true);
 			}
 		}
-
-		public static void OnPlayerLeave(GameSession player, GameRoom room){
-			if(room.IsRandom){
-				//随机房间不触发
-				return;
-			}
-			if(player==null) return;
-			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)StocMessage.PlayerLeave);
-				writer.WriteUnicode(player.Name, 20);
-				writer.WriteUnicode(room.Name, 20);
-				writer.Use();
-				OnClientLogout(player);
-				//发送
-				SendAll(writer.Content);
-			}
-		}
-		
+		#endregion
 		public static void OnClientLogout(GameSession client){
 			if(client==null || client.Name ==null) return;
 			if(client.Type != (int)PlayerType.Client) return;

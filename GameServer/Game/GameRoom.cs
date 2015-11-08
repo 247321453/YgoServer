@@ -165,7 +165,7 @@ namespace YGOCore.Game
 				}else if(State == GameState.Side){
 					player.ServerMessage(Messages.MSG_WATCH_SIDE);
 				}
-				RoomManager.OnPlayerJoin(player, this);
+				//RoomManager.OnPlayerJoin(player, this);
 				return;
 			}
 
@@ -221,7 +221,7 @@ namespace YGOCore.Game
 				player.Send(nwatch, false);
 			}
 			player.PeekSend();
-			RoomManager.OnPlayerJoin(player, this);
+			//RoomManager.OnPlayerJoin(player, this);
 		}
 		#endregion
 		
@@ -230,7 +230,7 @@ namespace YGOCore.Game
 			if(player==null){
 				return;
 			}
-			RoomManager.OnPlayerLeave(player, this);
+		//	RoomManager.OnPlayerLeave(player, this);
 			if (player.Equals(HostPlayer) && State == GameState.Lobby){
 				//Logger.WriteLine("HostPlayer is leave", false);
 				Close(true);

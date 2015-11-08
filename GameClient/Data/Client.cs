@@ -7,40 +7,41 @@
  * 要改变这种模板请点击 工具|选项|代码编写|编辑标准头文件
  */
 using System;
-using System.Net;
-using System.Net.Sockets;
-using GameClient.Data;
 using System.Collections.Generic;
-using System.Threading;
+using System.Net.Sockets;
+
 using AsyncServer;
+using GameClient.Data;
+using OcgWrapper.Enums;
 using YGOCore;
 using YGOCore.Game;
-using OcgWrapper.Enums;
 
 namespace GameClient
 {
-	public interface Listener{
-		void OnLoginOk(ServerInfo info);
-	}
-	public delegate void OnLoginSuccess(ServerInfo info);
-	public delegate void OnServerChat(string pname, string tname, string msg);
+	public delegate void OnLoginHandler(ServerInfo info);
+	public delegate void OnServerChatHandler(string pname, string tname, string msg);
+	public delegate void OnRoomCreateHandler(GameConfig config);
+	public delegate void OnRoomStartHandler(string name);
+	public delegate void OnRoomCloseHandler(string name);
+	public delegate void OnRoomListHandler(List<GameConfig> configs);
 	/// <summary>
 	/// Description of Client.
 	/// </summary>
 	public class Client
 	{
-		TcpClient client;
+		public event OnLoginHandler OnLogin;
+		public event OnServerChatHandler OnServerChat;
+		public event OnRoomCreateHandler OnRoomCreate;
+		public event OnRoomStartHandler OnRoomStart;
+		public event OnRoomCloseHandler OnRoomClose;
+		public event OnRoomListHandler OnRoomList;
+		private TcpClient client;
 		public string Name="???";
 		public string Pwd = "";
 		public ServerInfo GameServerInfo;
 		public bool IsLogin=false;
-		public event OnLoginSuccess OnLoginHandler;
-		public event OnServerChat OnServerChatHandler;
 		readonly ArrayQueue<byte> ReceviceQueue=new ArrayQueue<byte>();
-		public readonly SortedList<string, GameConfig> Rooms=new SortedList<string, GameConfig>();
 		//名字，房间名
-		public readonly SortedList<string, string> Players=new SortedList<string, string>();
-		
 		public Client()
 		{
 		}
@@ -84,7 +85,11 @@ namespace GameClient
 					OnRecevice();
 				}
 			}catch(Exception e){
-				System.Windows.Forms.MessageBox.Show("用户："+Name+" 服务器已经断开\n"+e);
+				System.Windows.Forms.MessageBox.Show("服务器已经断开"
+				                                     #if DEBUG
+				                                     +"\n"+e
+				                                     #endif
+				                                    );
 			}finally{
 				BeginRecevice();
 			}
@@ -108,6 +113,14 @@ namespace GameClient
 				}
 			}
 			ClientEvent.Handler(this, packets);
+		}
+		
+		public void GetRooms(){
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)CtosMessage.RoomList);
+				writer.Use();
+				Send(writer.Content);
+			}
 		}
 		public void Close(){
 			try{
@@ -140,10 +153,11 @@ namespace GameClient
 		}
 		#endregion
 		
+		#region login/chat
 		/// <summary>
 		/// 联网登录
 		/// </summary>
-		public void OnLogin(string name, string pwd){
+		public void Login(string name, string pwd){
 			Name = name;
 			Pwd = pwd;
 			pwd= Tool.GetMd5(pwd);
@@ -170,57 +184,11 @@ namespace GameClient
 			}
 			return false;
 		}
-		
-		public void OnServerJoinGame(string room,string name){
-			lock(Players){
-				if(Players.ContainsKey(name)){
-					Players[name] =room;
-				}else{
-					Players.Add(name, room);
-				}
-			}
-		}
-		
-		public void OnServerLeaveGame(string room, string name){
-			lock(Players){
-				if(Players.ContainsKey(name)){
-					Players[name] = null;
-				}
-			}
-		}
-		
-		#region room
-		public void OnServerRoomCreate(GameConfig config){
-			string name = Password.OnlyName(config.Name);
-			lock(Rooms){
-				if(Rooms.ContainsKey(name)){
-					Rooms[name] = config;
-				}else{
-					Rooms.Add(name, config);
-				}
-			}
-		}
-		public void OnServerRoomClose(string name){
-			lock(Rooms){
-				if(Rooms.ContainsKey(name)){
-					Rooms.Remove(name);
-				}
-			}
-		}
-		public void OnServerRoomStart(string name){
-			lock(Rooms){
-				if(Rooms.ContainsKey(name)){
-					Rooms[name].IsStart = true;
-				}
-			}
-		}
-		#endregion
-		
 		public void OnServerInfo(ServerInfo info){
 			IsLogin = true;
 			GameServerInfo = info;
-			if(OnLoginHandler!=null){
-				OnLoginHandler(info);
+			if(OnLogin!=null){
+				OnLogin(info);
 			}
 		}
 		/// <summary>
@@ -228,10 +196,36 @@ namespace GameClient
 		/// </summary>
 		/// <param name="pname">消息者</param>
 		/// <param name="msg"></param>
-		public void OnServerChat(string pname, string tname, string msg){
-			if(OnServerChatHandler!=null){
-				OnServerChatHandler(pname, tname, msg);
+		public void ServerChat(string pname, string tname, string msg){
+			if(OnServerChat!=null){
+				OnServerChat(pname, tname, msg);
 			}
 		}
+		#endregion
+		
+		#region room
+		public void OnServerRoomCreate(GameConfig config){
+			if(OnRoomCreate!=null){
+				OnRoomCreate(config);
+			}
+		}
+		public void OnServerRoomClose(string name){
+			if(OnRoomClose!=null){
+				OnRoomClose(name);
+			}
+		}
+		public void OnServerRoomStart(string name){
+			if(OnRoomStart!=null){
+				OnRoomStart(name);
+			}
+		}
+		public void OnServerRoomList(List<GameConfig> configs){
+			if(OnRoomList!=null){
+				OnRoomList(configs);
+			}
+		}
+		#endregion
+		
+
 	}
 }

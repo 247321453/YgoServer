@@ -38,7 +38,7 @@
 		/// 更新房间信息
 		/// </summary>
 		RoomStart = 0x44,
-		PlayerJoin= 0x45,
-		PlayerLeave = 0x46,
+		
+		RoomList = 0x45,
 	}
 }

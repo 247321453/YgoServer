@@ -34,8 +34,7 @@ namespace GameClient
 			EventHandler.Register((ushort)StocMessage.RoomCreate, OnRoomCreate);
 			EventHandler.Register((ushort)StocMessage.RoomStart, OnRoomStart);
 			EventHandler.Register((ushort)StocMessage.RoomClose, OnRoomClose);
-			EventHandler.Register((ushort)StocMessage.PlayerJoin, OnPlayerJoin);
-			EventHandler.Register((ushort)StocMessage.PlayerLeave, OnPlayerLeave);
+			EventHandler.Register((ushort)StocMessage.RoomList, OnRoomList);
 		}
 		public static void Handler(Client client, List<PacketReader> packets){
 			if(packets.Count==0) return;
@@ -71,7 +70,7 @@ namespace GameClient
 			//服务器消息
 			int type = (int)reader.ReadInt16();
 			string msg = reader.ReadUnicode(256);
-			client.OnServerChat(null, null, msg);
+			client.ServerChat(null, null, msg);
 		}
 		private static void OnServerInfo(Client client, PacketReader reader){
 			//服务器信息
@@ -84,25 +83,12 @@ namespace GameClient
 			info.Desc = reader.ReadUnicode(256);
 			client.OnServerInfo(info);
 		}
-		#endregion
-		
-		#region player
-		private static void OnPlayerJoin(Client client, PacketReader reader){
-			string player = reader.ReadUnicode(20);
-			string room = reader.ReadUnicode(20);
-			client.OnServerJoinGame(room, player);
-		}
-		private static void OnPlayerLeave(Client client, PacketReader reader){
-			string player = reader.ReadUnicode(20);
-			string room = reader.ReadUnicode(20);
-			client.OnServerLeaveGame(room, player);
-		}
 		private static void OnClientChat(Client client, PacketReader reader){
 			//大厅聊天
 			string name = reader.ReadUnicode(20);
 			string toname = reader.ReadUnicode(20);
 			string msg = reader.ReadUnicode(256);
-			client.OnServerChat(name, toname, msg);
+			client.ServerChat(name, toname, msg);
 		}
 		#endregion
 		
@@ -132,6 +118,28 @@ namespace GameClient
 		private static void OnRoomClose(Client client, PacketReader reader){
 			string room = reader.ReadUnicode(20);
 			client.OnServerRoomClose(room);
+		}
+		private static void OnRoomList(Client client, PacketReader reader){
+			int count = reader.ReadInt32();
+			List<GameConfig> configs=new List<GameConfig>();
+			for(int i=0;i<count;i++){
+				GameConfig config =new GameConfig();
+				config.Name = reader.ReadUnicode(20);
+				config.BanList = reader.ReadUnicode(20);
+				config.LfList = reader.ReadInt16();
+				config.Rule = reader.ReadInt16();
+				config.Mode = reader.ReadInt16();
+				config.EnablePriority = reader.ReadBoolean();
+				config.NoCheckDeck = reader.ReadBoolean();
+				config.NoShuffleDeck = reader.ReadBoolean();
+				config.StartLp = reader.ReadInt32();
+				config.StartHand = reader.ReadInt16();
+				config.DrawCount= reader.ReadInt16();
+				config.GameTimer = reader.ReadInt32();
+				config.IsStart = reader.ReadBoolean();
+				configs.Add(config);
+			}
+			client.OnServerRoomList(configs);
 		}
 		#endregion
 		

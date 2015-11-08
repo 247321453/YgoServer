@@ -37,6 +37,7 @@ namespace YGOCore.Net
 			EventHandler.Register((ushort)CtosMessage.Response,		OnResponse);
 			EventHandler.Register((ushort)CtosMessage.Surrender,	OnSurrender);
 			EventHandler.Register((ushort)CtosMessage.TimeConfirm,  OnTimeConfirm);
+			EventHandler.Register((ushort)CtosMessage.RoomList,  RoomManager.OnRoomList);
 		}
 		public static void Handler(GameSession player, List<GameClientPacket> packets){
 			foreach(GameClientPacket packet in packets){

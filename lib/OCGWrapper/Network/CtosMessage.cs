@@ -20,5 +20,7 @@
 		HsNotReady = 0x23,
 		HsKick = 0x24,
 		HsStart = 0x25,
+		
+		RoomList = 0x40,
 	}
 }
