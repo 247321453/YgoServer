@@ -85,6 +85,7 @@ namespace GameClient
 					OnRecevice();
 				}
 			}catch(Exception e){
+				Logger.Warn(e);
 				System.Windows.Forms.MessageBox.Show("服务器已经断开"
 				                                     #if DEBUG
 				                                     +"\n"+e
