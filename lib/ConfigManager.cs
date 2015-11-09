@@ -5,6 +5,7 @@ namespace System.Xml
 {
 	public class ConfigManager
 	{
+		public static string XmlFile = System.Windows.Forms.Application.ExecutablePath + ".config";
 		#region 读取内容
 		/// <summary>
 		/// 读取字符串值
@@ -83,7 +84,7 @@ namespace System.Xml
 		/// <param name="appValue"></param>
 		public static void Save(string appKey, string appValue)
 		{
-			string file=System.Windows.Forms.Application.ExecutablePath + ".config";
+			string file = XmlFile;
 			if(!File.Exists(file)){
 				return;
 			}
@@ -110,7 +111,7 @@ namespace System.Xml
 		/// <returns></returns>
 		public static string GetAppConfig(string appKey)
 		{
-			string file=System.Windows.Forms.Application.ExecutablePath + ".config";
+			string file = XmlFile;
 			if(!File.Exists(file)){
 				return string.Empty;
 			}

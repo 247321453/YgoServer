@@ -11,6 +11,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
 using AsyncServer;
+using System.Xml;
 
 namespace GameClient
 {
@@ -32,6 +33,7 @@ namespace GameClient
 			#if DEBUG
 			Logger.SetLogLevel(LogLevel.Debug);
 			#endif
+			ConfigManager.XmlFile = "ygoclient.xml";
 			Application.Run(new LoginForm());
 		}
 		
