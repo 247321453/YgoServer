@@ -47,6 +47,7 @@ namespace AsyncServer
 			return false;
 		}
 		public void BeginRecevice(){
+			if(!Connected)return;
 			byte[] m_buff = new byte[1024];
 			try{
 				client.Client.BeginReceive(m_buff, 0, m_buff.Length, SocketFlags.None, new AsyncCallback(EndRecevice), m_buff);
@@ -70,6 +71,28 @@ namespace AsyncServer
 				BeginRecevice();
 			}
 		}
-	
+		public void Send(byte[] data){
+			if(!Connected)return;
+			try{
+				client.Client.Send(data, data.Length, SocketFlags.None);
+			}catch(Exception){
+				
+			}
+		}
+		public void AsyncSend(byte[] data){
+			if(!Connected)return;
+			try{
+				client.Client.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(EndSend), data);
+			}catch(Exception){
+				
+			}
+		}
+		private void EndSend(IAsyncResult ar){
+			try{
+				client.Client.EndSend(ar);
+			}catch(Exception){
+				
+			}
+		}
 	}
 }
