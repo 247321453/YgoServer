@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayQueue.cs" />
+    <Compile Include="AsyncClient.cs" />
     <Compile Include="AsyncTcpListener.cs" />
     <Compile Include="BinaryExtensions.cs" />
     <Compile Include="Connection.cs" />
