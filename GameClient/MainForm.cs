@@ -48,7 +48,7 @@ namespace GameClient
 		#region chat
 		private void SendMsg(string toname, string msg){
 			try{
-				m_login.Client.OnChat(msg, toname);
+				m_login.Client.OnChat(msg, chb_nonane.Checked, toname);
 			}catch(Exception){
 				MessageBox.Show("发送失败");
 			}

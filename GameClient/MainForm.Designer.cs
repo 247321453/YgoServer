@@ -50,6 +50,7 @@ namespace GameClient
 			this.chb_closemsg = new System.Windows.Forms.CheckBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
+			this.chb_nonane = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -61,7 +62,7 @@ namespace GameClient
 			this.btn_single.Name = "btn_single";
 			this.btn_single.Size = new System.Drawing.Size(90, 40);
 			this.btn_single.TabIndex = 0;
-			this.btn_single.Text = "单局模式";
+			this.btn_single.Text = "加入单局";
 			this.btn_single.UseVisualStyleBackColor = true;
 			this.btn_single.Click += new System.EventHandler(this.Btn_singleClick);
 			// 
@@ -72,7 +73,7 @@ namespace GameClient
 			this.btn_match.Name = "btn_match";
 			this.btn_match.Size = new System.Drawing.Size(90, 40);
 			this.btn_match.TabIndex = 0;
-			this.btn_match.Text = "比赛模式";
+			this.btn_match.Text = "加入比赛";
 			this.btn_match.UseVisualStyleBackColor = true;
 			this.btn_match.Click += new System.EventHandler(this.Btn_matchClick);
 			// 
@@ -83,7 +84,7 @@ namespace GameClient
 			this.tbn_tag.Name = "tbn_tag";
 			this.tbn_tag.Size = new System.Drawing.Size(90, 40);
 			this.tbn_tag.TabIndex = 0;
-			this.tbn_tag.Text = "双打模式";
+			this.tbn_tag.Text = "加入双打";
 			this.tbn_tag.UseVisualStyleBackColor = true;
 			this.tbn_tag.Click += new System.EventHandler(this.Tbn_tagClick);
 			// 
@@ -99,6 +100,7 @@ namespace GameClient
 			this.rb_allmsg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.rb_allmsg.BackColor = System.Drawing.SystemColors.Window;
 			this.rb_allmsg.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.rb_allmsg.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.rb_allmsg.Location = new System.Drawing.Point(611, 88);
 			this.rb_allmsg.Name = "rb_allmsg";
 			this.rb_allmsg.ReadOnly = true;
@@ -111,6 +113,7 @@ namespace GameClient
 			this.rb_msg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.rb_msg.BackColor = System.Drawing.SystemColors.Window;
 			this.rb_msg.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.rb_msg.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.rb_msg.Location = new System.Drawing.Point(611, 524);
 			this.rb_msg.Name = "rb_msg";
 			this.rb_msg.Size = new System.Drawing.Size(397, 52);
@@ -140,7 +143,7 @@ namespace GameClient
 			this.groupBox1.Size = new System.Drawing.Size(297, 68);
 			this.groupBox1.TabIndex = 0;
 			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "快速加入";
+			this.groupBox1.Text = "随机模式";
 			// 
 			// btn_other
 			// 
@@ -150,7 +153,7 @@ namespace GameClient
 			this.btn_other.Name = "btn_other";
 			this.btn_other.Size = new System.Drawing.Size(90, 72);
 			this.btn_other.TabIndex = 0;
-			this.btn_other.Text = "自定义模式";
+			this.btn_other.Text = "自定义建房";
 			this.btn_other.UseVisualStyleBackColor = true;
 			this.btn_other.Click += new System.EventHandler(this.Btn_otherClick);
 			// 
@@ -158,7 +161,7 @@ namespace GameClient
 			// 
 			this.btn_clean.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.btn_clean.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.btn_clean.Location = new System.Drawing.Point(715, 582);
+			this.btn_clean.Location = new System.Drawing.Point(730, 582);
 			this.btn_clean.Name = "btn_clean";
 			this.btn_clean.Size = new System.Drawing.Size(75, 33);
 			this.btn_clean.TabIndex = 4;
@@ -170,7 +173,7 @@ namespace GameClient
 			// 
 			this.chb_closemsg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.chb_closemsg.AutoSize = true;
-			this.chb_closemsg.Location = new System.Drawing.Point(613, 590);
+			this.chb_closemsg.Location = new System.Drawing.Point(612, 581);
 			this.chb_closemsg.Name = "chb_closemsg";
 			this.chb_closemsg.Size = new System.Drawing.Size(96, 16);
 			this.chb_closemsg.TabIndex = 5;
@@ -196,6 +199,17 @@ namespace GameClient
 			this.label2.TabIndex = 7;
 			this.label2.Text = "房间列表";
 			// 
+			// chb_nonane
+			// 
+			this.chb_nonane.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.chb_nonane.AutoSize = true;
+			this.chb_nonane.Location = new System.Drawing.Point(612, 601);
+			this.chb_nonane.Name = "chb_nonane";
+			this.chb_nonane.Size = new System.Drawing.Size(72, 16);
+			this.chb_nonane.TabIndex = 5;
+			this.chb_nonane.Text = "匿名消息";
+			this.chb_nonane.UseVisualStyleBackColor = true;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -203,6 +217,7 @@ namespace GameClient
 			this.ClientSize = new System.Drawing.Size(1014, 622);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
+			this.Controls.Add(this.chb_nonane);
 			this.Controls.Add(this.chb_closemsg);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.btn_other);
@@ -222,6 +237,7 @@ namespace GameClient
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.CheckBox chb_nonane;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button btn_other;

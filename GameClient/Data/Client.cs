@@ -174,10 +174,16 @@ namespace GameClient
 		/// <summary>
 		/// 发送聊天消息
 		/// </summary>
-		public bool OnChat(string msg, string toname=""){
+		public bool OnChat(string msg, bool hidename,string toname=""){
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)CtosMessage.Chat);
-				writer.WriteUnicode(Name, 20);
+				if(string.IsNullOrEmpty(toname)){
+					if(hidename){
+						writer.WriteUnicode("匿名", 20);
+					}else{
+						writer.WriteUnicode(Name, 20);
+					}
+				}
 				writer.WriteUnicode(toname, 20);
 				writer.WriteUnicode(msg, msg.Length+1);
 				writer.Use();
