@@ -100,7 +100,7 @@ namespace YGOCore.Net
 		{
 			if(Client!=null){
 				//绑定关系
-				GameSession session = new GameSession(Client, Config.ClientVersion);
+				GameSession session = new GameSession(Client, Config.ClientVersion,Config.Timeout);
 				Client.isAsync = Config.AsyncMode;
 				Client.Tag = session;
 			}

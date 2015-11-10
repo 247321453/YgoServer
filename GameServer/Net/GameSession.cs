@@ -13,14 +13,14 @@ namespace YGOCore.Net
 	public class GameSession
 	{
 		MyTimer CheckTimer;
-		public GameSession(Connection<GameSession> client,int version)
+		public GameSession(Connection<GameSession> client,int version,int timeout)
 		{
 			this.m_client = client;
 			//异步发送
 			this.Type = (int)PlayerType.Undefined;
 			this.State = PlayerState.None;
 			this.ClientVersion=version;
-			CheckTimer = new MyTimer(3000, 15*1000);
+			CheckTimer = new MyTimer(3000, timeout*1000);
 			CheckTimer.AutoReset = true;
 			CheckTimer.Elapsed += delegate { 
 				if( !string.IsNullOrEmpty(Name) ){

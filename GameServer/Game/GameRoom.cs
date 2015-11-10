@@ -53,7 +53,7 @@ namespace YGOCore.Game
 		public Banlist Banlist{get; private set;}
 		
 		public int[] m_matchResult{get; private set;}
-		private int m_duelCount;
+		public int m_duelCount;
 		private bool m_swapped;
 		private bool m_matchKill;
 		
@@ -165,7 +165,7 @@ namespace YGOCore.Game
 				}else if(State == GameState.Side){
 					player.ServerMessage(Messages.MSG_WATCH_SIDE);
 				}
-				//RoomManager.OnPlayerJoin(player, this);
+				RoomManager.OnPlayerJoin(player, this);
 				return;
 			}
 
@@ -188,7 +188,6 @@ namespace YGOCore.Game
 				GameServerPacket watch = new GameServerPacket(StocMessage.HsWatchChange);
 				watch.Write((short)(Observers.Count + 1));
 				SendToAll(watch);
-				//	Server.OnPlayEvent(PlayerStatu.PlayerWatch, player);
 				player.Type = (int)PlayerType.Observer;
 				Observers.Add(player);
 //				if(player.IsAuthentified){
@@ -221,7 +220,7 @@ namespace YGOCore.Game
 				player.Send(nwatch, false);
 			}
 			player.PeekSend();
-			//RoomManager.OnPlayerJoin(player, this);
+			RoomManager.OnPlayerJoin(player, this);
 		}
 		#endregion
 		
@@ -230,10 +229,16 @@ namespace YGOCore.Game
 			if(player==null){
 				return;
 			}
-		//	RoomManager.OnPlayerLeave(player, this);
+			RoomManager.OnPlayerLeave(player, this);
 			if (player.Equals(HostPlayer) && State == GameState.Lobby){
 				//Logger.WriteLine("HostPlayer is leave", false);
+				//主机玩家离开
+				if(player.Type != (int)PlayerType.Observer){
+					Players[player.Type] = null;
+					IsReady[player.Type] = false;
+				}
 				Close(true);
+				return;
 			}
 			else if (player.Type == (int)PlayerType.Observer)
 			{
@@ -263,6 +268,16 @@ namespace YGOCore.Game
 					return;
 				}
 				Surrender(player, 4, true);
+			}
+			//所有玩家都离开
+			foreach (GameSession p in Players)
+			{
+				if (p != null)
+					return;
+			}
+			if (Observers.Count == 0)
+			{
+				Close(true);
 			}
 		}
 		#endregion
@@ -448,7 +463,10 @@ namespace YGOCore.Game
 		}
 		private static string GetYrpName(GameRoom room){
 			string yrpName = room.StartTime.Value.ToString("yyyyMMdd HHmmss");
-			yrpName=yrpName+" "+GetGameTagName(room)+".yrp";
+			if(room.IsMatch)
+				yrpName=yrpName+" "+GetGameTagName(room)+ (room.m_duelCount+1) +".yrp";
+			else
+				yrpName=yrpName+" "+GetGameTagName(room)+".yrp";
 			return yrpName;
 		}
 		private static string GetYrpFileName(GameRoom room){

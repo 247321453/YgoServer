@@ -36,3 +36,5 @@ aipassword=kenan123
 bannamemode=0
 bannamelist=namelist.txt
 loglevel=2
+#超时
+timeout=15

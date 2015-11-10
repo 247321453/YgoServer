@@ -104,8 +104,8 @@ namespace YGOCore
 		/// ’ ∫≈¡–±Ì
 		/// </summary>
 		public string File_BanAccont{get;private set;}
-		//public int Timeout{get;private set;}
-		
+		public int Timeout{get;private set;}
+
 		public ServerConfig()
 		{
 			ClientVersion = 0x1335;
@@ -135,6 +135,7 @@ namespace YGOCore
 			AsyncMode=false;
 			BanMode = 0;
 			File_BanAccont = "namelist.txt";
+			Timeout = 15;
 			//	Timeout = 20;
 		}
 
@@ -261,9 +262,9 @@ namespace YGOCore
 				case "asyncmode":
 					AsyncMode= (value.ToLower()=="true"||value=="1");
 					break;
-//				case "timeout":
-//					Timeout = Convert.ToInt32(value, 20);
-//					break;
+				case "timeout":
+					Timeout = Convert.ToInt32(value, 15);
+					break;
 				default:
 					return false;
 			}

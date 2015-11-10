@@ -223,9 +223,9 @@ namespace YGOCore.Net
 		}
 		public static void SendTypeChange(this GameSession client)
 		{
-			if(client.Game==null)return;
+			if(client == null||client.Game==null)return;
 			GameServerPacket packet = new GameServerPacket(StocMessage.TypeChange);
-			packet.Write((byte)(client.Type + (client.Game.HostPlayer.Equals(client) ? (int)PlayerType.Host : 0)));
+			packet.Write((byte)(client.Type + (client.Equals(client.Game.HostPlayer) ? (int)PlayerType.Host : 0)));
 			client.Send(packet);
 		}
 		public static void OnChat(GameSession client, GameClientPacket packet){

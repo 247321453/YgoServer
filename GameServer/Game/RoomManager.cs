@@ -424,6 +424,7 @@ namespace YGOCore.Game
 			}
 		}
 		#endregion
+		
 		public static void OnClientLogout(GameSession client){
 			if(client==null || client.Name ==null) return;
 			if(client.Type != (int)PlayerType.Client) return;
@@ -511,6 +512,12 @@ namespace YGOCore.Game
 				}
 			}
 			return true;
+		}
+		public static void OnPlayerLeave(GameSession player, GameRoom room){
+			
+		}
+		public static void OnPlayerJoin(GameSession player, GameRoom room){
+			
 		}
 		#endregion
 	}
