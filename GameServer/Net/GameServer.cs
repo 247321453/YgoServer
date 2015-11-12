@@ -48,6 +48,7 @@ namespace YGOCore.Net
 				m_listener.OnReceive    += new AsyncTcpListener<GameSession>.ReceiveEventHandler(Listener_OnReceive);
 				m_listener.OnDisconnect += new AsyncTcpListener<GameSession>.DisconnectEventHandler(Listener_OnDisconnect);
 				m_listener.Start();
+				RoomManager.Println("server$"+Config.ServerIp+"$"+Config.ServerPort+"$"+Config.ServerName+"$"+Config.ServerDesc);
 				IsListening = true;
 			}
 			catch (SocketException)

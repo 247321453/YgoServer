@@ -12,10 +12,6 @@ namespace YGOCore
 		public int ServerPort { get; private set; }
 		public string ServerIp{get;private set;}
 		/// <summary>
-		/// api端口
-		/// </summary>
-		public int ApiPort{get;private set;}
-		/// <summary>
 		/// 工作目录
 		/// </summary>
 		public string Path { get; private set; }
@@ -203,9 +199,6 @@ namespace YGOCore
 					break;
 				case "servermsgs":
 					File_ServerMsgs=value;
-					break;
-				case "apiport":
-					ApiPort =  Convert.ToInt32(value);
 					break;
 				case "path":
 					Path = value;

@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer", "GameServer\Ga
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameClient", "GameClient\GameClient.csproj", "{B08872F6-4B37-467D-B146-7AA0F413EF11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomServer", "RoomServer\RoomServer.csproj", "{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,18 @@ Global
 		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Release|x86.Build.0 = Release|Any CPU
 		{B08872F6-4B37-467D-B146-7AA0F413EF11}.Release|x86.ActiveCfg = Release|Any CPU
+		{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}.Debug|x86.Build.0 = Debug|Any CPU
+		{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}.Release|x86.Build.0 = Release|Any CPU
+		{45CF6E65-A6B6-4D65-A670-0A2D6CD14ACF}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
