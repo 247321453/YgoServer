@@ -28,10 +28,17 @@ namespace YGOCore
 			ServerExe = serverExe;
 			Configs = configs;
 		}
+		
 		public bool Start(){
 			if(Configs!=null){
 				foreach(string config in Configs){
 					Server server=new Server(ServerExe, config);
+					server.OnPlayerJoin += new OnPlayerJoinEvent(server_OnPlayerJoin);
+					server.OnPlayerLeave+=new OnPlayerLeaveEvent(server_OnPlayerLeave);
+					server.OnRoomClose+=new OnRoomCloseEvent(server_OnRoomClose);
+					server.OnRoomCreate+=new OnRoomCreateEvent(server_OnRoomCreate);
+					server.OnRoomStart+=new OnRoomStartEvent(server_OnRoomStart);
+					server.OnServerInfo+=new OnServerInfoEvent(server_OnServerInfo);
 					Servers.Add(server);
 					server.Start();
 				}
@@ -40,6 +47,39 @@ namespace YGOCore
 			}
 			return false;
 		}
+		
+		#region event
+		void server_OnServerInfo(Server server)
+		{
+			throw new NotImplementedException();
+		}
+
+		void server_OnRoomStart(Server server, string name)
+		{
+			throw new NotImplementedException();
+		}
+
+		void server_OnRoomCreate(Server server, GameConfig config)
+		{
+			throw new NotImplementedException();
+		}
+
+		void server_OnRoomClose(Server server, string name)
+		{
+			throw new NotImplementedException();
+		}
+
+		void server_OnPlayerLeave(Server server, string name, string room)
+		{
+			throw new NotImplementedException();
+		}
+
+		void server_OnPlayerJoin(Server server, string name, string room)
+		{
+			throw new NotImplementedException();
+		}
+		#endregion
+		
 		public void Stop(){
 			//Server.Close();
 			if(!IsListening) return;

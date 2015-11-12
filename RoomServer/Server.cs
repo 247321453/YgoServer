@@ -15,11 +15,28 @@ using System.Threading;
 
 namespace YGOCore
 {
+	public delegate void OnServerInfoEvent(Server server);
+	
+	public delegate void OnRoomCreateEvent(Server server,GameConfig config);
+	
+	public delegate void OnRoomStartEvent(Server server,string name);
+	public delegate void OnRoomCloseEvent(Server server,string name);
+	
+	public delegate void OnPlayerJoinEvent(Server server,string name,string room);
+	public delegate void OnPlayerLeaveEvent(Server server,string name,string room);
 	/// <summary>
 	/// Description of Server.
 	/// </summary>
 	public class Server
 	{
+		
+		#region
+		public event OnServerInfoEvent OnServerInfo;
+		public event OnRoomCreateEvent OnRoomCreate;
+		public event OnRoomStartEvent OnRoomStart;
+		public event OnRoomCloseEvent OnRoomClose;
+		public event OnPlayerJoinEvent OnPlayerJoin;
+		public event OnPlayerLeaveEvent OnPlayerLeave;
 		private const char SEP = '\t';
 		private const string HEAD="::";
 		public bool IsOpen {get; private set;}
@@ -48,6 +65,7 @@ namespace YGOCore
 			lock(Users) user= Users.Count;
 			return Host+":"+Port+" "+Name+" "+Desc+"\n"+"Rooms:"+room+"Users:"+user;
 		}
+		#endregion
 
 		#region api
 		private void OnRead(){
@@ -78,6 +96,9 @@ namespace YGOCore
 						Port = p;
 						Name = args[3];
 						Desc = args[4];
+						if(OnServerInfo!=null){
+							OnServerInfo(this);
+						}
 					}
 					else{
 						Logger.Warn("server");
@@ -85,7 +106,7 @@ namespace YGOCore
 					break;
 				case "create":
 					if(args.Length>3){
-						OnRoomCreate(args[1], args[2], args[3]);
+						RoomCreate(args[1], args[2], args[3]);
 					}
 					else{
 						Logger.Warn("create");
@@ -93,7 +114,7 @@ namespace YGOCore
 					break;
 				case "start":
 					if(args.Length>1){
-						OnRoomStart(args[1]);
+						RoomStart(args[1]);
 					}
 					else{
 						Logger.Warn("start");
@@ -101,7 +122,7 @@ namespace YGOCore
 					break;
 				case "close":
 					if(args.Length>1){
-						OnRoomClose(args[1]);
+						RoomClose(args[1]);
 					}
 					else{
 						Logger.Warn("close");
@@ -127,7 +148,7 @@ namespace YGOCore
 		}
 		#endregion
 		
-		private void OnRoomCreate(string name,string banlist,string gameinfo){
+		private void RoomCreate(string name,string banlist,string gameinfo){
 			GameConfig config = new GameConfig();
 			config.Parse(gameinfo);
 			config.Name = gameinfo;
@@ -139,8 +160,11 @@ namespace YGOCore
 					Rooms.Add(name, config);
 				}
 			}
+			if(OnRoomCreate!=null){
+				OnRoomCreate(this, config);
+			}
 		}
-		private void OnRoomClose(string name){
+		private void RoomClose(string name){
 			lock(Rooms){
 				if(Rooms.ContainsKey(name)){
 					if(Rooms[name]!=null){
@@ -149,14 +173,20 @@ namespace YGOCore
 					Rooms.Remove(name);
 				}
 			}
+			if(OnRoomClose!=null){
+				OnRoomClose(this, name);
+			}
 		}
-		private void OnRoomStart(string name){
+		private void RoomStart(string name){
 			lock(Rooms){
 				if(Rooms.ContainsKey(name)){
 					if(Rooms[name]!=null){
 						Rooms[name].IsStart = true;
 					}
 				}
+			}
+			if(OnRoomStart!=null){
+				OnRoomStart(this, name);
 			}
 		}
 		
@@ -181,6 +211,15 @@ namespace YGOCore
 							rooms.Remove(room);
 						}
 					}
+				}
+			}
+			if(join){
+				if(OnPlayerJoin!=null){
+					OnPlayerJoin(this, name, room);
+				}
+			}else{
+				if(OnPlayerLeave!=null){
+					OnPlayerLeave(this, name, room);
 				}
 			}
 		}
