@@ -23,22 +23,5 @@
 		HsPlayerEnter = 0x20,
 		HsPlayerChange = 0x21,
 		HsWatchChange = 0x22,
-		
-		ServerInfo = 0x40,
-		ClientChat = 0x41,
-		/// <summary>
-		/// 添加一个房间
-		/// </summary>
-		RoomCreate = 0x42,
-		/// <summary>
-		/// 关闭一个房间
-		/// </summary>
-		RoomClose  = 0x43,
-		/// <summary>
-		/// 更新房间信息
-		/// </summary>
-		RoomStart = 0x44,
-		
-		RoomList = 0x45,
 	}
 }

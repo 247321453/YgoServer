@@ -37,7 +37,6 @@ namespace YGOCore.Net
 			EventHandler.Register((ushort)CtosMessage.Response,		OnResponse);
 			EventHandler.Register((ushort)CtosMessage.Surrender,	OnSurrender);
 			EventHandler.Register((ushort)CtosMessage.TimeConfirm,  OnTimeConfirm);
-			EventHandler.Register((ushort)CtosMessage.RoomList,  RoomManager.OnRoomList);
 		}
 		public static void Handler(GameSession player, List<GameClientPacket> packets){
 			foreach(GameClientPacket packet in packets){
@@ -123,7 +122,7 @@ namespace YGOCore.Net
 					client.ServerMessage(Messages.ERR_NO_PASS);
 					return false;
 				}else{
-					if(!RoomManager.OnLogin(_names[0],_names[1])){
+					if(!RoomManager.OnLogin(_names[0].Trim(),_names[1])){
 						//LobbyError("Auth Fail");
 						if(Encoding.Default.GetBytes(namepassword).Length>=20){
 							client.ServerMessage(Messages.ERR_NAME_PASSWORD_LONG);
@@ -230,9 +229,6 @@ namespace YGOCore.Net
 		}
 		public static void OnChat(GameSession client, GameClientPacket packet){
 			if (!client.IsAuthentified){
-				return;
-			}
-			if(RoomManager.OnChat(client, packet)){
 				return;
 			}
 			string msg = packet.ReadUnicode(256);

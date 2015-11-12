@@ -32,24 +32,24 @@ namespace YGOCore.Game
 		private static readonly Queue<WinInfo> WinInfos = new Queue<WinInfo>();
 		private static System.Timers.Timer WinSaveTimer;
 		private static List<string> banNames=new List<string>();
-		private static readonly SortedList<string, GameSession> Users = new SortedList<string, GameSession>();
-		private static readonly SortedList<string, string> SPwds =new SortedList<string, string>();
-		private static System.Timers.Timer RefreshTimer;
 		public  static int Count{
 			get{lock(Games){return Games.Count;}}
 		}
 		#endregion
 		
 		#region public
-		public static void OnWorldMessage(string msg, PlayerType color= PlayerType.Yellow){
+		public static int OnWorldMessage(string msg, PlayerType color= PlayerType.Yellow){
 			List<GameRoom> rooms = new List<GameRoom>();
+			int i=0;
 			lock(Games){
 				foreach(GameRoom room in Games.Values){
 					if(room!=null&& room.IsOpen){
 						room.ServerMessage(msg, color);
+						i++;
 					}
 				}
 			}
+			return i;
 		}
 		public static void OnWin(string roomName, int roomMode,int win,int reason,string yrpFileName,
 		                         string[] names,bool force){
@@ -67,13 +67,6 @@ namespace YGOCore.Game
 				Logger.Debug("[AI]login:"+pwd+"=="+Program.Config.AIPass+"?");
 				return Program.Config.AIPass == pwd;
 			}
-			lock(SPwds){
-				if(SPwds.ContainsKey(name)){
-					if(SPwds[name] == pwd){
-						return true;
-					}
-				}
-			}
 			//服务器接口
 			return true;
 		}
@@ -81,7 +74,6 @@ namespace YGOCore.Game
 			if(Program.Config.RecordWin){
 				SatrtWinTimer();
 			}
-			StartRefreshTimer();
 			ReadBanNames();
 		}
 		#endregion
@@ -303,221 +295,33 @@ namespace YGOCore.Game
 		#endregion
 		
 		#region 事件
+		public static void OnClientLogout(GameSession client){ }
+
+		public static void OnClientLogin(GameSession client,string name,string pwd){ }
 		
-		private static void StartRefreshTimer(){
-			if(RefreshTimer==null){
-				//3秒发送一次包
-				RefreshTimer=new System.Timers.Timer(3000);
-				RefreshTimer.AutoReset = true;
-				RefreshTimer.Elapsed+= delegate {
-					lock(Users){
-						foreach(GameSession user in Users.Values){
-							user.Client.PeekSend();
-						}
-					}
-				};
-			}
-			RefreshTimer.Start();
-		}
-		private static void SendAll(byte[] data,bool isNow = false){
-			//发送
-			lock(Users){
-				foreach(GameSession user in Users.Values){
-					user.Client.SendPackage(data, isNow);
-				}
-			}
-		}
 		public static void OnRoomCreate(GameRoom room){
-			Logger.Debug("room create");
-			GameConfig config = room.Config;
-			if(room.IsRandom){
-				//随机房间不触发
-				return;
-			}
-			if(config==null) return;
-			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)StocMessage.RoomCreate);
-				writer.WriteUnicode(config.Name, 20);
-				writer.WriteUnicode(config.BanList, 20);
-				writer.Write((short)config.LfList);
-				writer.Write((short)config.Rule);
-				writer.Write((short)config.Mode);
-				writer.Write(config.EnablePriority);
-				writer.Write(config.NoCheckDeck);
-				writer.Write(config.NoShuffleDeck);
-				writer.Write(config.StartLp);
-				writer.Write((short)config.StartHand);
-				writer.Write((short)config.DrawCount);
-				writer.Write(config.GameTimer);
-				writer.Write(config.IsStart);
-				writer.Use();
-				//发送
-				SendAll(writer.Content);
-			}
-			
+			Println("create$"+room.Name+"$"+room.Config.GetString());
 		}
+		
 		public static void OnRoomStart(GameRoom room){
-			Logger.Debug("room start");
-			if(room.IsRandom){
-				//随机房间不触发
-				return;
-			}
-			GameConfig config = room.Config;
-			if(config==null) return;
-			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)StocMessage.RoomStart);
-				writer.WriteUnicode(Password.OnlyName(config.Name), 20);
-				writer.Use();
-				//发送
-				SendAll(writer.Content);
-			}
+			Println("start$"+room.Name);
 		}
 		
 		public static void OnRoomClose(GameRoom room){
-			Logger.Debug("room close");
-			if(room.IsRandom){
-				//随机房间不触发
-				return;
-			}
-			GameConfig config = room.Config;
-			if(config==null) return;
-			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)StocMessage.RoomClose);
-				writer.WriteUnicode(Password.OnlyName(config.Name), 20);
-				writer.Use();
-				//发送
-				SendAll(writer.Content);
-			}
-		}
-		
-		#region room
-		public static void OnRoomList(GameSession client, GameClientPacket packet){
-			List<GameConfig> rooms=new List<GameConfig>();
-			lock(Games){
-				foreach(GameRoom room in Games.Values){
-					if(room !=null && room.IsOpen && !room.IsRandom && !room.Config.IsStart){
-						//没有结束，非随机房间,未开始决斗
-						rooms.Add(room.Config);
-					}
-				}
-			}
-			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)StocMessage.RoomList);
-				writer.Write((int)rooms.Count);
-				foreach(GameConfig config in rooms){
-					writer.WriteUnicode(config.Name, 20);
-					writer.WriteUnicode(config.BanList, 20);
-					writer.Write((short)config.LfList);
-					writer.Write((short)config.Rule);
-					writer.Write((short)config.Mode);
-					writer.Write(config.EnablePriority);
-					writer.Write(config.NoCheckDeck);
-					writer.Write(config.NoShuffleDeck);
-					writer.Write(config.StartLp);
-					writer.Write((short)config.StartHand);
-					writer.Write((short)config.DrawCount);
-					writer.Write(config.GameTimer);
-					writer.Write(config.IsStart);
-				}
-				writer.Use();
-				client.Client.SendPackage(writer.Content, true);
-			}
-		}
-		#endregion
-		
-		public static void OnClientLogout(GameSession client){
-			if(client==null || client.Name ==null) return;
-			if(client.Type != (int)PlayerType.Client) return;
-			if(!client.IsAuthentified) return;
-			lock(Users){
-				if(Users.ContainsKey(client.Name)){
-					Users.Remove(client.Name);
-				}
-			}
-			lock(SPwds){
-				if(SPwds.ContainsKey(client.Name)){
-					SPwds.Remove(client.Name);
-				}
-			}
+			Println("close$"+room.Name);
 		}
 
-		public static void OnClientLogin(GameSession client,string name,string pwd){
-			string namepwd = string.IsNullOrEmpty(pwd)?name:name+'$'+pwd;
-			client.Name = name;
-			client.Type = (int)PlayerType.Client;
-			client.IsAuthentified = client.CheckAuth(namepwd);
-			//必须开启异步
-			client.Client.isAsync = true;
-			Logger.Debug("client");
-			string token = Tool.SubString(Tool.GetMd5(pwd+DateTime.Now.ToString()), 4, 4);
-			if(!client.IsAuthentified){
-				//登陆失败
-				Logger.Debug("client "+name+" login fail");
-				client.LobbyError(Messages.ERR_AUTH_FAIL);
-				return;
-			}else{
-				lock(Users){
-					if(Users.ContainsKey(client.Name)){
-//						已经登陆
-						Logger.Debug("client "+name+" is logined");
-						client.IsAuthentified = false;
-						client.LobbyError(Messages.ERR_IS_LOGIN);
-						return;
-					}else{
-						Logger.Debug("client login ok");
-						//短密码
-						SPwds.Add(client.Name, token);
-						Users.Add(client.Name, client);
-					}
-				}
-			}
-			using(GameServerPacket writer=new GameServerPacket(StocMessage.ServerInfo)){
-				writer.WriteUnicode(Program.Config.ServerName, 20);
-				writer.WriteUnicode(Program.Config.ServerIp, 20);
-				writer.Write((int)Program.Config.ServerPort);
-				writer.Write(Program.Config.isNeedAuth);
-				writer.WriteUnicode(token, 20);
-				writer.WriteUnicode(Program.Config.ServerDesc, Program.Config.ServerDesc.Length+1);
-				writer.Use();
-				client.Send(writer, true);
-			}
+		public static void OnPlayerLeave(GameSession player, GameRoom room){
+			Println("leave$"+player.Name+"$"+room.Name);
 		}
 		
-		public static bool OnChat(GameSession client, GameClientPacket packet){
-			if(client.Type != (int)PlayerType.Client){
-				return false;
-			}
-			string name = packet.ReadUnicode(20);
-			string toname = packet.ReadUnicode(20);
-			string msg = packet.ReadUnicode(255);
-			lock(Users){
-				using(GameServerPacket tomsg=new GameServerPacket(StocMessage.ClientChat)){
-					tomsg.WriteUnicode(client.Name, 20);
-					tomsg.WriteUnicode(toname, 20);
-					tomsg.WriteUnicode(msg, msg.Length + 1);
-					tomsg.Use();
-					if(!string.IsNullOrEmpty(toname)){
-						if(Users.ContainsKey(toname)){
-							Logger.Debug("private chat:"+toname);
-							Users[toname].Client.SendPackage(tomsg.Content, true);
-							client.Client.SendPackage(tomsg.Content, true);
-						}else{
-							//没有该玩家
-							client.LobbyError(string.Format(Messages.ERR_NO_CLIENT, toname));
-						}
-					}else{
-						Logger.Debug("send :" +Users.Count);
-						SendAll(tomsg.Content, true);
-					}
-				}
-			}
-			return true;
-		}
-		public static void OnPlayerLeave(GameSession player, GameRoom room){
-			
-		}
 		public static void OnPlayerJoin(GameSession player, GameRoom room){
-			
+			Println("join$"+player.Name+"$"+room.Name);
+		}
+		public static void Println(string str){
+			if(Program.Config.ConsoleApi){
+				Console.WriteLine("::"+str);
+			}
 		}
 		#endregion
 	}

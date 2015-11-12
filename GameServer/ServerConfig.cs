@@ -105,6 +105,10 @@ namespace YGOCore
 		/// </summary>
 		public string File_BanAccont{get;private set;}
 		public int Timeout{get;private set;}
+		/// <summary>
+		/// ¿ØÖÆÌ¨api 
+		/// </summary>
+		public bool ConsoleApi{get;private set;}
 
 		public ServerConfig()
 		{
@@ -136,6 +140,7 @@ namespace YGOCore
 			BanMode = 0;
 			File_BanAccont = "namelist.txt";
 			Timeout = 15;
+			ConsoleApi = true;
 			//	Timeout = 20;
 		}
 
@@ -264,6 +269,9 @@ namespace YGOCore
 					break;
 				case "timeout":
 					Timeout = Convert.ToInt32(value, 15);
+					break;
+				case "consoleapi":
+					ConsoleApi = Convert.ToBoolean(value);
 					break;
 				default:
 					return false;

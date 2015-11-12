@@ -32,7 +32,6 @@ namespace YGOCore.Game
 			config.StartHand = 5;
 			config.DrawCount = 1;
 			config.GameTimer = 120;
-			
 			#region 解析
 			try{
 				if(!string.IsNullOrEmpty(gameinfo)){

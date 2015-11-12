@@ -63,9 +63,7 @@
     <Compile Include="Enums\CardRace.cs" />
     <Compile Include="Enums\CardType.cs" />
     <Compile Include="Enums\Query.cs" />
-    <Compile Include="Helpers\BigInteger.cs" />
     <Compile Include="Helpers\MtRandom.cs" />
-    <Compile Include="Helpers\RSAHelper.cs" />
     <Compile Include="Managers\CardsManager.cs" />
     <Compile Include="Managers\PathManager.cs" />
     <Compile Include="Network\CtosMessage.cs" />

@@ -19,7 +19,7 @@ namespace YGOCore
 			if(string.IsNullOrEmpty(namepassword)){
 				return namepassword;
 			}
-			return namepassword.Split('$')[0];
+			return namepassword.Split('$')[0].Trim();
 		}
 		public static string GetPwd(string namepassword){
 			if(string.IsNullOrEmpty(namepassword)){
@@ -27,7 +27,7 @@ namespace YGOCore
 			}
 			int i = namepassword.IndexOf('$');
 			if(i>0 && i+1 < namepassword.Length){
-				return namepassword.Substring(i+1);
+				return namepassword.Substring(i+1).Trim();
 			}
 			return "";
 		}

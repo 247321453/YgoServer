@@ -148,13 +148,10 @@ namespace YGOCore
 				args = new string[]{args[0], ""};
 			}
 			switch(cmd){
-//				case "sendto":
-//					//发送给所有玩家
-//					Server.OnWorldMessage(args[1]);
-//					break;
 				case "sendall":
 					//发送给所有玩家
-					RoomManager.OnWorldMessage(args[1]);
+					int count = RoomManager.OnWorldMessage(args[1]);
+					Console.WriteLine(">>room="+count);
 					break;
 				case "room":
 					Console.WriteLine(">>count="+RoomManager.Count);

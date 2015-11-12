@@ -19,6 +19,5 @@
         Yellow = 16,
         White = 17,
         Gray = 18,
-        Client = 0x20,
     }
 }

@@ -27,5 +27,8 @@ namespace YGOCore.Game
 		public bool HasPassword(){
 			return Name!=null && Name.IndexOf("$")>=0;
 		}
+		public string GetString(){
+			return "";
+		}
 	}
 }

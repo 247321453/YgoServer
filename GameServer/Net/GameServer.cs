@@ -80,9 +80,6 @@ namespace YGOCore.Net
 		{
 			if(Client!=null){
 				if(Client.Tag!=null){
-					if(Client.Tag.Type == (int)PlayerType.Client){
-						RoomManager.OnClientLogout(Client.Tag);
-					}
 					Client.Tag.Close();
 				}
 				m_listener.DisconnectClient(Client);
