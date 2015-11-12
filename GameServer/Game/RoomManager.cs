@@ -153,7 +153,24 @@ namespace YGOCore.Game
 		}
 		#endregion
 		
-		#region 房间创建
+		#region 房间
+		public  static void Add(GameRoom room){
+			if(room==null)return;
+			lock(Games){
+				if(!Games.ContainsKey(room.Name)){
+					Games.Add(room.Name, room);
+				}
+			}
+		}
+		public  static void Remove(GameRoom room){
+			if(room==null)return;
+			lock(Games){
+				if(Games.ContainsKey(room.Name)){
+					Games.Remove(room.Name);
+				}
+			}
+			ServerApi.OnRoomClose(room);
+		}
 		public  static bool CheckRoomPassword(string namepwd){
 			string name = Password.OnlyName(namepwd);
 			lock(Games){
@@ -186,7 +203,7 @@ namespace YGOCore.Game
 			Logger.Info("create room");
 			GameRoom room = new GameRoom(config);
 			Add(room);
-			OnRoomCreate(room);
+			ServerApi.OnRoomCreate(room);
 			return room;
 		}
 		/// <summary>
@@ -271,57 +288,6 @@ namespace YGOCore.Game
 			sb.Replace("*", "");
 			sb.Replace(" ", "");
 			return GuidString.Substring(0, 6);
-		}
-		#endregion
-		
-		#region 房间
-		public  static void Add(GameRoom room){
-			if(room==null)return;
-			lock(Games){
-				if(!Games.ContainsKey(room.Name)){
-					Games.Add(room.Name, room);
-				}
-			}
-		}
-		public  static void Remove(GameRoom room){
-			if(room==null)return;
-			lock(Games){
-				if(Games.ContainsKey(room.Name)){
-					Games.Remove(room.Name);
-				}
-			}
-			OnRoomClose(room);
-		}
-		#endregion
-		
-		#region 事件
-		public static void OnClientLogout(GameSession client){ }
-
-		public static void OnClientLogin(GameSession client,string name,string pwd){ }
-		
-		public static void OnRoomCreate(GameRoom room){
-			Println("create$"+room.Name+"$"+room.Config.GetString());
-		}
-		
-		public static void OnRoomStart(GameRoom room){
-			Println("start$"+room.Name);
-		}
-		
-		public static void OnRoomClose(GameRoom room){
-			Println("close$"+room.Name);
-		}
-
-		public static void OnPlayerLeave(GameSession player, GameRoom room){
-			Println("leave$"+player.Name+"$"+room.Name);
-		}
-		
-		public static void OnPlayerJoin(GameSession player, GameRoom room){
-			Println("join$"+player.Name+"$"+room.Name);
-		}
-		public static void Println(string str){
-			if(Program.Config.ConsoleApi){
-				Console.WriteLine("::"+str);
-			}
 		}
 		#endregion
 	}

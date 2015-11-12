@@ -92,7 +92,7 @@ namespace YGOCore.Net
 			if(name == "client"){
 				name = packet.ReadUnicode(20);
 				string pwd = packet.ReadUnicode(32);
-				RoomManager.OnClientLogin(client, name, pwd);
+				ServerApi.OnClientLogin(client, name, pwd);
 				return;
 			}
 			Logger.Debug("player name:"+name);

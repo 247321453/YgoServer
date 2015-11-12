@@ -5,7 +5,7 @@ namespace YGOCore.Game
 {
     public static class BanlistManager
     {
-        public static List<Banlist> Banlists { get; private set; }
+        private static List<Banlist> Banlists { get; set; }
 
         public static void Init(string fileName)
         {
@@ -42,6 +42,18 @@ namespace YGOCore.Game
                 if (Banlists[i].Hash == hash)
                     return i;
             return 0;
+        }
+               public static string GetName(int lflist){
+        	if(lflist>=0&&lflist<Banlists.Count){
+        		return Banlists[lflist].Name;
+        	}
+        	return "";
+        }
+        public static Banlist GetBanlist(int lflist){
+        	if(lflist>=0&&lflist<Banlists.Count){
+        		return Banlists[lflist];
+        	}
+        	return Banlist.Emtry;
         }
     }
 }

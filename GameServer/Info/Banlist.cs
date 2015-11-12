@@ -9,6 +9,7 @@ namespace YGOCore.Game
         public IList<int> SemiLimitedIds { get; private set; }
         public uint Hash { get; private set; }
         public string Name{get;private set;}
+        public static Banlist Emtry = new Banlist("???");
         public Banlist(string name)
         {
         	Name=name;

@@ -4,7 +4,7 @@ using OcgWrapper.Enums;
 
 namespace YGOCore.Game
 {
-    public class CoreMessage
+	public class CoreMessage
     {
         public GameMessage Message { get; private set; }
         public BinaryReader Reader { get; private set; }

@@ -81,11 +81,7 @@ namespace YGOCore.Game
 			m_bonustime = new int[2];
 			m_matchResult = new int[3];
 			AutoEndTrun = Program.Config.AutoEndTurn;
-			if (config.LfList >= 0 && config.LfList < BanlistManager.Banlists.Count)
-				Banlist = BanlistManager.Banlists[config.LfList];
-			else if(BanlistManager.Banlists.Count>0){
-				Banlist = BanlistManager.Banlists[0];
-			}
+			Banlist = BanlistManager.GetBanlist(config.LfList);
 			m_analyser = new GameAnalyser(this);
 			StartTime = DateTime.Now;
 			IsOpen =true;
@@ -165,7 +161,7 @@ namespace YGOCore.Game
 				}else if(State == GameState.Side){
 					player.ServerMessage(Messages.MSG_WATCH_SIDE);
 				}
-				RoomManager.OnPlayerJoin(player, this);
+				ServerApi.OnPlayerJoin(player, this);
 				return;
 			}
 
@@ -220,7 +216,7 @@ namespace YGOCore.Game
 				player.Send(nwatch, false);
 			}
 			player.PeekSend();
-			RoomManager.OnPlayerJoin(player, this);
+			ServerApi.OnPlayerJoin(player, this);
 		}
 		#endregion
 		
@@ -229,7 +225,7 @@ namespace YGOCore.Game
 			if(player==null){
 				return;
 			}
-			RoomManager.OnPlayerLeave(player, this);
+			ServerApi.OnPlayerLeave(player, this);
 			if (player.Equals(HostPlayer) && State == GameState.Lobby){
 				//Logger.WriteLine("HostPlayer is leave", false);
 				//主机玩家离开
@@ -979,7 +975,7 @@ namespace YGOCore.Game
 			SendToAll(new GameServerPacket(StocMessage.DuelStart));
 			SendHand();
 			Config.IsStart = true;
-			RoomManager.OnRoomStart(this);
+			ServerApi.OnRoomStart(this);
 			DuleTimer.Start();
 		}
 		private void Process()

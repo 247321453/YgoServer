@@ -66,13 +66,6 @@ namespace YGOCore
 		/// </summary>
 		public string WinDbName{get;private set;}
 		/// <summary>
-		/// 登录接口
-		/// </summary>
-		public string LoginUrl{get;private set;}
-		// 私聊
-//		public bool PrivateChat{get;private set;}
-		
-		/// <summary>
 		/// 服务端名字
 		/// </summary>
 		public string ServerName{get;private set;}
@@ -108,12 +101,11 @@ namespace YGOCore
 
 		public ServerConfig()
 		{
-			ClientVersion = 0x1335;
+			ClientVersion = 0x1336;
 			ServerIp="127.0.0.1";
 			ServerPort = 8911;
 			ServerName="YGOserver";
 			//	ApiIp="127.0.0.1";
-			ApiPort=ServerPort+1000;
 			Path = ".";
 			ScriptFolder = "script";
 			replayFolder="replay";
@@ -130,7 +122,6 @@ namespace YGOCore
 			File_ServerMsgs="server_msg.txt";
 			MaxAICount=10;
 			AIPass="kenan123";
-			LoginUrl="http://127.0.0.1/login.php";
 			AIisHide=false;
 			AsyncMode=false;
 			BanMode = 0;
@@ -250,9 +241,6 @@ namespace YGOCore
 					break;
 				case "aiishide":
 					AIisHide=(value.ToLower()=="true"||value=="1");
-					break;
-				case "loginurl":
-					LoginUrl=value;
 					break;
 				case "serverdesc":
 					ServerDesc=value;

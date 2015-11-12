@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Diagnostics;
 
 namespace YGOCore
 {
@@ -10,7 +12,8 @@ namespace YGOCore
 		/// <param name="args"></param>
 		public static void Main(string[] args)
 		{
-			Console.WriteLine("Hello World!");
+			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
 			int port = 0;
 			string serverExe="";
 			string[] configs=null;
@@ -27,7 +30,7 @@ namespace YGOCore
 				Console.ReadKey(true);
 				return;
 			}
-			GameServer server=new GameServer(port, serverExe, configs);
+			RoomServer server=new RoomServer(port, serverExe, configs);
 			if(server.Start()){
 				
 			}else{
@@ -35,6 +38,28 @@ namespace YGOCore
 			}
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
+		}
+		private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+		{
+			e.Cancel=true;
+			ConsoleColor color=Console.ForegroundColor;
+			Console.ForegroundColor=ConsoleColor.Cyan;
+			Console.WriteLine("Please input to close server.");
+			Console.ForegroundColor=color;
+		}
+		
+		private static void Command(RoomServer server){
+			string cmd="";
+			while(server.IsListening){
+				cmd=Console.ReadLine();
+				server.OnCommand(cmd);
+			}
+		}
+
+		private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			File.WriteAllText("crash_room_" + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt", e.ExceptionObject.ToString());
+			Process.GetCurrentProcess().Kill();
 		}
 	}
 }
