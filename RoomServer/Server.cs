@@ -15,17 +15,14 @@ using System.Threading;
 
 namespace YGOCore
 {
-	public delegate void OnServerInfoEvent(Server server);
-	
+	public delegate void OnServerInfoEvent(Server server,bool isClose);
 	public delegate void OnRoomCreateEvent(Server server,GameConfig config);
-	
 	public delegate void OnRoomStartEvent(Server server,string name);
 	public delegate void OnRoomCloseEvent(Server server,string name);
-	
 	public delegate void OnPlayerJoinEvent(Server server,string name,string room);
 	public delegate void OnPlayerLeaveEvent(Server server,string name,string room);
 	/// <summary>
-	/// Description of Server.
+	/// 服务信息
 	/// </summary>
 	public class Server
 	{
@@ -97,7 +94,7 @@ namespace YGOCore
 						Name = args[3];
 						Desc = args[4];
 						if(OnServerInfo!=null){
-							OnServerInfo(this);
+							OnServerInfo(this, false);
 						}
 					}
 					else{
@@ -273,6 +270,9 @@ namespace YGOCore
 		public void Close(){
 			if(!IsOpen) return;
 			IsOpen = false;
+			if(OnServerInfo!=null){
+				OnServerInfo(this, true);
+			}
 			try{
 				m_read.Interrupt();
 				m_read= null;

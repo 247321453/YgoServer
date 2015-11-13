@@ -8,7 +8,7 @@
  */
 using System;
 
-namespace YGOCore.Common
+namespace YGOCore
 {
 	/// <summary>
 	/// Description of RoomMessage.
@@ -16,9 +16,23 @@ namespace YGOCore.Common
 	public enum RoomMessage : byte
 	{
 		Error,
+		/// <summary>
+		/// 请求房间列表
+		/// </summary>
 		RoomList,
-		ServerInfo,
-		ClientChat,
+		/// <summary>
+		/// 登录/服务器信息
+		/// </summary>
+		Info,
+		/// <summary>
+		/// 聊天
+		/// </summary>
+		Chat,
+		/// <summary>
+		/// 暂停推送
+		/// </summary>
+		Pause,
+		SystemChat,
 		RoomCreate,
 		RoomStart,
 		RoomClose,
