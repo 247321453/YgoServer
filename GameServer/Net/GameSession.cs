@@ -12,7 +12,6 @@ namespace YGOCore.Net
 	/// </summary>
 	public class GameSession
 	{
-		MyTimer CheckTimer;
 		public GameSession(Connection<GameSession> client,int version,int timeout)
 		{
 			this.m_client = client;
@@ -23,7 +22,7 @@ namespace YGOCore.Net
 			if(timeout<=0){
 				timeout = 15;
 			}
-			CheckTimer = new MyTimer(3000, timeout*1000);
+			MyTimer CheckTimer = new MyTimer(1000, timeout*1000);
 			CheckTimer.AutoReset = true;
 			CheckTimer.Elapsed += delegate { 
 				if( !string.IsNullOrEmpty(Name) ){

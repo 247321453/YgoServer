@@ -6,6 +6,7 @@ namespace System.Xml
 	public class ConfigManager
 	{
 		public static string XmlFile = System.Windows.Forms.Application.ExecutablePath + ".config";
+		
 		#region 读取内容
 		/// <summary>
 		/// 读取字符串值

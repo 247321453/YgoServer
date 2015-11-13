@@ -7,9 +7,11 @@
  * 要改变这种模板请点击 工具|选项|代码编写|编辑标准头文件
  */
 using System;
+using System.Linq;
 using System.Net;
 using System.Collections.Generic;
 using AsyncServer;
+using System.Xml;
 
 namespace YGOCore
 {
@@ -23,14 +25,9 @@ namespace YGOCore
 		public readonly List<Server> Servers=new List<Server>();
 		public readonly List<Session> Clients=new List<Session>();
 		private AsyncTcpListener<Session> m_listener;
-		private string[] Configs;
-		private string ServerExe;
-		private int Port;
-		public RoomServer(int port=18910,string serverExe="GameServer.exe",string[] configs=null)
+		public readonly RoomConfig Config=new RoomConfig();
+		public RoomServer()
 		{
-			Port = port;
-			ServerExe = serverExe;
-			Configs = configs;
 		}
 		#endregion
 		
@@ -38,15 +35,15 @@ namespace YGOCore
 		public bool Start(){
 			if(IsListening) return true;
 			IsListening = true;
-			if(Configs!=null){
-				foreach(string config in Configs){
-					Server server=new Server(ServerExe, config);
+			Config.Load();
+			if(Config.Configs!=null){
+				foreach(string config in Config.Configs){
+					Server server=new Server(Config.ServerExe, config);
 					server.OnPlayerJoin += new OnPlayerJoinEvent(this.server_OnPlayerJoin);
 					server.OnPlayerLeave+=new OnPlayerLeaveEvent(this.server_OnPlayerLeave);
 					server.OnRoomClose+=new OnRoomCloseEvent(this.server_OnRoomClose);
 					server.OnRoomCreate+=new OnRoomCreateEvent(this.server_OnRoomCreate);
 					server.OnRoomStart+=new OnRoomStartEvent(this.server_OnRoomStart);
-					server.OnServerInfo+=new OnServerInfoEvent(this.server_OnServerInfo);
 					Servers.Add(server);
 					server.Start();
 				}
@@ -55,7 +52,7 @@ namespace YGOCore
 			}
 			try{
 				if(m_listener == null){
-					m_listener = new AsyncTcpListener<Session>(IPAddress.Any, Port);
+					m_listener = new AsyncTcpListener<Session>(IPAddress.Any, Config.Port);
 					m_listener.OnConnect +=new AsyncTcpListener<Session>.ConnectEventHandler(Listener_OnConnect);
 					m_listener.OnDisconnect +=new AsyncTcpListener<Session>.DisconnectEventHandler(Listener_OnDisconnect);
 					m_listener.OnReceive += new AsyncTcpListener<Session>.ReceiveEventHandler(Listener_OnReceive);
@@ -80,7 +77,7 @@ namespace YGOCore
 		#endregion
 		
 		#region listener
-		void Listener_OnDisconnect(Connection<Session> Client)
+		private void Listener_OnDisconnect(Connection<Session> Client)
 		{
 			if(Client.Tag!=null){
 				lock(Clients){
@@ -90,21 +87,39 @@ namespace YGOCore
 				Client.Tag = null;
 			}
 		}
-		void Listener_OnReceive(Connection<Session> Client)
+		private void Listener_OnReceive(Connection<Session> Client)
 		{
 			if(Client.Tag!=null){
 				Client.Tag.OnRecevice();
 			}
 		}
 		
-		void Listener_OnConnect(Connection<Session> Client)
+		private void Listener_OnConnect(Connection<Session> Client)
 		{
 			Session session= new Session(Client);
 			lock(Clients){
+				//分配对战端
+				session.Server = this;
 				Clients.Add(session);
 			}
 		}
 		#endregion
-
+		
+		public int GetChatPort(){
+			return Config.Port;
+		}
+		/// <summary>
+		/// 返回最少人数的服务端
+		/// </summary>
+		public int GetDuelPort(){
+			List<int> lens=new List<int>();
+			lock(Servers){
+				foreach(Server server in Servers){
+					lens.Add(server.RoomCount);
+				}
+			}
+			if(lens.Count == 0)return 0 ;
+			return lens.Min();
+		}
 	}
 }

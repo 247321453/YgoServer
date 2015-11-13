@@ -17,6 +17,8 @@ namespace YGOCore
 	/// </summary>
 	public class Session
 	{
+		#region member
+		public RoomServer Server;
 		public Connection<Session> Client{get; private set;}
 		private bool m_close = false;
 		/// <summary>
@@ -35,10 +37,26 @@ namespace YGOCore
 		/// 当前所在的服务器
 		/// </summary>
 		public Server ServerInfo;
-		public Session(Connection<Session> client)
+		#endregion
+		
+		#region public
+		public Session(Connection<Session> client,int timeout=15)
 		{
 			Client = client;
 			Client.Tag = this;
+			MyTimer CheckTimer = new MyTimer(1000, timeout*1000);
+			CheckTimer.AutoReset = true;
+			CheckTimer.Elapsed += delegate {
+				if( !string.IsNullOrEmpty(Name) ){
+					CheckTimer.Stop();
+					CheckTimer.Close();
+				}
+				if(CheckTimer.CheckStop()){
+					//超时自动断开
+					Close();
+					CheckTimer.Close();
+				}
+			};
 		}
 		public void Close(){
 			if(m_close)return;
@@ -77,5 +95,7 @@ namespace YGOCore
 			//处理游戏事件
 			ClinetEvent.Handler(this, packets);
 		}
+		#endregion
+
 	}
 }

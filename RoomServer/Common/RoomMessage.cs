@@ -32,9 +32,10 @@ namespace YGOCore
 		/// 暂停推送
 		/// </summary>
 		Pause,
-		SystemChat,
 		RoomCreate,
 		RoomStart,
 		RoomClose,
+		PlayerEnter,
+		PlayerLeave,
 	}
 }

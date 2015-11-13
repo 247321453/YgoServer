@@ -26,24 +26,27 @@ namespace YGOCore.Game
 		public bool IsMatch {get{return Mode == 1;}}
 		public bool IsTag {get{return  Mode == 2;}}
 		public bool IsStart{get;set;}
+		public string RoomString{get; set;}
 		public bool HasPassword(){
 			return Name!=null && Name.IndexOf("$")>=0;
 		}
 		
-		public int Parse(string gameinfo){
+		public void Parse(string gameinfo){
 			int head=gameinfo.IndexOf("#");
 			if(head < 0){
+				//xxxx
 				IsRandom = false;
 				Name = gameinfo;
-				return -1;
+				return;
 			}else if(head==0 && gameinfo.Length > 1){
+				//#xxx
 				Name = gameinfo.Substring(1);
-				if(!string.IsNullOrEmpty(Name)){
-					IsRandom = false;
-					return -1;
-				}
+				IsRandom = false;
+				return;
 			}
 			try{
+				//xxxx#xxxx
+				//xxxx#xxxx$xxx
 				int index=0;
 				string tmp=gameinfo.Substring(index++,1);
 				int tmpInt=0;
@@ -94,7 +97,6 @@ namespace YGOCore.Game
 			}catch(Exception){
 				
 			}
-			return head;
 		}
 	}
 }

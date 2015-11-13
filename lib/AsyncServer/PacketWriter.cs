@@ -16,7 +16,11 @@ namespace AsyncServer
 			get { return m_stream.ToArray(); }
 		}
 		public byte[] Content{
-			get{return content;}
+			get{
+				if(!appendLength)
+					Use();
+				return content;
+			}
 		}
 		private bool appendLength = false;
 		private byte[] content;

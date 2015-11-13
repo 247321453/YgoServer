@@ -9,45 +9,11 @@
 using System;
 using System.Timers;
 using YGOCore.Net;
+using AsyncServer;
 using OcgWrapper.Enums;
 
 namespace YGOCore.Game
-{
-	#region 计时器
-	public class MyTimer : System.Timers.Timer{
-		private DateTime? timer;
-		private long maxtime;
-		public long MaxTime{get{return maxtime;}}
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="interval">每隔多少毫秒</param>
-		/// <param name="maxtime">最大秒数</param>
-		public MyTimer(long interval, long maxtime) : base(interval) {
-			timer = DateTime.Now;
-			this.maxtime=maxtime;
-		}
-		public new void Start(){
-			timer = DateTime.Now;
-			base.Start();
-		}
-		public long Second{
-			get{return (long)Math.Round((float)(DateTime.Now.Ticks - timer.Value.Ticks)/(1000f*10000f)); }
-		}
-		public void Restart() {
-			Stop();
-			Start();
-		}
-		public bool CheckStop(){
-			if(Second >= maxtime){
-				Stop();
-				return true;
-			}
-			return false;
-		}
-	}
-	#endregion
-	
+{	
 	/// <summary>
 	/// Description of GameTimer.
 	/// </summary>

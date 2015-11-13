@@ -15,8 +15,7 @@ using System.Threading;
 
 namespace YGOCore
 {
-	public delegate void OnServerInfoEvent(Server server,bool isClose);
-	public delegate void OnRoomCreateEvent(Server server,GameConfig config);
+	public delegate void OnRoomCreateEvent(Server server,string name,string banlist,string gameinfo);
 	public delegate void OnRoomStartEvent(Server server,string name);
 	public delegate void OnRoomCloseEvent(Server server,string name);
 	public delegate void OnPlayerJoinEvent(Server server,string name,string room);
@@ -28,7 +27,6 @@ namespace YGOCore
 	{
 		
 		#region
-		public event OnServerInfoEvent OnServerInfo;
 		public event OnRoomCreateEvent OnRoomCreate;
 		public event OnRoomStartEvent OnRoomStart;
 		public event OnRoomCloseEvent OnRoomClose;
@@ -47,7 +45,7 @@ namespace YGOCore
 		public string Host{get;private set;}
 		public string Name{get;private set;}
 		public string Desc{get;private set;}
-		
+		public int RoomCount{get{lock(Rooms)return Rooms.Count;}}
 		public Server(string fileName,string config="config.txt")
 		{
 			m_config = config;
@@ -93,9 +91,6 @@ namespace YGOCore
 						Port = p;
 						Name = args[3];
 						Desc = args[4];
-						if(OnServerInfo!=null){
-							OnServerInfo(this, false);
-						}
 					}
 					else{
 						Logger.Warn("server");
@@ -158,7 +153,7 @@ namespace YGOCore
 				}
 			}
 			if(OnRoomCreate!=null){
-				OnRoomCreate(this, config);
+				OnRoomCreate(this, name, banlist, gameinfo);
 			}
 		}
 		private void RoomClose(string name){
@@ -270,9 +265,6 @@ namespace YGOCore
 		public void Close(){
 			if(!IsOpen) return;
 			IsOpen = false;
-			if(OnServerInfo!=null){
-				OnServerInfo(this, true);
-			}
 			try{
 				m_read.Interrupt();
 				m_read= null;

@@ -48,6 +48,7 @@
     <Compile Include="Connection.cs" />
     <Compile Include="EventHandler.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="MyTimer.cs" />
     <Compile Include="PacketReader.cs" />
     <Compile Include="PacketWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

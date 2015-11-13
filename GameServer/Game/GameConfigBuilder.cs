@@ -35,27 +35,28 @@ namespace YGOCore.Game
 			if(!string.IsNullOrEmpty(gameinfo)){
 				gameinfo = gameinfo.Trim();
 			}
-			if(string.IsNullOrEmpty(gameinfo)||gameinfo=="random"){
+			config.RoomString = gameinfo;
+			if(string.IsNullOrEmpty(gameinfo)||gameinfo=="random"||gameinfo=="#"){
 				//random
 				config.Name = RoomManager.RandomRoomName();
 				return config;
 			}
-			int head = config.Parse(gameinfo);
+			config.Parse(gameinfo);
 			config.BanList = BanlistManager.GetName(config.LfList);
-			//M#
-			//head=1
-			if(head >=0 && head+1>= gameinfo.Length){
-				string _name=RoomManager.RandomRoomName(gameinfo);
-				if(_name==null){
-					//条件#的随机房间名没找到，则创建一个
-					config.Name=gameinfo + RoomManager.NewRandomRoomName();
+			if(string.IsNullOrEmpty(config.Name)){
+				if(gameinfo.EndsWith("#")){
+					string _name=RoomManager.RandomRoomName(gameinfo);
+					if(_name==null){
+						//条件#的随机房间名没找到，则创建一个
+						config.Name=gameinfo + RoomManager.NewRandomRoomName();
+					}else{
+						//条件#的随机房间名存在，则进去，可能重复观战
+						config.Name=_name;
+					}
 				}else{
-					//条件#的随机房间名存在，则进去，可能重复观战
-					config.Name=_name;
+					config.IsRandom = false;
+					config.Name=gameinfo;
 				}
-			}else{
-				config.IsRandom = false;
-				config.Name=gameinfo;//.Substring(head+1);
 			}
 			return config;
 		}
