@@ -21,7 +21,7 @@ namespace YGOCore
 			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
 			RoomServer server=new RoomServer();
 			if(server.Start()){
-				
+				Command(server);
 			}else{
 				Console.WriteLine("start fail.");
 			}

@@ -225,12 +225,15 @@ namespace YGOCore
 			}
 			process.StartInfo.FileName = m_fileName;
 			//设定程式执行参数
+			process.StartInfo.UseShellExecute = false;
 			process.StartInfo.Arguments = m_config;
 			process.EnableRaisingEvents=true;
 			process.StartInfo.RedirectStandardInput = true;
 			process.StartInfo.RedirectStandardOutput = true;
 			process.StartInfo.RedirectStandardError = false;
+			process.StartInfo.CreateNoWindow = false;
 			#if !DEBUG
+			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
 			#endif
 			process.Exited+=new EventHandler(Exited);

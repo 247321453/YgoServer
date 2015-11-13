@@ -37,7 +37,10 @@ namespace YGOCore
 					}else{
 						//数量
 						lock(server.Servers){
-							Console.WriteLine(">>count="+server.Servers.Count);
+							int i= 0;
+							foreach(Server srv in server.Servers){
+								Console.WriteLine(">>"+(i++)+srv.Name);
+							}
 						}
 					}
 					break;
