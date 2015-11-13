@@ -20,6 +20,9 @@ namespace YGOCore.Net
 			this.Type = (int)PlayerType.Undefined;
 			this.State = PlayerState.None;
 			this.ClientVersion=version;
+			if(timeout<=0){
+				timeout = 15;
+			}
 			CheckTimer = new MyTimer(3000, timeout*1000);
 			CheckTimer.AutoReset = true;
 			CheckTimer.Elapsed += delegate { 

@@ -249,7 +249,7 @@ namespace YGOCore
 					AsyncMode= (value.ToLower()=="true"||value=="1");
 					break;
 				case "timeout":
-					Timeout = Convert.ToInt32(value, 15);
+					Timeout = Convert.ToInt32(value);
 					break;
 				case "consoleapi":
 					ConsoleApi = Convert.ToBoolean(value);
