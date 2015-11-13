@@ -44,7 +44,6 @@ namespace YGOCore
 		public int Port{get;private set;}
 		public string Host{get;private set;}
 		public string Name{get;private set;}
-		public string Desc{get;private set;}
 		public int RoomCount{get{lock(Rooms)return Rooms.Count;}}
 		public Server(string fileName,string config="config.txt")
 		{
@@ -59,7 +58,7 @@ namespace YGOCore
 			int user = 0;
 			lock(Rooms) room = Rooms.Count;
 			lock(Users) user= Users.Count;
-			return Host+":"+Port+" "+Name+" "+Desc+"\n"+"Rooms:"+room+"Users:"+user;
+			return Host+":"+Port+" "+Name+" "+"Rooms:"+room+",Users:"+user;
 		}
 		#endregion
 
@@ -83,15 +82,16 @@ namespace YGOCore
 			}
 			line = line.Substring(HEAD.Length);
 			string[] args= line.Split(SEP);
+			Logger.Debug(""+line);
 			switch(args[0]){
 				case "server":
-					if(args.Length>4){
+					if(args.Length>3){
 						Host = args[1];
 						int p = 0;
 						int.TryParse(args[2], out p);
 						Port = p;
 						Name = args[3];
-						Desc = args[4];
+						Logger.Debug("server:"+Name+":"+Port);
 					}
 					else{
 						Logger.Warn("server");
@@ -220,21 +220,23 @@ namespace YGOCore
 		
 		#region process
 		public void Start(){
+			IsOpen = true;
 			if(process==null||process.HasExited){
 				process=new Process();
 			}
 			process.StartInfo.FileName = m_fileName;
 			//设定程式执行参数
 			process.StartInfo.UseShellExecute = false;
-			process.StartInfo.Arguments = m_config;
+			process.StartInfo.Arguments = " "+m_config;
 			process.EnableRaisingEvents=true;
-			process.StartInfo.RedirectStandardInput = true;
+			process.StartInfo.RedirectStandardInput = false;
 			process.StartInfo.RedirectStandardOutput = true;
-			process.StartInfo.RedirectStandardError = false;
-			process.StartInfo.CreateNoWindow = false;
-			#if !DEBUG
+			//		process.StartInfo.RedirectStandardError = false;
 			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
+			#if DEBUG
+			process.StartInfo.CreateNoWindow = false;
+			process.StartInfo.WindowStyle=ProcessWindowStyle.Normal;
 			#endif
 			process.Exited+=new EventHandler(Exited);
 			try{
@@ -249,21 +251,25 @@ namespace YGOCore
 					
 				}
 			}
-			m_read = new Thread(new ThreadStart(OnRead));
-			m_read.IsBackground = true;
-			m_read.Start();
+			if(m_read==null){
+				m_read = new Thread(new ThreadStart(OnRead));
+				m_read.IsBackground = true;
+				m_read.Start();
+			}
 		}
 		private void Exited(object sender, EventArgs e){
-			if(IsOpen){
-				//异常结束
-			}
-			Close();
-			process = null;
 			lock(Rooms){
 				Rooms.Clear();
 			}
 			lock(Users){
 				Users.Clear();
+			}
+			if(IsOpen){
+				Close();
+				//异常结束
+				Start();
+			}else{
+				Close();
 			}
 		}
 		public void Close(){

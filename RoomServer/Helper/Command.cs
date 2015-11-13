@@ -23,26 +23,50 @@ namespace YGOCore
 			switch(args[0]){
 				case "server":
 					if(args.Length>1){
-						string name = args[1];
+						int i = 0;
+						int.TryParse(args[1], out i);
 						//服务信息，玩家数，房间数
 						lock(server.Servers){
-							foreach(Server srv in server.Servers){
-								if(srv!=null&&srv.Name == name){
-									Console.WriteLine(">>"+srv.ToString());
-									return;
-								}
+							if(i<server.Servers.Count){
+								Console.WriteLine(">>"+server.Servers[i].ToString());
+							}else{
+								Console.WriteLine(">>no find "+i);
 							}
-							Console.WriteLine(">>no find "+name);
 						}
 					}else{
 						//数量
 						lock(server.Servers){
 							int i= 0;
 							foreach(Server srv in server.Servers){
-								Console.WriteLine(">>"+(i++)+srv.Name);
+								Console.WriteLine(">>"+(++i)+":"+srv.Name);
 							}
 						}
 					}
+					break;
+				case "close":
+					if(args.Length>1){
+						int i = 0;
+						int.TryParse(args[1], out i);
+						//服务信息，玩家数，房间数
+						lock(server.Servers){
+							if(i<server.Servers.Count){
+								Console.WriteLine(">>close "+server.Servers[i].Name);
+							}else{
+								Console.WriteLine(">>no find "+i);
+							}
+						}
+					}else{
+						//数量
+						lock(server.Servers){
+							foreach(Server srv in server.Servers){
+								Console.WriteLine(">>close:"+srv.Name);
+								srv.Close();
+							}
+						}
+					}
+					break;
+				default:
+					Console.WriteLine(">>no invalid:"+cmd);
 					break;
 			}
 		}
