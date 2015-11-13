@@ -50,6 +50,7 @@ namespace YGOCore
 		{
 			m_config = config;
 			m_fileName = fileName;
+			Logger.Debug(fileName+":"+config);
 		}
 
 		public override string ToString()

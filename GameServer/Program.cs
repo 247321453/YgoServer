@@ -35,7 +35,7 @@ namespace YGOCore
 			GameServer Server = new GameServer(Config);
 			Server.WriteHead();
 			if(loaded)
-				Logger.Info("Config loaded.");
+				Logger.Debug("Config loaded.");
 			else
 				Logger.Warn("Unable to load config.txt, using default settings.");
 			

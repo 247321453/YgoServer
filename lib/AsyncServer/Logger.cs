@@ -27,7 +27,7 @@ namespace AsyncServer {
 		}
 		public static void Debug(object obj, bool ignoreLevel=false){
 			if(sLevel <= LogLevel.Debug || ignoreLevel){
-				WriteLine(" "+obj, ConsoleColor.Gray);
+				WriteLine(""+obj, ConsoleColor.Gray);
 			}
 		}
 		public static void Info(object obj, bool ignoreLevel=false){
