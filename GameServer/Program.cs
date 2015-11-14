@@ -43,6 +43,15 @@ namespace YGOCore
 				Console.WriteLine(">>server start fail.");
 				Console.ReadKey();
 			}else{
+				if(args.Length>1){
+					if("true" == args[1].ToLower()){
+						//关闭命令
+						while(Server.IsListening){
+							Console.ReadLine();
+						}
+						return;
+					}
+				}
 				Command(Server);
 			}
 		}

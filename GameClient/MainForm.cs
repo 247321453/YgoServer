@@ -38,7 +38,13 @@ namespace GameClient
 			Client.OnPlayerEnter+=new OnPlayerEnterEvent(m_login_Client_OnPlayerEnter);
 			Client.OnPlayerLeave+=new OnPlayerLeaveEvent(m_login_Client_OnPlayerLeave);
 			Client.OnGameExited+=new OnGameExitedEvent(m_login_Client_OnGameExited);
+			Client.OnServerClose+=new OnServerCloseEvent(Client_OnServerClose);
 			Client.GetRooms(false, true);
+		}
+
+		void Client_OnServerClose(int port)
+		{
+			panel_rooms.Clear(port);
 		}
 
 		void m_login_Client_OnGameExited()

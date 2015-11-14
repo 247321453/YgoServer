@@ -35,6 +35,7 @@ namespace GameClient
 			EventHandler.Register((ushort)RoomMessage.RoomList, OnRoomList);
 			EventHandler.Register((ushort)RoomMessage.PlayerEnter, OnPlayerEnter);
 			EventHandler.Register((ushort)RoomMessage.PlayerLeave, OnPlayerLeave);
+			EventHandler.Register((ushort)RoomMessage.ServerClose, OnServerClose);
 		}
 		public static void Handler(Client client, List<PacketReader> packets){
 			if(packets.Count==0) return;
@@ -87,17 +88,17 @@ namespace GameClient
 			config.Name = room;
 			config.DeulPort = port;
 			config.BanList = banlist;
-			client.OnServerRoomCreate(config);
+			client.ServerRoomCreate(config);
 		}
 		private static void OnRoomStart(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
 			string room = reader.ReadUnicode(20);
-			client.OnServerRoomStart(port, room);
+			client.ServerRoomStart(port, room);
 		}
 		private static void OnRoomClose(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
 			string room = reader.ReadUnicode(20);
-			client.OnServerRoomClose(port, room);
+			client.ServerRoomClose(port, room);
 		}
 		private static void OnRoomList(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
@@ -115,19 +116,25 @@ namespace GameClient
 				configs.Add(config);
 			}
 			MessageBox.Show("roomlist:"+configs.Count);
-			client.OnServerRoomList(configs);
+			client.ServerRoomList(configs);
 		}
 		private static void OnPlayerEnter(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
 			string name = reader.ReadUnicode(20);
 			string room = reader.ReadUnicode(20);
-			client.OnServerPlayerEnter(port, name, room);
+			client.ServerPlayerEnter(port, name, room);
 		}
 		private static void OnPlayerLeave(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
 			string name = reader.ReadUnicode(20);
 			string room = reader.ReadUnicode(20);
-			client.OnServerPlayerLeave(port, name, room);
+			client.ServerPlayerLeave(port, name, room);
+		}
+		private static void OnServerClose(Client client, PacketReader reader){
+			int port = reader.ReadInt32();
+			int nport=reader.ReadInt32();
+			Program.Config.DuelPort = nport;
+			client.ServerClose(port);
 		}
 		#endregion
 		

@@ -229,7 +229,7 @@ namespace YGOCore.Game
 		
 		#region 移除玩家
 		public void RemovePlayer(GameSession player){
-			if(player==null){
+			if(player==null || player.IsClose){
 				return;
 			}
 			ServerApi.OnPlayerLeave(player, this);
@@ -239,6 +239,7 @@ namespace YGOCore.Game
 				if(player.Type != (int)PlayerType.Observer){
 					Players[player.Type] = null;
 					IsReady[player.Type] = false;
+					HostPlayer = null;
 				}
 				Close(true);
 				return;
@@ -387,6 +388,7 @@ namespace YGOCore.Game
 		#region 结果
 		public void Close(bool forceclose=false)
 		{
+			if(!IsOpen) return;
 			IsOpen = false;
 			RoomManager.Remove(this);
 			if(forceclose){
@@ -701,14 +703,22 @@ namespace YGOCore.Game
 				for (int i = 0; i < 5; i++)
 				{
 					int len = reader.ReadInt32();
-					if (len == 4)
+					if (len == 4){
+						//fix 20151114
+						//update.Write(4);
 						continue;
+					}
 					long pos = ms.Position;
 					byte[] raw = reader.ReadBytes(len - 4);
 					if ((raw[11] & (int)CardPosition.FaceDown) != 0)
 					{
 						ms.Position = pos;
 						writer.Write(new byte[len - 4]);
+						//update.Write(8);
+						//update.Write(0);
+					}else{
+						//update.Write(len);
+						//update.Write(raw);
 					}
 				}
 				reader.Close();
@@ -739,8 +749,10 @@ namespace YGOCore.Game
 				for (int i = 0; i < 8; i++)
 				{
 					int len = reader.ReadInt32();
-					if (len == 4)
+					if (len == 4){
+						// update.Write(4);
 						continue;
+					}
 					long pos = ms.Position;
 					byte[] raw = reader.ReadBytes(len - 4);
 					if ((raw[11] & (int)CardPosition.FaceDown) != 0)
@@ -776,8 +788,10 @@ namespace YGOCore.Game
 				while (ms.Position < ms.Length)
 				{
 					int len = reader.ReadInt32();
-					if (len == 4)
+					if (len == 4){
+						//update.Write(4);
 						continue;
+					}
 					long pos = ms.Position;
 					byte[] raw = reader.ReadBytes(len - 4);
 					if (raw[len - 8] == 0)
@@ -1313,7 +1327,7 @@ namespace YGOCore.Game
 			Players[player.Type] = null;
 			IsReady[player.Type] = false;
 			lock(Observers)
-			Observers.Add(player);
+				Observers.Add(player);
 
 			GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
 			change.Write((byte)((player.Type << 4) + (int)PlayerChange.Observe));

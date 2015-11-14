@@ -15,7 +15,7 @@ namespace YGOCore
 	/// </summary>
 	public static class Command
 	{
-		public static void OnCommand(this RoomServer server,string cmd)
+		public static void OnCommand(this RoomServer server,string cmd,bool tip=true)
 		{
 			if(cmd==null)return;
 			cmd = cmd.Trim();
@@ -48,6 +48,8 @@ namespace YGOCore
 						lock(server.Servers){
 							if(i<server.Servers.Count){
 								Console.WriteLine(">>close "+server.Servers[i].Port);
+								server.Servers[i].Close();
+								server.Servers.RemoveAt(i);
 							}else{
 								Console.WriteLine(">>no find "+i);
 							}
@@ -63,6 +65,7 @@ namespace YGOCore
 					}
 					break;
 				default:
+					if(tip)
 					Console.WriteLine(">>no invalid:"+cmd);
 					break;
 			}

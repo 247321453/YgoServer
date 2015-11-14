@@ -20,6 +20,9 @@ namespace YGOCore
 	public delegate void OnRoomCloseEvent(Server server,string name);
 	public delegate void OnPlayerJoinEvent(Server server,string name,string room);
 	public delegate void OnPlayerLeaveEvent(Server server,string name,string room);
+	public delegate void OnCommandEvent(Server server, string line);
+	public delegate void OnServerCloseEvent(Server server);
+	                                
 	/// <summary>
 	/// 服务信息
 	/// </summary>
@@ -27,11 +30,13 @@ namespace YGOCore
 	{
 		
 		#region
+		public event OnServerCloseEvent OnServerClose;
 		public event OnRoomCreateEvent OnRoomCreate;
 		public event OnRoomStartEvent OnRoomStart;
 		public event OnRoomCloseEvent OnRoomClose;
 		public event OnPlayerJoinEvent OnPlayerJoin;
 		public event OnPlayerLeaveEvent OnPlayerLeave;
+		public event OnCommandEvent OnCommand;
 		private const char SEP = '\t';
 		private const string HEAD="::";
 		public bool IsOpen {get; private set;}
@@ -76,6 +81,9 @@ namespace YGOCore
 		#region 事件
 		private void OnEvent(string line){
 			if(line == null || !line.StartsWith(HEAD)){
+				if(OnCommand!=null){
+					OnCommand(this, line);
+				}
 				return;
 			}
 			line = line.Substring(HEAD.Length);
@@ -222,11 +230,10 @@ namespace YGOCore
 			process.StartInfo.FileName = m_fileName;
 			//设定程式执行参数
 			process.StartInfo.UseShellExecute = false;
-			process.StartInfo.Arguments = " "+m_config;
+			process.StartInfo.Arguments = " "+m_config+" true";
 			process.EnableRaisingEvents=true;
 			process.StartInfo.RedirectStandardInput = false;
 			process.StartInfo.RedirectStandardOutput = true;
-			process.StartInfo.StandardOutputEncoding=System.Text.Encoding.UTF8;
 			//		process.StartInfo.RedirectStandardError = false;
 			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
@@ -271,6 +278,9 @@ namespace YGOCore
 		public void Close(){
 			if(!IsOpen) return;
 			IsOpen = false;
+			if(OnServerClose!=null){
+				OnServerClose(this);
+			}
 			try{
 				m_read.Interrupt();
 				m_read= null;

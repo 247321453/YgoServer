@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 using YGOCore;
 using YGOCore.Game;
@@ -131,7 +132,7 @@ namespace System.Windows.Forms
 	public class RoomGrid : FlowLayoutPanel
 	{
 		private Client client;
-		private readonly SortedList<string, GameConfig> Rooms=new SortedList<string, GameConfig>();
+		private readonly SortedList<string, GameConfig2> Rooms=new SortedList<string, GameConfig2>();
 		private readonly byte[] _lock =new byte[0];
 		public void SetClient(Client client){
 			this.client=client;
@@ -145,8 +146,39 @@ namespace System.Windows.Forms
 		public void ClearRooms(){
 			lock(Rooms){
 				Rooms.Clear();
+				BeginInvoke(new Action(
+					()=>{
+						lock(_lock)
+						this.Controls.Clear();
+					})
+				           );
+				
 			}
 		}
+		
+		public void Clear(int port){
+			BeginInvoke(new Action(
+				()=>{
+					lock(_lock)
+						CloseRoom(port);
+				})
+			           );
+		}
+		
+		private void CloseRoom(int port){
+			for(int i= Controls.Count-1;i>=0;i--){
+				Control c = Controls[i];
+				if(c is RoomBlock && c.Tag!=null){
+					string key  = c.Tag.ToString();
+					if(key.StartsWith(port+":")){
+						this.Controls.Remove(c);
+						lock(Rooms)
+							Rooms.Remove(key);
+					}
+				}
+			}
+		}
+		
 		#region allrooms
 		public void OnRoomList(List<GameConfig2> configs){
 			lock(Rooms){

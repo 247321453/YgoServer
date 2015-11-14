@@ -44,6 +44,8 @@ namespace YGOCore
 					server.OnRoomClose+=new OnRoomCloseEvent(this.server_OnRoomClose);
 					server.OnRoomCreate+=new OnRoomCreateEvent(this.server_OnRoomCreate);
 					server.OnRoomStart+=new OnRoomStartEvent(this.server_OnRoomStart);
+					server.OnCommand +=new OnCommandEvent(server_OnCommand);
+					server.OnServerClose+=new OnServerCloseEvent(this.OnServerClose);
 					Servers.Add(server);
 					server.Start();
 				}
@@ -63,6 +65,10 @@ namespace YGOCore
 				Stop();
 			}
 			return IsListening;
+		}
+		void server_OnCommand(Server server, string line)
+		{
+			this.OnCommand(line, false);
 		}
 		public void Stop(){
 			//Server.Close();

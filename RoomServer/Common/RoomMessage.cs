@@ -37,5 +37,6 @@ namespace YGOCore
 		RoomClose,
 		PlayerEnter,
 		PlayerLeave,
+		ServerClose,
 	}
 }

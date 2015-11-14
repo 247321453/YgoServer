@@ -27,6 +27,18 @@ namespace YGOCore
 				session.Client.SendPackage(writer.Content);
 			}
 		}
+		
+		public static void OnServerClose(this RoomServer roomServer,Server server)
+		{
+			using(PacketWriter writer = new PacketWriter(2)){
+				writer.Write((byte)RoomMessage.ServerClose);
+				writer.Write(server.Port);
+				writer.Write(roomServer.GetDuelPort());
+				writer.Use();
+				roomServer.SendAll(writer.Content);
+			}
+		}
+
 
 		#region room list
 		public static void OnRoomList(this RoomServer roomServer,Session session,bool nolock=false,bool nostart = false){

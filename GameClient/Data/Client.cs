@@ -25,11 +25,13 @@ namespace GameClient
 	public delegate void OnPlayerEnterEvent(int port, string name, string room);
 	public delegate void OnPlayerLeaveEvent(int port, string name, string room);
 	public delegate void OnGameExitedEvent();
+	public delegate void OnServerCloseEvent(int port);
 	/// <summary>
 	/// Description of Client.
 	/// </summary>
 	public class Client
 	{
+		public event OnServerCloseEvent OnServerClose;
 		public event OnGameExitedEvent OnGameExited;
 		public event OnLoginHandler OnLoginSuccess;
 		public event OnServerChatHandler OnServerChat;
@@ -233,34 +235,39 @@ namespace GameClient
 		#endregion
 		
 		#region room
-		public void OnServerRoomCreate(GameConfig2 config){
+		public void ServerRoomCreate(GameConfig2 config){
 			if(OnRoomCreate!=null){
 				OnRoomCreate(config);
 			}
 		}
-		public void OnServerRoomClose(int port, string name){
+		public void ServerRoomClose(int port, string name){
 			if(OnRoomClose!=null){
 				OnRoomClose(port, name);
 			}
 		}
-		public void OnServerRoomStart(int port, string name){
+		public void ServerRoomStart(int port, string name){
 			if(OnRoomStart!=null){
 				OnRoomStart(port, name);
 			}
 		}
-		public void OnServerRoomList(List<GameConfig2> configs){
+		public void ServerRoomList(List<GameConfig2> configs){
 			if(OnRoomList!=null){
 				OnRoomList(configs);
 			}
 		}
-		public void OnServerPlayerEnter(int port, string name, string room){
+		public void ServerPlayerEnter(int port, string name, string room){
 			if(OnPlayerEnter!=null){
 				OnPlayerEnter(port, name, room);
 			}
 		}
-		public void OnServerPlayerLeave(int port, string name, string room){
+		public void ServerPlayerLeave(int port, string name, string room){
 			if(OnPlayerLeave!=null){
 				OnPlayerLeave(port, name, room);
+			}
+		}
+		public void ServerClose(int port){
+			if(OnServerClose!=null){
+				OnServerClose(port);
 			}
 		}
 		#endregion
