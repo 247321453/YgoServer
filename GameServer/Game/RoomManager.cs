@@ -159,6 +159,7 @@ namespace YGOCore.Game
 			lock(Games){
 				if(!Games.ContainsKey(room.Name)){
 					Games.Add(room.Name, room);
+					ServerApi.OnRoomCreate(room);
 				}
 			}
 		}
@@ -167,9 +168,9 @@ namespace YGOCore.Game
 			lock(Games){
 				if(Games.ContainsKey(room.Name)){
 					Games.Remove(room.Name);
+					ServerApi.OnRoomClose(room);
 				}
 			}
-			ServerApi.OnRoomClose(room);
 		}
 		public  static bool CheckRoomPassword(string namepwd){
 			string name = Password.OnlyName(namepwd);
@@ -203,7 +204,6 @@ namespace YGOCore.Game
 			Logger.Info("create room");
 			GameRoom room = new GameRoom(config);
 			Add(room);
-			ServerApi.OnRoomCreate(room);
 			return room;
 		}
 		/// <summary>

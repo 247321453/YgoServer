@@ -56,7 +56,8 @@ namespace YGOCore.Game
 		public int m_duelCount;
 		private bool m_swapped;
 		private bool m_matchKill;
-		
+		private const string logFile = "LuaErrors.log";
+		private readonly byte[] _errLock=new byte[0];
 		public bool isReading{
 			get{return State==GameState.Lobby;}
 		}
@@ -154,7 +155,8 @@ namespace YGOCore.Game
 				SendJoinGame(player);
 				player.SendTypeChange();
 				player.Send(new GameServerPacket(StocMessage.DuelStart));
-				Observers.Add(player);
+				lock(Observers)
+					Observers.Add(player);
 				if (State == GameState.Duel){
 					//中途观战
 					InitNewSpectator(player);
@@ -185,7 +187,8 @@ namespace YGOCore.Game
 				watch.Write((short)(Observers.Count + 1));
 				SendToAll(watch);
 				player.Type = (int)PlayerType.Observer;
-				Observers.Add(player);
+				lock(Observers)
+					Observers.Add(player);
 //				if(player.IsAuthentified){
 //					ServerMessage("[Server] "+player.Name+" watch game.", PlayerType.White);
 //				}
@@ -209,7 +212,11 @@ namespace YGOCore.Game
 					}
 				}
 			}
-			if (Observers.Count > 0)
+			bool _watch = false;
+			lock(Observers){
+				_watch = Observers.Count > 0;
+			}
+			if (_watch)
 			{
 				GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
 				nwatch.Write((short)Observers.Count);
@@ -271,10 +278,10 @@ namespace YGOCore.Game
 				if (p != null)
 					return;
 			}
-			if (Observers.Count == 0)
-			{
-				Close(true);
+			lock(Observers){
+				if(Observers.Count>0) return;
 			}
+			Close(true);
 		}
 		#endregion
 		
@@ -388,15 +395,16 @@ namespace YGOCore.Game
 						continue;
 					}
 					plager.Close();
-					
 				}
+				GameSession[] players;
 				lock(Observers){
-					foreach(GameSession plager in Observers){
-						if(plager==null){
-							continue;
-						}
-						plager.Close();
+					players = Observers.ToArray();
+				}
+				foreach(GameSession plager in players){
+					if(plager==null){
+						continue;
 					}
+					plager.Close();
 				}
 			}
 		}
@@ -1276,7 +1284,8 @@ namespace YGOCore.Game
 			}
 			else
 			{
-				Observers.Remove(player);
+				lock(Observers)
+					Observers.Remove(player);
 				Players[pos] = player;
 				player.Type = pos;
 
@@ -1303,6 +1312,7 @@ namespace YGOCore.Game
 				return;
 			Players[player.Type] = null;
 			IsReady[player.Type] = false;
+			lock(Observers)
 			Observers.Add(player);
 
 			GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
@@ -1317,20 +1327,9 @@ namespace YGOCore.Game
 		#region 脚本错误
 		private void HandleError(string error)
 		{
-			const string log = "LuaErrors.log";
-			if (File.Exists(log))
-			{
-				foreach (string line in File.ReadAllLines(log))
-				{
-					if (line == error)
-						return;
-				}
+			lock(_errLock){
+				File.AppendAllText(logFile, error);
 			}
-
-			StreamWriter writer = new StreamWriter(log, true);
-			writer.WriteLine(error);
-			writer.Close();
-
 			GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
 			packet.Write((short)PlayerType.Observer);
 			packet.WriteUnicode(error, error.Length + 1);
