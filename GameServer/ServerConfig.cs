@@ -11,21 +11,13 @@ namespace YGOCore
 		/// </summary>
 		public int ServerPort { get; private set; }
 		/// <summary>
+		/// api端口
+		/// </summary>
+		public int ApiPort{get;private set;}
+		/// <summary>
 		/// 工作目录
 		/// </summary>
 		public string Path { get; private set; }
-		/// <summary>
-		/// 脚本目录
-		/// </summary>
-		public string ScriptFolder { get; private set; }
-		/// <summary>
-		/// 卡牌数据库
-		/// </summary>
-		public string CardCDB { get; private set; }
-		/// <summary>
-		/// 禁卡表文件
-		/// </summary>
-		public string BanlistFile { get; private set; }
 		/// <summary>
 		/// 超时自动结束回合
 		/// </summary>
@@ -51,22 +43,12 @@ namespace YGOCore
 		/// </summary>
 		public int MaxRoomCount{get;private set;}
 		/// <summary>
-		/// 自动录像
+		/// 最大AI数
 		/// </summary>
-		public bool AutoReplay{get;private set;}
-		/// <summary>
-		/// 录像保存文件夹
-		/// </summary>
-		public string replayFolder { get; private set; }
-		
-		public bool RecordWin{get;private set;}
-		/// <summary>
-		/// 记录
-		/// </summary>
-		public string WinDbName{get;private set;}
 		public int MaxAICount{get;private set;}
-		
-		public bool AIisHide{get;private set;}
+		/// <summary>
+		/// AI密码
+		/// </summary>
 		public string AIPass{get;private set;}
 		/// <summary>
 		/// 帐号禁止模式
@@ -76,9 +58,8 @@ namespace YGOCore
 		/// </summary>
 		public int BanMode{get;private set;}
 		/// <summary>
-		/// 帐号列表
+		/// 超时
 		/// </summary>
-		public string File_BanAccont{get;private set;}
 		public int Timeout{get;private set;}
 		/// <summary>
 		/// 控制台api 
@@ -91,23 +72,15 @@ namespace YGOCore
 			ServerPort = 8911;
 			//	ApiIp="127.0.0.1";
 			Path = ".";
-			ScriptFolder = "script";
-			replayFolder="replay";
-			CardCDB = "cards.cdb";
-			BanlistFile = "lflist.conf";
 			AutoEndTurn = true;
 			isNeedAuth=false;
 			MaxRoomCount=200;
-			WinDbName="wins.db";
-			RecordWin=false;
 			//PrivateChat=false;
 			//SaveRecordTime=1;//
 			MaxAICount=10;
 			AIPass="kenan123";
-			AIisHide=false;
 			AsyncMode=false;
 			BanMode = 0;
-			File_BanAccont = "namelist.txt";
 			Timeout = 15;
 			ConsoleApi = true;
 			//	Timeout = 20;
@@ -155,6 +128,9 @@ namespace YGOCore
 			variable=variable.ToLower();
 			switch (variable)
 			{
+				case "apiport":
+					ApiPort = Convert.ToInt32(value);
+					break;
 				case "aipassword":
 					AIPass=value;
 					break;
@@ -167,20 +143,8 @@ namespace YGOCore
 				case "path":
 					Path = value;
 					break;
-				case "scriptfolder":
-					ScriptFolder = value;
-					break;
-				case "cardcdb":
-					CardCDB = value;
-					break;
-				case "banlist":
-					BanlistFile = value;
-					break;
 				case "bannamemode":
 					BanMode = Convert.ToInt32(value);
-					break;
-				case "bannamelist":
-					File_BanAccont = value;
 					break;
 				case "loglevel":
 					LogLevel = Convert.ToInt32(value);
@@ -199,18 +163,6 @@ namespace YGOCore
 					if(MaxRoomCount<=10){
 						MaxRoomCount = 10;
 					}
-					break;
-				case "autoreplay":
-					AutoReplay= (value.ToLower()=="true"||value=="1");
-					break;
-				case "replayfolder":
-					replayFolder=value;
-					break;
-				case "windbname":
-					WinDbName=value;
-					break;
-				case "recordwin":
-					RecordWin=(value.ToLower()=="true"||value=="1");
 					break;
 				case "asyncmode":
 					AsyncMode= (value.ToLower()=="true"||value=="1");

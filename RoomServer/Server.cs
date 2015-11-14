@@ -47,6 +47,7 @@ namespace YGOCore
 		private string m_fileName;
 		private Thread m_read;
 		public int Port{get;private set;}
+		public bool NeedAuth{get;private set;}
 		public int RoomCount{get{lock(Rooms)return Rooms.Count;}}
 		public Server(string fileName,string config="config.txt")
 		{
@@ -91,10 +92,11 @@ namespace YGOCore
 			Logger.Debug(""+line);
 			switch(args[0]){
 				case "server":
-					if(args.Length>1){
+					if(args.Length>2){
 						int p = 0;
 						int.TryParse(args[1], out p);
 						Port = p;
+						NeedAuth = args[2].ToLower() == "true";
 					}
 					else{
 						Logger.Warn("server");

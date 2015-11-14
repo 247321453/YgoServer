@@ -74,7 +74,7 @@ namespace GameClient
 		void Btn_createClick(object sender, EventArgs e)
 		{
 			string room = GetRoomString();
-			client.JoinRoom(room);
+			client.JoinRoom(room, Program.Config.DuelPort, Program.Config.NeedAuth);
 			this.Hide();
 			//MessageBox.Show(room);
 		}

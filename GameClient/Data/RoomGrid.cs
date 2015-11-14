@@ -97,14 +97,14 @@ namespace System.Windows.Forms
 						using(InputDialog input=new InputDialog("请输入密码", true)){
 							if(input.ShowDialog()==DialogResult.OK){
 								if(pass == input.InputText){
-									if(parent!=null)parent.JoinRoom(config.Name);
+									if(parent!=null)parent.JoinRoom(config.Name, config.DeulPort, config.NeedAuth);
 								}else{
 									MessageBox.Show("密码不正确");
 								}
 							}
 						}
 					}else{
-						if(parent!=null)parent.JoinRoom(config.Name);
+						if(parent!=null)parent.JoinRoom(config.Name, config.DeulPort, config.NeedAuth);
 					}
 				};
 				join.BackColor= SystemColors.Control;
@@ -138,9 +138,9 @@ namespace System.Windows.Forms
 			this.client=client;
 		}
 		
-		public void JoinRoom(string room){
+		public void JoinRoom(string room,int port, bool needauth){
 			if(client!=null){
-				client.JoinRoom(room);
+				client.JoinRoom(room, port, needauth);
 			}
 		}
 		public void ClearRooms(){

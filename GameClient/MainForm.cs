@@ -141,7 +141,7 @@ namespace GameClient
 		
 		#region quick mode
 		private void JoinRoom(string room){
-			Client.JoinRoom(room);
+			Client.JoinRoom(room, Program.Config.DuelPort, Program.Config.NeedAuth);
 		}
 		void Btn_singleClick(object sender, EventArgs e)
 		{

@@ -117,7 +117,7 @@ namespace YGOCore
 		/// <summary>
 		/// 返回最少人数的服务端
 		/// </summary>
-		public int GetDuelPort(){
+		public Server GetMinServer(){
 			List<int> lens=new List<int>();
 			Server minsrv=null;
 			lock(Servers){
@@ -130,9 +130,9 @@ namespace YGOCore
 				}
 			}
 			if(minsrv!=null){
-				return minsrv.Port;
+				return minsrv;
 			}
-			return 0;
+			return null;
 		}
 	}
 }

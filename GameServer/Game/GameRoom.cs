@@ -452,18 +452,18 @@ namespace YGOCore.Game
 			else{
 				if(State == GameState.Side){
 					//Logger.WriteLine("side is lose");
+					State = GameState.End;
 					GameSession pl= null;
 					try{
 						if(Players[0] != null ){
 							pl = (Players[0].IsConnected)?Players[1]:Players[0];
 						}
 					}catch{}
-					
-					if(pl!=null){
-						Surrender(pl,  4,true);
+					if(pl != null){
+						// && pl.Type != (int)PlayerType.Observer
+						Surrender(pl,  4, true);
 					}
 				}
-				State = GameState.End;
 				End();
 			}
 		}
@@ -476,7 +476,7 @@ namespace YGOCore.Game
 			return yrpName;
 		}
 		private static string GetYrpFileName(GameRoom room){
-			return Tool.Combine(Program.Config.replayFolder, GetYrpName(room));
+			return Tool.Combine(Program.Config.Path, "replay/"+GetYrpName(room));
 		}
 		private static string GetGameTagName(GameRoom room){
 			string filename="";
@@ -1168,8 +1168,7 @@ namespace YGOCore.Game
 				opt += 0x10;
 			if (IsTag)
 				opt += 0x20;
-			Replay = new Replay(GetYrpFileName(this),
-			                    Program.Config.AutoReplay, Program.Config.ClientVersion,
+			Replay = new Replay(GetYrpFileName(this), Program.Config.ClientVersion,
 			                    Config.Mode, (uint)seed, IsTag);
 			Replay.Writer.WriteUnicode(Players[0].Name, 20);
 			Replay.Writer.WriteUnicode(Players[1].Name, 20);

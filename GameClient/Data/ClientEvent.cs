@@ -64,6 +64,7 @@ namespace GameClient
 			//服务器信息
 			Program.Config.ChatPort = reader.ReadInt32(); 
 			Program.Config.DuelPort = reader.ReadInt32();
+			Program.Config.NeedAuth = reader.ReadBoolean();
 			MessageBox.Show(Program.Config.ChatPort+":"+Program.Config.DuelPort);
 			client.OnLoginOk();
 		}
@@ -80,14 +81,17 @@ namespace GameClient
 		private static void OnRoomCreate(Client client, PacketReader reader){
 			//房间创建
 			int port = reader.ReadInt32();
+			bool needauth = reader.ReadBoolean();
 			string room = reader.ReadUnicode(20);
 			string banlist = reader.ReadUnicode(20);
 			string info = reader.ReadUnicode(40);
 			GameConfig2 config = new GameConfig2();
 			config.Parse(info);
 			config.Name = room;
+			config.NeedAuth = needauth;
 			config.DeulPort = port;
 			config.BanList = banlist;
+			
 			client.ServerRoomCreate(config);
 		}
 		private static void OnRoomStart(Client client, PacketReader reader){
@@ -102,6 +106,7 @@ namespace GameClient
 		}
 		private static void OnRoomList(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
+			bool needauth = reader.ReadBoolean();
 			int count = reader.ReadInt32();
 			List<GameConfig2> configs=new List<GameConfig2>();
 			for(int i=0;i<count;i++){
@@ -113,6 +118,7 @@ namespace GameClient
 				config.Name = name;
 				config.BanList = banlist;
 				config.DeulPort = port;
+				config.NeedAuth = needauth;
 				configs.Add(config);
 			}
 			MessageBox.Show("roomlist:"+configs.Count);
@@ -134,6 +140,7 @@ namespace GameClient
 			int port = reader.ReadInt32();
 			int nport=reader.ReadInt32();
 			Program.Config.DuelPort = nport;
+			Program.Config.NeedAuth = reader.ReadBoolean();
 			client.ServerClose(port);
 		}
 		#endregion

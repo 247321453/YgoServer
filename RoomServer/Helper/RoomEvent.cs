@@ -22,7 +22,14 @@ namespace YGOCore
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.Info);
 				writer.Write(roomServer.GetChatPort());
-				writer.Write(roomServer.GetDuelPort());
+				Server srv = roomServer.GetMinServer();
+				if(srv!=null){
+					writer.Write(srv.Port);
+					writer.Write(srv.NeedAuth);
+				}else{
+					writer.Write((byte)0);
+					writer.Write((byte)0);
+				}
 				writer.Use();
 				session.Client.SendPackage(writer.Content);
 			}
@@ -33,7 +40,14 @@ namespace YGOCore
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.ServerClose);
 				writer.Write(server.Port);
-				writer.Write(roomServer.GetDuelPort());
+				Server srv = roomServer.GetMinServer();
+				if(srv!=null){
+					writer.Write(srv.Port);
+					writer.Write(srv.NeedAuth);
+				}else{
+					writer.Write((byte)0);
+					writer.Write((byte)0);
+				}
 				writer.Use();
 				roomServer.SendAll(writer.Content);
 			}
@@ -48,6 +62,7 @@ namespace YGOCore
 					using(PacketWriter wrtier=new PacketWriter(20)){
 						wrtier.Write((byte)RoomMessage.RoomList);
 						wrtier.Write(srv.Port);
+						wrtier.Write(srv.NeedAuth);
 						lock(srv.Rooms){
 							wrtier.Write(srv.Rooms.Count);
 							foreach(GameConfig config in srv.Rooms.Values){
@@ -104,6 +119,7 @@ namespace YGOCore
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomCreate);
 				writer.Write(server.Port);
+				wrtier.Write(server.NeedAuth);
 				writer.WriteUnicode(name, 20);
 				writer.WriteUnicode(banlist, 20);
 				writer.WriteUnicode(gameinfo, gameinfo.Length+1);

@@ -213,9 +213,12 @@ namespace GameClient
 				OnServerChat(pname, tname, msg);
 			}
 		}
-		public void JoinRoom(string room){
-			string namepwd =Name + "$"+Pwd;
-			if(GameUtil.JoinRoom(Program.Config.Host, ""+Program.Config.DuelPort, namepwd, room, GameExited)){
+		public void JoinRoom(string room,int port,bool needauth){
+			string namepwd = Name;
+			if(needauth){
+				Name += "$"+Pwd;
+			}
+			if(GameUtil.JoinRoom(Program.Config.Host, ""+port, namepwd, room, GameExited)){
 				//暂停游戏
 				if(Program.Config.JoinPause){
 					using(PacketWriter writer=new PacketWriter(2)){

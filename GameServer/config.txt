@@ -1,21 +1,18 @@
-﻿####################################################
-#客户端版本1033.7
-clientversion=1337
-serverport=8910
-apiport=18910
-##############
-###需要登录认证，AI任何时候都需要密码
+﻿#### 客户端版本1033.7
+clientversion = 1337
+serverport = 8910
+apiport = 10001
+#### 资源路径
+path = 1337
+#### 登录认证
 needauth=false
-############如果卡的话，试试asyncmode为true
+############## 如果卡的话，试试asyncmode为true
 asyncmode=true
-###最大房间数
+### 最大房间数
 maxroom=500
-###自动录像
-autoreplay=true
-replayfolder=replay
-recordwin=true
-###AI最大数
+### AI最大数
 maxai=100
+### AI任何时候都需要密码
 aipassword=kenan123
 ###################帐号管理
 ##### 0 不禁止；1 禁止列表帐号；2 只允许列表帐号

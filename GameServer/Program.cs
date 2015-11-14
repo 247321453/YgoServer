@@ -38,7 +38,6 @@ namespace YGOCore
 				Logger.Debug("Config loaded.");
 			else
 				Logger.Warn("Unable to load config.txt, using default settings.");
-			
 			if (!Server.Start()){
 				Console.WriteLine(">>server start fail.");
 				Console.ReadKey();

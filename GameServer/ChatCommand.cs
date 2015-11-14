@@ -40,7 +40,6 @@ namespace YGOCore
 			Logger.Info("│Client version 0x" + config.ClientVersion.ToString("x")
 			            + " or new, MaxRooms = "+config.MaxRoomCount, true);
 			Logger.Info("│NeedAtuh="+config.isNeedAuth+", AsyncMode="+config.AsyncMode
-			            +", RecordWin="+config.RecordWin
 			            +", BanMode="+config.BanMode, true);
 			Logger.Info("└───────────────────────────────────", true);
 		}

@@ -71,9 +71,7 @@ namespace YGOCore.Game
 			return true;
 		}
 		public static void init(){
-			if(Program.Config.RecordWin){
-				SatrtWinTimer();
-			}
+			SatrtWinTimer();
 			ReadBanNames();
 		}
 		#endregion
@@ -91,9 +89,6 @@ namespace YGOCore.Game
 		}
 		private  static void WinSaveTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
-			if(!Program.Config.RecordWin){
-				return;
-			}
 			string[] sqls=null;
 			lock(WinInfos){
 				if(WinInfos.Count==0) return;
@@ -108,7 +103,7 @@ namespace YGOCore.Game
 				delegate(object obj)
 				{
 					//string[] sqls = (string[])obj;
-					SQLiteTool.Command(Program.Config.WinDbName, sqls);
+					SQLiteTool.Command(WinInfo.DB_FILE, sqls);
 					Logger.Debug("save wins record:"+sqls.Length);
 				}
 			));
@@ -138,8 +133,9 @@ namespace YGOCore.Game
 		}
 		private static void ReadBanNames()
 		{
-			if(File.Exists(Program.Config.File_BanAccont)){
-				string[] lines = File.ReadAllLines(Program.Config.File_BanAccont);
+			string file = Tool.Combine(Program.Config.Path, "namelist.txt");
+			if(File.Exists(file)){
+				string[] lines = File.ReadAllLines(file);
 				foreach(string line in lines){
 					if(string.IsNullOrEmpty(line)||line.StartsWith("#")){
 						continue;

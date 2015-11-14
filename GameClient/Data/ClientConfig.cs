@@ -26,6 +26,7 @@ namespace GameClient
 		public int Port{get; set;}
 		public int ChatPort{get; set;}
 		public int DuelPort{get; set;}
+		public bool NeedAuth{get;set;}
 		public string GamePath{get;set;}
 		public string GameExe{get;set;}
 		public ClientConfig(){
