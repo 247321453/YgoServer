@@ -43,7 +43,9 @@ namespace GameClient
 
 		void m_login_Client_OnGameExited()
 		{
-			panel_rooms.ClearRooms();
+			if(Program.Config.JoinPause){
+				panel_rooms.ClearRooms();
+			}
 		}
 
 		void m_login_Client_OnPlayerLeave(int port, string name, string room)
@@ -60,7 +62,7 @@ namespace GameClient
 		{
 			Client.Close();
 			System.Diagnostics.Process.GetCurrentProcess().Kill();
-		//	m_login.Close();
+			//	m_login.Close();
 		}
 		#endregion
 

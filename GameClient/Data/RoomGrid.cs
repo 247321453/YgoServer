@@ -34,26 +34,29 @@ namespace System.Windows.Forms
 		private void Init(){
 			RoomName = Password.OnlyName(config.Name);
 			this.Tag = config.DeulPort+":"+RoomName;
-			this.Size=new Size(186, 150);
+			this.Size=new Size(186, 186);
 			if(config!=null){
 				this.SuspendLayout();
-				lb_statu = new Label();
-				lb_statu.TextAlign = ContentAlignment.MiddleCenter;
-				lb_statu.Size = new Size(182, 30);
+				Label lb_title = new Label();
+				lb_title.TextAlign = ContentAlignment.MiddleCenter;
+				lb_title.Size = new Size(182, 30);
 				//label.Location = new Point(3,3);
-				lb_statu.ForeColor = Color.White;
+				lb_title.ForeColor = Color.White;
+				lb_title.Text = RoomName;
 				if(config.NoCheckDeck | config.NoShuffleDeck){
-					lb_statu.BackColor=Color.FromArgb(0xee, 0xdd, 0, 0);
-					lb_statu.Text = RoomName;
+					lb_title.BackColor=Color.FromArgb(0xee, 0xdd, 0, 0);
 				}else{
 					if(config.HasPassword()){
 						//label.BackColor=Color.FromArgb(0xdd, 0, 0x68, 0x8b);
-						lb_statu.BackColor=Color.FromArgb(0xee, 0xee, 0xad, 0x0e);
+						lb_title.BackColor=Color.FromArgb(0xee, 0xee, 0xad, 0x0e);
 					}else{
-						lb_statu.BackColor=Color.FromArgb(0xdd, 0, 0x64, 0);
+						lb_title.BackColor=Color.FromArgb(0xdd, 0, 0x64, 0);
 					}
 				}
-				
+				lb_statu = new Label();
+				lb_statu.TextAlign = ContentAlignment.MiddleCenter;
+				lb_statu.Size = new Size(182, 30);
+				this.Controls.Add(lb_title);
 				this.Controls.Add(lb_statu);
 				
 				Label label2 = new Label();
@@ -115,9 +118,9 @@ namespace System.Windows.Forms
 		public void StartGame(bool start){
 			if(lb_statu!=null){
 				if(start){
-					lb_statu.Text=RoomName+" 【决斗中】";
+					lb_statu.Text="【决斗中】";
 				}else{
-					lb_statu.Text=RoomName+" 【等待中】";
+					lb_statu.Text="【等待中】";
 				}
 			}
 		}
@@ -148,7 +151,9 @@ namespace System.Windows.Forms
 		public void OnRoomList(List<GameConfig2> configs){
 			lock(Rooms){
 				foreach(GameConfig2 config in configs){
-					Rooms.Add(Password.OnlyName(config.Name), config);
+					string name = Password.OnlyName(config.Name);
+					if(!Rooms.ContainsKey(name))
+						Rooms.Add(name, config);
 				}
 			}
 			BeginInvoke(new Action(

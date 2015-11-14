@@ -61,7 +61,7 @@ namespace YGOCore
 				writer.WriteUnicode(toname, 20);
 				writer.WriteUnicode(msg, msg.Length+1);
 				writer.Use();
-				roomServer.SendAll(writer.Content);
+				roomServer.SendAll(writer.Content, true, true);
 			}
 		}
 		public static void SendError(this Session session, string err){
@@ -74,10 +74,10 @@ namespace YGOCore
 			}
 		}
 		
-		private static void SendAll(this RoomServer roomServer,byte[] data,bool isNow = true){
+		private static void SendAll(this RoomServer roomServer,byte[] data,bool isNow = true,bool Force=false){
 			lock(roomServer.Clients){
 				foreach(Session client in roomServer.Clients){
-					if(!client.IsPause){
+					if(Force || !client.IsPause){
 						client.Client.SendPackage(data, isNow);
 					}
 				}

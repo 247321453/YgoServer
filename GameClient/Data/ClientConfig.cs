@@ -17,6 +17,11 @@ namespace GameClient
 	/// </summary>
 	public class ClientConfig
 	{
+		/// <summary>
+		/// 进入房间，暂停推送
+		/// </summary>
+		public bool JoinPause{get;set;}
+		
 		public string Host{get; set;}
 		public int Port{get; set;}
 		public int ChatPort{get; set;}
@@ -25,6 +30,7 @@ namespace GameClient
 		public string GameExe{get;set;}
 		public ClientConfig(){
 			ConfigManager.XmlFile = "ygoclient.xml";
+			JoinPause = false;
 		}
 		public void Load(){
 			Host = ConfigManager.readString("server");

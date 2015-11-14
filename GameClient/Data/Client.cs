@@ -215,10 +215,12 @@ namespace GameClient
 			string namepwd =Name + "$"+Pwd;
 			if(GameUtil.JoinRoom(Program.Config.Host, ""+Program.Config.DuelPort, namepwd, room, GameExited)){
 				//暂停游戏
-				using(PacketWriter writer=new PacketWriter(2)){
-					writer.Write((byte)RoomMessage.Pause);
-					writer.Use();
-					AsyncSend(writer.Content);
+				if(Program.Config.JoinPause){
+					using(PacketWriter writer=new PacketWriter(2)){
+						writer.Write((byte)RoomMessage.Pause);
+						writer.Use();
+						AsyncSend(writer.Content);
+					}
 				}
 			}
 		}
