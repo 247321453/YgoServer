@@ -37,7 +37,10 @@ namespace YGOCore.Net
 			EventHandler.Register((ushort)CtosMessage.Response,		OnResponse);
 			EventHandler.Register((ushort)CtosMessage.Surrender,	OnSurrender);
 			EventHandler.Register((ushort)CtosMessage.TimeConfirm,  OnTimeConfirm);
-		}
+
+            EventHandler.Register((ushort)CtosMessage.NETWORK_CLIENT_ID, RoomManager.SendRoomList);
+            EventHandler.Register((ushort)CtosMessage.STOP_CLIENT, OnDisconnected);
+        }
 		public static void Handler(GameSession player, List<GameClientPacket> packets){
 			foreach(GameClientPacket packet in packets){
 				//			Parse(player, packet);
@@ -72,7 +75,10 @@ namespace YGOCore.Net
 			enter.WriteUnicode("[err]" + message, 20);
 			enter.Write((byte)0);
 			client.Send(enter, isNow);
-		}
+
+            client.IsAuthentified = false;
+            //client.ServerMessage(MsgSystem.getMessage(client.Name, 0), PlayerType.White);
+        }
 
 		public static void ServerMessage(this GameSession client, string msg, PlayerType type=PlayerType.Yellow,bool isNow=true)
 		{
@@ -82,12 +88,14 @@ namespace YGOCore.Net
 			packet.WriteUnicode(finalmsg, finalmsg.Length + 1);
 			client.Send(packet, isNow);
 		}
-		#endregion
-		
-		#region 玩家信息/登录
-		public static void OnPlayerInfo(GameSession client, GameClientPacket packet){
-			if (client.Name != null)
-				return;
+        #endregion
+
+        #region 玩家信息/登录
+        public static void OnPlayerInfo(GameSession client, GameClientPacket packet){
+            if (client.Name != null) {
+                client.Name = packet.ReadUnicode(20);
+                return;
+            }
 			string name = packet.ReadUnicode(20);
 			if(name == "client"){
 				name = packet.ReadUnicode(20);
@@ -100,10 +108,10 @@ namespace YGOCore.Net
 				client.LobbyError(Messages.ERR_NO_NAME);
 			}
 			client.Name = name;
-			client.IsAuthentified = client.CheckAuth(name);
-			if(client.IsAuthentified){
+			//client.IsAuthentified = client.CheckAuth(name);
+			//if(client.IsAuthentified){
 				client.ServerMessage(MsgSystem.getMessage(client.Name, 0), PlayerType.White);
-			}
+			//}
 		}
 		#endregion
 		
@@ -136,6 +144,7 @@ namespace YGOCore.Net
 			return true;
 		}
 		public static void OnJoinGame(GameSession client, GameClientPacket packet){
+            
 			if (string.IsNullOrEmpty(client.Name) || client.Type != (int)PlayerType.Undefined){
 				Logger.Debug("join room fail:"+client.Name);
 				return;
@@ -149,12 +158,14 @@ namespace YGOCore.Net
 			else if (version > Program.Config.ClientVersion){
 				client.ServerMessage(Messages.MSG_HIGH_VERSION);
 			}
-			int gameid = packet.ReadInt32();//gameid
-			packet.ReadInt16();
-
+			//int gameid = packet.ReadInt32();//gameid
+			//packet.ReadInt16();
+            packet.ReadInt16();
+            int roomport = packet.ReadInt32();
 			string joinCommand = packet.ReadUnicode(60);
 			
 			GameRoom room = null;
+            /*
 			//IsAuthentified = CheckAuth();
 			if(!client.IsAuthentified){
 				client.LobbyError(Messages.ERR_AUTH_FAIL);
@@ -166,11 +177,9 @@ namespace YGOCore.Net
 			}
 			GameConfig config = GameConfigBuilder.Build(joinCommand);
 			room =  RoomManager.CreateOrGetGame(config);
-			if (room == null){
-				client.LobbyError(Messages.MSG_FULL);
-				return;
-			}
-			if (!room.IsOpen)
+            */
+            room = RoomManager.GetGame(roomport);
+			if (room == null || !room.IsOpen)
 			{
 				client.LobbyError(Messages.MSG_GAMEOVER);
 				return;
@@ -189,16 +198,23 @@ namespace YGOCore.Net
 			Logger.Debug("room "+room.Name+" add "+client.Name);
 			client.Game = room;
 			room.AddPlayer(client);
-		}
+            client.IsAuthentified = true;
+
+
+        }
 		#endregion
 		
 		#region 创建游戏
 		public static void OnCreateGame(GameSession client, GameClientPacket packet){
+            
 			if (string.IsNullOrEmpty(client.Name) || client.Type != (int)PlayerType.Undefined)
 				return;
 			GameRoom room = null;
-			GameConfig config = GameConfigBuilder.Build(packet);
-			room = RoomManager.CreateOrGetGame(config);
+            CtosCreateGame roomconfig = (CtosCreateGame)StructTransformer.BytesToStruct(packet.ReadBytes(StructTransformer.SizeOf(typeof(CtosCreateGame))), typeof(CtosCreateGame));
+            room = RoomManager.CreateGame(roomconfig);
+            
+			//GameConfig config = GameConfigBuilder.Build(packet);
+			//room = RoomManager.CreateOrGetGame(config);
 
 			if (room == null)
 			{
@@ -207,15 +223,18 @@ namespace YGOCore.Net
 			}
 			client.Game = room;
 			room.AddPlayer(client);
-			//IsAuthentified = CheckAuth();
+            client.IsAuthentified = true;
+            /*
+			IsAuthentified = CheckAuth();
 			if(!client.IsAuthentified){
 				client.LobbyError(Messages.ERR_AUTH_FAIL);
 			}
-		}
-		#endregion
-		
-		#region 决斗事件
-		public static void OnTimeConfirm(GameSession client, GameClientPacket packet){
+            */
+        }
+        #endregion
+
+        #region 决斗事件
+        public static void OnTimeConfirm(GameSession client, GameClientPacket packet){
 			if(client!=null){
 				Logger.Debug("OnTimeConfirm "+client.Name);
 			}
@@ -286,7 +305,7 @@ namespace YGOCore.Net
 				return;
 			if (client.State != PlayerState.Response)
 				return;
-			byte[] resp = packet.ReadToEnd();
+			byte[] resp = packet.ReadBytes();
 			if (resp.Length > 64)
 				return;
 			client.State = PlayerState.None;
@@ -347,7 +366,10 @@ namespace YGOCore.Net
 			if(client.Game!=null)
 				client.Game.RemovePlayer(client);
 		}
-		#endregion
-		
-	}
+        #endregion
+        public static void OnDisconnected(GameSession client, GameClientPacket nul)
+        {
+            client.Close(false);
+        }
+    }
 }

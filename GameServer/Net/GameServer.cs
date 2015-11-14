@@ -25,12 +25,15 @@ namespace YGOCore.Net
 		private AsyncTcpListener<GameSession> m_listener;
 		public ServerConfig Config{get;private set;}
 		public bool IsListening{get; private set;}
-		#endregion
-		
-		public GameServer(ServerConfig config)
+        public int PortNum { get; private set; }
+        private int portnum;
+        #endregion
+
+        public GameServer(ServerConfig config)
 		{
 			Config = config;
-		}
+            portnum = 10000;
+        }
 		
 		#region socket
 		public bool Start()
@@ -84,7 +87,8 @@ namespace YGOCore.Net
 					Client.Tag.Close();
 				}
 				m_listener.DisconnectClient(Client);
-			}
+                Logger.Info("玩家离开 当前人数" + (--PortNum) + ".");
+            }
 		}
 		void Listener_OnReceive(Connection<GameSession> Client)
 		{
@@ -101,9 +105,14 @@ namespace YGOCore.Net
 				GameSession session = new GameSession(Client, Config.ClientVersion,Config.Timeout);
 				Client.isAsync = Config.AsyncMode;
 				Client.Tag = session;
-			}
+                Logger.Info("玩家连接 当前人数" + (++PortNum) + ".");
+            }
 		}
-		#endregion
-		
-	}
+        #endregion
+
+        public int AddPort()
+        {
+            return portnum++;
+        }
+    }
 }

@@ -18,7 +18,9 @@ namespace YGOCore
 	class Program
 	{
 		public static ServerConfig Config;
-		public static void Main(string[] args)
+        public static GameServer Server { get; private set; }
+
+        public static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
@@ -32,7 +34,7 @@ namespace YGOCore
 			#if DEBUG
 			Logger.SetLogLevel(LogLevel.Debug);
 			#endif
-			GameServer Server = new GameServer(Config);
+			Server = new GameServer(Config);
 			Server.WriteHead();
 			if(loaded)
 				Logger.Info("Config loaded.");

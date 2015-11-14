@@ -22,7 +22,7 @@ namespace YGOCore.Net
 		public static void Init(string file){
 			try{
 				if(File.Exists(file)){
-					Msgs.AddRange(File.ReadAllLines(file));
+                    Msgs.AddRange(File.ReadAllLines(file, System.Text.Encoding.Default));
 				}
 			}catch(Exception){
 				

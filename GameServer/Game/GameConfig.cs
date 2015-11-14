@@ -7,21 +7,132 @@ namespace YGOCore.Game
 		public GameConfig(){
 			
 		}
-		//	private static Regex NameRegex=new Regex("^[0-9A-Za-z_\\s.]+$");
-		public int LfList { get; set; }
-		public string BanList{get; set;}
-		//012
-		public int Rule { get; set; }
-		//012
-		public int Mode { get; set; }
-		public bool EnablePriority { get; set; }
-		public bool NoCheckDeck { get; set; }
-		public bool NoShuffleDeck { get; set; }
-		public int StartLp { get; set; }
-		public int StartHand { get; set; }
-		public int DrawCount { get; set; }
-		public int GameTimer { get; set; }
-		public string Name { get; set; }
+        //	private static Regex NameRegex=new Regex("^[0-9A-Za-z_\\s.]+$");
+        public HostInfo Info;
+        public int LfList
+        {
+            get
+            {
+                return BanlistManager.GetIndex(Info.LfList);
+            }
+            set
+            {
+                    Info.LfList= BanlistManager.Gethash(value);
+            }
+        }
+        public string BanList
+        {
+            get
+            {
+                return BanlistManager.GetName(LfList);
+            }
+            set
+            {
+                Info.LfList = BanlistManager.Gethash(value);
+            }
+        }
+        //012
+        public int Rule
+        {
+            get
+            {
+                return Info.Rule;
+            }
+            set
+            {
+                Info.Rule = Convert.ToByte(value);
+            }
+        }
+        //012
+        public int Mode
+        {
+            get
+            {
+                return Info.Mode;
+            }
+            set
+            {
+                Info.Mode = Convert.ToByte(value);
+            }
+        }
+        public bool EnablePriority
+        {
+            get
+            {
+                return Convert.ToBoolean(Info.EnablePriority);
+            }
+            set
+            {
+                Info.EnablePriority = Convert.ToByte(value);
+            }
+        }
+        public bool NoCheckDeck
+        {
+            get
+            {
+                return Convert.ToBoolean(Info.NoCheckDeck);
+            }
+            set
+            {
+                Info.NoCheckDeck = Convert.ToByte(value);
+            }
+        }
+        public bool NoShuffleDeck
+        {
+            get
+            {
+                return Convert.ToBoolean(Info.NoShuffleDeck);
+            }
+            set
+            {
+                Info.NoShuffleDeck = Convert.ToByte(value);
+            }
+        }
+        public int StartLp
+        {
+            get
+            {
+                return Convert.ToInt32(Info.StartLp);
+            }
+            set
+            {
+                Info.StartLp = Convert.ToUInt32(value);
+            }
+        }
+        public int StartHand
+        {
+            get
+            {
+                return Info.StartHand;
+            }
+            set
+            {
+                Info.StartHand = Convert.ToByte(value);
+            }
+        }
+        public int DrawCount
+        {
+            get
+            {
+                return Info.DrawCount;
+            }
+            set
+            {
+                Info.DrawCount = Convert.ToByte(value);
+            }
+        }
+        public int GameTimer
+        {
+            get
+            {
+                return Info.GameTimer;
+            }
+            set
+            {
+                Info.GameTimer = Convert.ToByte(value);
+            }
+        }
+        public string Name { get; set; }
 		public bool IsRandom {get; set;}
 		public bool IsMatch {get{return Mode == 1;}}
 		public bool IsTag {get{return  Mode == 2;}}

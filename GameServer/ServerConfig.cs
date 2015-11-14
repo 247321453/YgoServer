@@ -35,10 +35,12 @@ namespace YGOCore
 		/// 客户端版本
 		/// </summary>
 		public int ClientVersion { get; private set; }
-		/// <summary>
-		/// 异步模式
-		/// </summary>
-		public bool AsyncMode{get;private set;}
+        public int PotVersion { get; private set; }
+        
+        /// <summary>
+        /// 异步模式
+        /// </summary>
+        public bool AsyncMode{get;private set;}
 		/// <summary>
 		/// 日志等级
 		/// </summary>
@@ -101,8 +103,9 @@ namespace YGOCore
 
 		public ServerConfig()
 		{
-			ClientVersion = 0x1336;
-			ServerIp="127.0.0.1";
+			ClientVersion = 0x1337;
+            PotVersion = 2;
+            ServerIp ="127.0.0.1";
 			ServerPort = 8911;
 			ServerName="YGOserver";
 			//	ApiIp="127.0.0.1";
@@ -249,7 +252,7 @@ namespace YGOCore
 					AsyncMode= (value.ToLower()=="true"||value=="1");
 					break;
 				case "timeout":
-					Timeout = Convert.ToInt32(value, 15);
+					Timeout = Convert.ToInt32(value);
 					break;
 				case "consoleapi":
 					ConsoleApi = Convert.ToBoolean(value);

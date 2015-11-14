@@ -20,6 +20,9 @@ namespace YGOCore.Net
 			this.Type = (int)PlayerType.Undefined;
 			this.State = PlayerState.None;
 			this.ClientVersion=version;
+			if(timeout<=0){
+				timeout = 15;
+			}
 			CheckTimer = new MyTimer(3000, timeout*1000);
 			CheckTimer.AutoReset = true;
 			CheckTimer.Elapsed += delegate { 
@@ -28,12 +31,16 @@ namespace YGOCore.Net
 					CheckTimer.Close();
 				}
 				if(CheckTimer.CheckStop()){
-					//超时自动断开
-					Close();
-					CheckTimer.Close();
+                    //超时自动断开
+                    m_client.Close();
+                    CheckTimer.Close();
 				}
 			};
-		}
+            GameServerPacket packet_write = new GameServerPacket(StocMessage.VersionCheck);
+            packet_write.Write(Program.Config.ClientVersion);
+            packet_write.Write(Program.Config.PotVersion);
+            Send(packet_write);
+        }
 		
 		#region Member
 		private bool m_close;
@@ -95,7 +102,7 @@ namespace YGOCore.Net
 
 		#region packet
 		public void OnReceive(object statu){
-			if(m_close) return;
+			//if(m_close) return;
 			//线程处理
 			List<GameClientPacket> packets=new List<GameClientPacket>();
 			lock(m_client.SyncRoot){
@@ -119,7 +126,7 @@ namespace YGOCore.Net
 		}
 
 		public void Send(GameServerPacket packet,bool isNow = true){
-			if(m_close) return;
+			//if(m_close) return;
 			packet.Use();
 			//	Logger.Debug("send "+System.Text.Encoding.Default.GetString(packet.Content));
 			//发送大量数据可能会卡
@@ -135,14 +142,25 @@ namespace YGOCore.Net
 				m_client.PeekSend();
 			}catch{}
 		}
-		public void Close(){
+		public void Close(bool sendpacket = true){
 			if(m_close) return;
 			m_close = true;
 			if(Game!=null){
 				Game.RemovePlayer(this);
 			}
-			m_client.Close();
-		}
+            //m_client.Close();/*
+            Type = (int)PlayerType.Undefined;
+            State = PlayerState.None;
+            TurnSkip = 0;
+            Game = null;
+            IsAuthentified = false;
+            if (sendpacket)
+            {
+                GameServerPacket packet_write = new GameServerPacket(StocMessage.STOP_CLIENT);
+                Send(packet_write);
+            }
+            m_close = false;
+        }
 		#endregion
 	}
 }

@@ -59,6 +59,7 @@ namespace YGOCore
 		/// <param name="deck"></param>
 		/// <returns></returns>
 		private static bool AddAI(ServerConfig Config, string room){
+            /*
 			lock(AIs){
 				if(AIs.Count >= Config.MaxAICount){
 					return false;
@@ -88,8 +89,8 @@ namespace YGOCore
 			}
 			lock(AIs){
 				AIs.Add(ai);
-			}
-			return true;
+			}*/
+			return false;
 		}
 
 		static void ai_Exited(object sender, EventArgs e)
@@ -179,9 +180,11 @@ namespace YGOCore
 		
 		private static void AICmd(GameServer Server,string[] args){
 			switch(args[1]){
+                /*
 				case "add":
 					AddAI(Server);
 					break;
+                    */
 				case "kill":
 					KillAIs();
 					break;
@@ -204,6 +207,7 @@ namespace YGOCore
 				AIs.Clear();
 			}
 		}
+        /*
 		private static void AddAI(GameServer Server){
 			string name = null;
 			GameRoom room = RoomManager.CreateOrGetGame(GameConfigBuilder.Build(""));
@@ -218,6 +222,7 @@ namespace YGOCore
 				Console.WriteLine(">>add ai fail");
 			}
 		}
+        */
 		#endregion
 	}
 }

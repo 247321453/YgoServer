@@ -55,5 +55,19 @@ namespace YGOCore.Game
         	}
         	return Banlist.Emtry;
         }
+        public static uint Gethash(int index)
+        {
+            if (index < Banlists.Count)
+                return Banlists[index].Hash;
+            return uint.MaxValue;
+        }
+
+        public static uint Gethash(string name)
+        {
+            for (int i = 0; i < Banlists.Count; i++)
+                if (Banlists[i].Name == name)
+                    return Banlists[i].Hash;
+            return uint.MaxValue;
+        }
     }
 }

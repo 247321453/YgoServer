@@ -16,7 +16,8 @@ namespace YGOCore.Game
 	{
 		#region member
 		public string Name{get{return Password.OnlyName(Config.Name);}}
-		public GameConfig Config;
+        public int Port { get; private set; }
+        public GameConfig Config;
 		public GameSession[] Players;
 		public GameSession[] CurPlayers;
 		public readonly List<GameSession> Observers = new List<GameSession>();
@@ -56,8 +57,9 @@ namespace YGOCore.Game
 		public int m_duelCount;
 		private bool m_swapped;
 		private bool m_matchKill;
-		
-		public bool isReading{
+        private object LuaErrorsLock = new object();
+
+        public bool isReading{
 			get{return State==GameState.Lobby;}
 		}
 		
@@ -66,9 +68,10 @@ namespace YGOCore.Game
 		#endregion
 		
 		#region 初始化
-		public GameRoom(GameConfig config)
+		public GameRoom(int port,GameConfig config)
 		{
-			Config = config;
+            Port = port;
+            Config = config;
 			IsRandom = config.IsRandom;
 			State = GameState.Lobby;
 			CurrentPlayer = 0;
@@ -134,14 +137,14 @@ namespace YGOCore.Game
 			{
 				if (Players[i] == null)
 					continue;
-				if(Players[i].Name == player.Name){
-					return true;
-				}
+				//if(Players[i].Name == player.Name){
+				//	return true;
+				//}
 			}
 			return false;
 		}
 		public void AddPlayer(GameSession player){
-			if(IsJoin(player)){
+            if (IsJoin(player)){
 //				/玩家已经在游戏
 				player.LobbyError(Messages.MSG_PLAYER_INGAME);
 				return;
@@ -154,7 +157,7 @@ namespace YGOCore.Game
 				SendJoinGame(player);
 				player.SendTypeChange();
 				player.Send(new GameServerPacket(StocMessage.DuelStart));
-				Observers.Add(player);
+                ObserversHandler(player);
 				if (State == GameState.Duel){
 					//中途观战
 					InitNewSpectator(player);
@@ -181,11 +184,11 @@ namespace YGOCore.Game
 			}
 			else
 			{
-				GameServerPacket watch = new GameServerPacket(StocMessage.HsWatchChange);
-				watch.Write((short)(Observers.Count + 1));
-				SendToAll(watch);
+                GameServerPacket watch = new GameServerPacket(StocMessage.HsWatchChange);
+                watch.Write((short)(ObserversHandler() + 1));
+                SendToAll(watch);
 				player.Type = (int)PlayerType.Observer;
-				Observers.Add(player);
+                ObserversHandler(player);
 //				if(player.IsAuthentified){
 //					ServerMessage("[Server] "+player.Name+" watch game.", PlayerType.White);
 //				}
@@ -209,10 +212,10 @@ namespace YGOCore.Game
 					}
 				}
 			}
-			if (Observers.Count > 0)
+            if (ObserversHandler() > 0)
 			{
 				GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
-				nwatch.Write((short)Observers.Count);
+				nwatch.Write((short)ObserversHandler());
 				player.Send(nwatch, false);
 			}
 			player.PeekSend();
@@ -222,7 +225,7 @@ namespace YGOCore.Game
 		
 		#region 移除玩家
 		public void RemovePlayer(GameSession player){
-			if(player==null){
+			if(player==null || !IsOpen){
 				return;
 			}
 			ServerApi.OnPlayerLeave(player, this);
@@ -238,12 +241,11 @@ namespace YGOCore.Game
 			}
 			else if (player.Type == (int)PlayerType.Observer)
 			{
-				lock(Observers)
-					Observers.Remove(player);
+                ObserversHandler(null,player);
 				if (State == GameState.Lobby)
 				{
 					GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
-					nwatch.Write((short) Observers.Count);
+                    nwatch.Write((short) ObserversHandler());
 					SendToAll(nwatch);
 				}
 				player.Close();
@@ -271,7 +273,7 @@ namespace YGOCore.Game
 				if (p != null)
 					return;
 			}
-			if (Observers.Count == 0)
+			if (ObserversHandler() == 0)
 			{
 				Close(true);
 			}
@@ -313,11 +315,11 @@ namespace YGOCore.Game
 			foreach (GameSession player in Players)
 				if (player != null && !player.Equals(except))
 					player.Send(packet, isNow);
-			lock(Observers){
-				foreach (GameSession player in Observers)
-					if (!player.Equals(except))
-						player.Send(packet, isNow);
-			}
+            List<GameSession> removeObservers = new List<GameSession>();
+            ObserversHandler(null, null, removeObservers);
+            foreach (GameSession player in removeObservers)
+				if (!player.Equals(except))
+					player.Send(packet, isNow);
 		}
 
 		public void SendToAllBut(GameServerPacket packet, int except,bool isNow=true)
@@ -338,11 +340,12 @@ namespace YGOCore.Game
 
 		public void SendToObservers(GameServerPacket packet,bool isNow=true)
 		{
-			lock(Observers){
-				foreach (GameSession player in Observers){
-					if (player != null){
-						player.Send(packet, isNow);
-					}
+            List<GameSession> removeObservers = new List<GameSession>();
+            ObserversHandler(null, null, removeObservers);
+            foreach (GameSession player in removeObservers)
+            {
+				if (player != null){
+					player.Send(packet, isNow);
 				}
 			}
 		}
@@ -380,23 +383,29 @@ namespace YGOCore.Game
 		#region 结果
 		public void Close(bool forceclose=false)
 		{
+            if (!IsOpen) return;
 			IsOpen = false;
 			RoomManager.Remove(this);
 			if(forceclose){
-				foreach(GameSession plager in Players){
+                GameSession[] removePlayers;
+                lock (Players)
+                    removePlayers = (GameSession[])Players.Clone();
+                foreach (GameSession plager in removePlayers)
+                {
 					if(plager==null){
 						continue;
 					}
 					plager.Close();
 					
 				}
-				lock(Observers){
-					foreach(GameSession plager in Observers){
-						if(plager==null){
-							continue;
-						}
-						plager.Close();
-					}
+                List<GameSession> removeObservers = new List<GameSession>();
+                ObserversHandler(null,null, removeObservers);
+                foreach (GameSession plager in removeObservers)
+                {
+				    if(plager==null){
+					    continue;
+				    }
+				    plager.Close();
 				}
 			}
 		}
@@ -1276,7 +1285,7 @@ namespace YGOCore.Game
 			}
 			else
 			{
-				Observers.Remove(player);
+                ObserversHandler(null,player);
 				Players[pos] = player;
 				player.Type = pos;
 
@@ -1286,7 +1295,7 @@ namespace YGOCore.Game
 				SendToAll(enter);
 
 				GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
-				nwatch.Write((short)Observers.Count);
+				nwatch.Write((short)ObserversHandler());
 				SendToAll(nwatch);
 
 				player.SendTypeChange();
@@ -1303,7 +1312,7 @@ namespace YGOCore.Game
 				return;
 			Players[player.Type] = null;
 			IsReady[player.Type] = false;
-			Observers.Add(player);
+            ObserversHandler(player);
 
 			GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
 			change.Write((byte)((player.Type << 4) + (int)PlayerChange.Observe));
@@ -1317,29 +1326,48 @@ namespace YGOCore.Game
 		#region 脚本错误
 		private void HandleError(string error)
 		{
-			const string log = "LuaErrors.log";
-			if (File.Exists(log))
-			{
-				foreach (string line in File.ReadAllLines(log))
-				{
-					if (line == error)
-						return;
-				}
-			}
+            const string log = "LuaErrors.log";
+            lock (LuaErrorsLock)
+            {
+                if (File.Exists(log))
+                {
+                    foreach (string line in File.ReadAllLines(log))
+                    {
+                        if (line == error)
+                            return;
+                    }
+                }
 
-			StreamWriter writer = new StreamWriter(log, true);
-			writer.WriteLine(error);
-			writer.Close();
-
+                StreamWriter writer = new StreamWriter(log, true);
+                writer.WriteLine(error);
+                writer.Close();
+            }
+            
 			GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
 			packet.Write((short)PlayerType.Observer);
 			packet.WriteUnicode(error, error.Length + 1);
 			SendToAll(packet);
-		}
-		#endregion
-		
-		#region 观战
-		private void InitNewSpectator(GameSession player, int pos=-1)
+        }
+        #endregion
+
+        private int ObserversHandler(GameSession add=null, GameSession remove = null, List<GameSession> copy=null)
+        {
+            int count;
+            lock (Observers)
+            {
+                if (add != null)
+                    Observers.Add(add);
+                if (remove != null)
+                    Observers.Remove(remove);
+                if (copy != null)
+                    copy.AddRange(Observers);
+                count = Observers.Count;
+            }
+            return count;
+        }
+
+        #region 观战
+        private void InitNewSpectator(GameSession player, int pos=-1)
 		{
 			int deck1 = m_duel.QueryFieldCount(0, CardLocation.Deck);
 			int deck2 = m_duel.QueryFieldCount(1, CardLocation.Deck);

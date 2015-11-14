@@ -27,7 +27,7 @@ namespace YGOCore.Game
 	public class RoomManager
 	{
 		#region member
-		private static readonly SortedList<string, GameRoom> Games = new SortedList<string, GameRoom>();
+		private static readonly SortedList<int, GameRoom> Games = new SortedList<int, GameRoom>();
 		private static readonly Random Random= new Random();
 		private static readonly Queue<WinInfo> WinInfos = new Queue<WinInfo>();
 		private static System.Timers.Timer WinSaveTimer;
@@ -151,26 +151,27 @@ namespace YGOCore.Game
 				}
 			}
 		}
-		#endregion
-		
-		#region 房间
+        #endregion
+
+        #region 房间
 		public  static void Add(GameRoom room){
 			if(room==null)return;
 			lock(Games){
-				if(!Games.ContainsKey(room.Name)){
-					Games.Add(room.Name, room);
+				if(!Games.ContainsKey(room.Port)){
+					Games.Add(room.Port, room);
 				}
 			}
 		}
-		public  static void Remove(GameRoom room){
+        public static void Remove(GameRoom room){
 			if(room==null)return;
 			lock(Games){
-				if(Games.ContainsKey(room.Name)){
-					Games.Remove(room.Name);
+				if(Games.ContainsKey(room.Port)){
+					Games.Remove(room.Port);
 				}
 			}
 			ServerApi.OnRoomClose(room);
 		}
+        /*
 		public  static bool CheckRoomPassword(string namepwd){
 			string name = Password.OnlyName(namepwd);
 			lock(Games){
@@ -184,13 +185,15 @@ namespace YGOCore.Game
 			}
 			return true;
 		}
-		/// <summary>
-		/// 创建房间
-		/// </summary>
-		/// <param name="server"></param>
-		/// <param name="config"></param>
-		/// <returns></returns>
-		public  static GameRoom CreateOrGetGame(GameConfig config){
+        */
+        /// <summary>
+        /// 创建房间
+        /// </summary>
+        /// <param name="server"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        /*
+        public  static GameRoom CreateOrGetGame(GameConfig config){
 			string roomname = Password.OnlyName(config.Name);
 			lock(Games){
 				if (Games.ContainsKey(roomname)){
@@ -206,12 +209,14 @@ namespace YGOCore.Game
 			ServerApi.OnRoomCreate(room);
 			return room;
 		}
-		/// <summary>
-		/// 得到一个不存在的随机房间名
-		/// </summary>
-		/// <param name="server"></param>
-		/// <returns></returns>
-		public  static string NewRandomRoomName(){
+        */
+        /// <summary>
+        /// 得到一个不存在的随机房间名
+        /// </summary>
+        /// <param name="server"></param>
+        /// <returns></returns>
+        /*
+        public  static string NewRandomRoomName(){
 			List<string> rooms=new List<string>();
 			lock(Games){
 				rooms.AddRange(Games.Keys);
@@ -231,14 +236,15 @@ namespace YGOCore.Game
 				}
 			}
 		}
-
-		/// <summary>
-		/// 得到一个存在的随机房间名，不能带密码
-		/// </summary>
-		/// <param name="server"></param>
-		/// <param name="tag"></param>
-		/// <returns></returns>
-		public  static string RandomRoomName(string tag=null){
+        */
+        /// <summary>
+        /// 得到一个存在的随机房间名，不能带密码
+        /// </summary>
+        /// <param name="server"></param>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        /*
+        public  static string RandomRoomName(string tag=null){
 			if(!string.IsNullOrEmpty(tag) && !tag.EndsWith("#")){
 				tag+="#";
 			}
@@ -253,7 +259,7 @@ namespace YGOCore.Game
 			GameRoom room = rooms[index];
 			return room.Config==null?null:room.Config.Name;
 		}
-		
+		*/
 		private  static List<GameRoom> GetNoPwdRoom(SortedList<string, GameRoom> rooms, string tag=null)
 		{
 			List<GameRoom> roomList=new List<GameRoom>();
@@ -289,6 +295,62 @@ namespace YGOCore.Game
 			sb.Replace(" ", "");
 			return GuidString.Substring(0, 6);
 		}
-		#endregion
-	}
+        #endregion
+
+        public static GameRoom GetGame(int port)
+        {
+            lock (Games)
+            {
+                if (Games.ContainsKey(port))
+                {
+                    return Games[port];
+                }
+            }
+            return null;
+        }
+
+        public static GameRoom CreateGame(CtosCreateGame roomconfig)
+        {
+            lock (Games)
+                if (Games.Count >= Program.Config.MaxRoomCount)
+                {
+                    return null;
+                }
+            GameRoom room = new GameRoom(Program.Server.AddPort(),GameConfigBuilder.Build(roomconfig));
+            Logger.Info("create room");
+            Add(room);
+            ServerApi.OnRoomCreate(room);
+            return room;
+        }
+
+        public static void SendRoomList(GameSession client, GameClientPacket nul)
+        {
+            GameServerPacket packet;
+            StocHostPacket hp = new StocHostPacket();
+            lock (Games)
+            foreach (var game in Games)
+            {
+                packet = new GameServerPacket(StocMessage.NETWORK_SERVER_ID);
+                hp.port = (ushort)game.Key;
+                hp.host = game.Value.Config.Info;
+                hp.name = new char[20];
+                char[] name = game.Value.Name.ToCharArray();
+                Array.Copy(name, hp.name,Math.Min(20,name.Length));
+                if (game.Value.State != GameState.Lobby)
+                {
+                    int i = 20;
+                    while (--i > 4) hp.name[i] = hp.name[i - 5];
+                    hp.name[0] = '【';
+                    hp.name[1] = '对';
+                    hp.name[2] = '战';
+                    hp.name[3] = '中';
+                    hp.name[4] = '】';
+                }
+                packet.Write(StructTransformer.StructToBytes(hp));
+                client.Send(packet);
+            }
+
+        }
+    }
+    
 }
