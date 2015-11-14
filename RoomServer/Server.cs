@@ -226,6 +226,7 @@ namespace YGOCore
 			process.EnableRaisingEvents=true;
 			process.StartInfo.RedirectStandardInput = false;
 			process.StartInfo.RedirectStandardOutput = true;
+			process.StartInfo.StandardOutputEncoding=System.Text.Encoding.UTF8;
 			//		process.StartInfo.RedirectStandardError = false;
 			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
