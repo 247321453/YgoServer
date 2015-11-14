@@ -18,24 +18,23 @@ namespace YGOCore
 	/// </summary>
 	public static class RoomEvent
 	{
-		public static void OnSendServerInfo(this RoomServer roomServer){
+		public static void OnSendServerInfo(this RoomServer roomServer,Session session){
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.Info);
 				writer.Write(roomServer.GetChatPort());
 				writer.Write(roomServer.GetDuelPort());
-				writer.WriteUnicode(roomServer.Config.Name, 20);
-				writer.WriteUnicode(roomServer.Config.Desc, roomServer.Config.Desc.Length+1);
 				writer.Use();
-				roomServer.SendAll(writer.Content);
+				session.Client.SendPackage(writer.Content);
 			}
 		}
 
 		#region room list
-		public static void OnRoomList(this RoomServer roomServer,bool nolock=false,bool nostart = false){
-			List<byte[]> packets=new List<byte[]>();
+		public static void OnRoomList(this RoomServer roomServer,Session session,bool nolock=false,bool nostart = false){
+			Logger.Debug("roomlist");
 			lock(roomServer.Servers){
 				foreach(Server srv in roomServer.Servers){
 					using(PacketWriter wrtier=new PacketWriter(20)){
+						wrtier.Write((byte)RoomMessage.RoomList);
 						wrtier.Write(srv.Port);
 						lock(srv.Rooms){
 							wrtier.Write(srv.Rooms.Count);
@@ -46,13 +45,11 @@ namespace YGOCore
 							}
 						}
 						wrtier.Use();
-						packets.Add(wrtier.Content);
+						session.Client.SendPackage(wrtier.Content, false);
 					}
 				}
 			}
-			foreach(byte[] data in packets){
-				roomServer.SendAll(data);
-			}
+			session.Client.PeekSend();
 		}
 		#endregion
 		
@@ -77,7 +74,7 @@ namespace YGOCore
 			}
 		}
 		
-		private static void SendAll(this RoomServer roomServer, byte[] data,bool isNow = true){
+		private static void SendAll(this RoomServer roomServer,byte[] data,bool isNow = true){
 			lock(roomServer.Clients){
 				foreach(Session client in roomServer.Clients){
 					if(!client.IsPause){

@@ -58,7 +58,7 @@ namespace YGOCore
 			bool nostart = packet.ReadBoolean();
 			session.IsPause  = false;
 			if(session.Server!=null){
-				session.Server.OnRoomList(nolock, nostart);
+				session.Server.OnRoomList(session, nolock, nostart);
 			}
 		}
 		//登录
@@ -70,7 +70,7 @@ namespace YGOCore
 				session.IsPause = false;
 				//返回聊天端口，对战端口
 				if(session.Server!=null){
-					session.Server.OnSendServerInfo();
+					session.Server.OnSendServerInfo(session);
 				}
 			}else{
 				session.SendError("认证失败");

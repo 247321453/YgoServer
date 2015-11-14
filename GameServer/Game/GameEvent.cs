@@ -101,9 +101,6 @@ namespace YGOCore.Net
 			}
 			client.Name = name;
 			client.IsAuthentified = client.CheckAuth(name);
-			if(client.IsAuthentified){
-				client.ServerMessage(MsgSystem.getMessage(client.Name, 0), PlayerType.White);
-			}
 		}
 		#endregion
 		

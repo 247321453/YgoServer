@@ -36,10 +36,7 @@ namespace YGOCore
 					}else{
 						//数量
 						lock(server.Servers){
-							int i= 0;
-							foreach(Server srv in server.Servers){
-								Console.WriteLine(">>"+(++i)+":"+srv.Name);
-							}
+							Console.WriteLine(">>"+server.Servers.Count);
 						}
 					}
 					break;
@@ -50,7 +47,7 @@ namespace YGOCore
 						//服务信息，玩家数，房间数
 						lock(server.Servers){
 							if(i<server.Servers.Count){
-								Console.WriteLine(">>close "+server.Servers[i].Name);
+								Console.WriteLine(">>close "+server.Servers[i].Port);
 							}else{
 								Console.WriteLine(">>no find "+i);
 							}
@@ -59,7 +56,7 @@ namespace YGOCore
 						//数量
 						lock(server.Servers){
 							foreach(Server srv in server.Servers){
-								Console.WriteLine(">>close:"+srv.Name);
+								Console.WriteLine(">>close:"+srv.Port);
 								srv.Close();
 							}
 						}

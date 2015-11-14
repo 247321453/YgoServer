@@ -61,10 +61,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GameServer\Game\GameConfig.cs">
-      <Link>Data\GameConfig.cs</Link>
+      <Link>Common\GameConfig.cs</Link>
     </Compile>
     <Compile Include="..\lib\AsyncServer\ArrayQueue.cs">
-      <Link>Data\ArrayQueue.cs</Link>
+      <Link>Common\ArrayQueue.cs</Link>
     </Compile>
     <Compile Include="..\lib\AsyncServer\BinaryExtensions.cs">
       <Link>Common\BinaryExtensions.cs</Link>
@@ -84,27 +84,25 @@
     <Compile Include="..\lib\ConfigManager.cs">
       <Link>Common\ConfigManager.cs</Link>
     </Compile>
-    <Compile Include="..\lib\OCGWrapper\Network\CtosMessage.cs">
-      <Link>Data\CtosMessage.cs</Link>
-    </Compile>
-    <Compile Include="..\lib\OCGWrapper\Network\StocMessage.cs">
-      <Link>Data\StocMessage.cs</Link>
-    </Compile>
     <Compile Include="..\lib\Password.cs">
       <Link>Common\Password.cs</Link>
     </Compile>
     <Compile Include="..\lib\Tool.cs">
       <Link>Common\Tool.cs</Link>
     </Compile>
+    <Compile Include="..\RoomServer\Common\RoomMessage.cs">
+      <Link>Common\RoomMessage.cs</Link>
+    </Compile>
     <Compile Include="CreateRoomForm.cs" />
     <Compile Include="CreateRoomForm.Designer.cs">
       <DependentUpon>CreateRoomForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Data\Client.cs" />
+    <Compile Include="Data\ClientConfig.cs" />
     <Compile Include="Data\ClientEvent.cs" />
+    <Compile Include="Data\GameConfig2.cs" />
     <Compile Include="Data\GameUtil.cs" />
     <Compile Include="Data\RoomGrid.cs" />
-    <Compile Include="Data\ServerInfo.cs" />
     <Compile Include="InputDialog.cs" />
     <Compile Include="InputDialog.Designer.cs">
       <DependentUpon>InputDialog.cs</DependentUpon>
@@ -142,8 +140,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ygoclient.xml">
-	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data" />

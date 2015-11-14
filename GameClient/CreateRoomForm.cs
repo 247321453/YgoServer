@@ -17,11 +17,11 @@ namespace GameClient
 	/// </summary>
 	public partial class CreateRoomForm : Form
 	{
-		MainForm parent;
-		public CreateRoomForm(MainForm parent)
+		Client client;
+		public CreateRoomForm(Client client)
 		{
 			InitializeComponent();
-			this.parent=parent;
+			this.client=client;
 			cb_banlist.SelectedIndex=0;
 			cb_draw.SelectedIndex=0;
 			cb_hand.SelectedIndex=4;
@@ -74,7 +74,7 @@ namespace GameClient
 		void Btn_createClick(object sender, EventArgs e)
 		{
 			string room = GetRoomString();
-			parent.JoinRoom(room);
+			client.JoinRoom(room);
 			this.Hide();
 			//MessageBox.Show(room);
 		}

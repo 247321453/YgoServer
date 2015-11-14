@@ -42,8 +42,6 @@ namespace YGOCore
 		private string m_fileName;
 		private Thread m_read;
 		public int Port{get;private set;}
-		public string Host{get;private set;}
-		public string Name{get;private set;}
 		public int RoomCount{get{lock(Rooms)return Rooms.Count;}}
 		public Server(string fileName,string config="config.txt")
 		{
@@ -58,7 +56,7 @@ namespace YGOCore
 			int user = 0;
 			lock(Rooms) room = Rooms.Count;
 			lock(Users) user= Users.Count;
-			return Host+":"+Port+" "+Name+" "+"Rooms:"+room+",Users:"+user;
+			return Port+" "+"Rooms:"+room+",Users:"+user;
 		}
 		#endregion
 
@@ -85,13 +83,10 @@ namespace YGOCore
 			Logger.Debug(""+line);
 			switch(args[0]){
 				case "server":
-					if(args.Length>3){
-						Host = args[1];
+					if(args.Length>1){
 						int p = 0;
-						int.TryParse(args[2], out p);
+						int.TryParse(args[1], out p);
 						Port = p;
-						Name = args[3];
-						Logger.Debug("server:"+Name+":"+Port);
 					}
 					else{
 						Logger.Warn("server");

@@ -10,8 +10,8 @@
 		<!-- access these values via the property:
 			System.Configuration.ConfigurationManager.AppSettings[key]
 		-->
-		<add key="lastserver" value=""/>
-		<add key="server01" value="服务器1:127.0.0.1:8910"/>
-		<add key="server02" value="服务器2:127.0.0.1:8911"/>
+		<add key="server" value="127.0.0.1"/>
+		<add key="port" value="18910"/>
+		<add key="game" value="F:\\ygopro\\ygopro_vs.exe"/>
 	</appSettings>
 </configuration>

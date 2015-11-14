@@ -25,7 +25,7 @@ namespace YGOCore
 		
 		public static void OnServerInfo(GameServer server){
 			ServerConfig Config = server.Config;
-			Println("server"+SEP+Config.ServerIp+SEP+Config.ServerPort+SEP+Config.ServerName);
+			Println("server"+SEP+Config.ServerPort);
 		}
 		public static void OnRoomCreate(GameRoom room){
 			if(room==null||room.Config==null){

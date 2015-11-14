@@ -21,10 +21,10 @@ namespace System.Windows.Forms
 	public class RoomBlock : FlowLayoutPanel
 	{
 		RoomGrid parent;
-		GameConfig config;
+		GameConfig2 config;
 		Label lb_statu;
 		string RoomName;
-		public RoomBlock(RoomGrid parent, GameConfig config){
+		public RoomBlock(RoomGrid parent, GameConfig2 config){
 			this.parent=parent;
 			this.config = config;
 			Init();
@@ -33,7 +33,7 @@ namespace System.Windows.Forms
 		#region init
 		private void Init(){
 			RoomName = Password.OnlyName(config.Name);
-			this.Tag = RoomName;
+			this.Tag = config.DeulPort+":"+RoomName;
 			this.Size=new Size(186, 150);
 			if(config!=null){
 				this.SuspendLayout();
@@ -127,41 +127,43 @@ namespace System.Windows.Forms
 	#region panel
 	public class RoomGrid : FlowLayoutPanel
 	{
-		private MainForm form;
+		private Client client;
 		private readonly SortedList<string, GameConfig> Rooms=new SortedList<string, GameConfig>();
 		private readonly byte[] _lock =new byte[0];
-		public void SetParent(MainForm form){
-			this.form=form;
+		public void SetClient(Client client){
+			this.client=client;
 		}
 		
 		public void JoinRoom(string room){
-			if(form!=null){
-				form.JoinRoom(room);
+			if(client!=null){
+				client.JoinRoom(room);
 			}
 		}
-		
-		#region allrooms
-		public void OnRoomList(List<GameConfig> configs){
+		public void ClearRooms(){
 			lock(Rooms){
 				Rooms.Clear();
-				foreach(GameConfig config in configs){
+			}
+		}
+		#region allrooms
+		public void OnRoomList(List<GameConfig2> configs){
+			lock(Rooms){
+				foreach(GameConfig2 config in configs){
 					Rooms.Add(Password.OnlyName(config.Name), config);
 				}
 			}
 			BeginInvoke(new Action(
 				()=>{
-					MessageBox.Show("count:"+configs.Count);
 					lock(_lock)
 						UpdateAll(configs);
 				})
 			           );
 		}
 		
-		private void UpdateAll(List<GameConfig> configs){
+		private void UpdateAll(List<GameConfig2> configs){
 			this.SuspendLayout();
 			this.Controls.Clear();
 			//MessageBox.Show("共有"+rooms.Length+"房间");
-			foreach(GameConfig config in configs){
+			foreach(GameConfig2 config in configs){
 				AddRoom(config);
 			}
 			this.ResumeLayout(true);
@@ -169,7 +171,8 @@ namespace System.Windows.Forms
 		#endregion
 		
 		#region close
-		public void OnClose(string name){
+		public void OnClose(int port, string name){
+			name = port+":"+name;
 			lock(Rooms){
 				if(Rooms.ContainsKey(name)){
 					Rooms.Remove(name);
@@ -195,7 +198,8 @@ namespace System.Windows.Forms
 		#endregion
 		
 		#region start
-		public void OnStart(string name){
+		public void OnStart(int port, string name){
+			name = port+":"+name;
 			lock(Rooms){
 				if(Rooms.ContainsKey(name)){
 					Rooms[name].IsStart = true;
@@ -221,7 +225,7 @@ namespace System.Windows.Forms
 		#endregion
 		
 		#region create
-		public void OnCreate(GameConfig config){
+		public void OnCreate(GameConfig2 config){
 			string name = Password.OnlyName(config.Name);
 			lock(Rooms){
 				if(Rooms.ContainsKey(name)){
@@ -238,7 +242,7 @@ namespace System.Windows.Forms
 			           );
 		}
 
-		private void AddRoom(GameConfig config){
+		private void AddRoom(GameConfig2 config){
 			RoomBlock b = new RoomBlock(this, config);
 			Controls.Add(b);
 		}

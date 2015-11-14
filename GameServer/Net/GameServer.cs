@@ -40,7 +40,6 @@ namespace YGOCore.Net
 			{
 				Api.Init(Config.Path, Config.ScriptFolder, Config.CardCDB);
 				BanlistManager.Init(Config.BanlistFile);
-				MsgSystem.Init(Config.File_ServerMsgs);
 				WinInfo.Init(Config.WinDbName);
 				RoomManager.init();
 				m_listener = new AsyncTcpListener<GameSession>(IPAddress.Any, Config.ServerPort);

@@ -29,7 +29,6 @@ namespace YGOCore
 			}
 			ServerConfig config = server.Config;
 			string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			Console.Title=(string.IsNullOrEmpty(config.ServerName)?"YgoServer":config.ServerName);
 			Logger.Info("┌───────────────────────────────────", true);
 			Logger.Info("│ __     _______  ____   _____", true);
 			Logger.Info("│ \\ \\   / / ____|/ __ \\ / ____|", true);
@@ -43,7 +42,6 @@ namespace YGOCore
 			Logger.Info("│NeedAtuh="+config.isNeedAuth+", AsyncMode="+config.AsyncMode
 			            +", RecordWin="+config.RecordWin
 			            +", BanMode="+config.BanMode, true);
-			Logger.Info("│"+config.ServerDesc, true);
 			Logger.Info("└───────────────────────────────────", true);
 		}
 		static readonly List<Process> AIs=new List<Process>();

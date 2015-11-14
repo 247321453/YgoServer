@@ -1,15 +1,8 @@
 ﻿####################################################
 #客户端版本1033.7
 clientversion=1337
-#####################
-serverip=127.0.0.1
-servername=菜菜服务器
-serverdesc=提供100只野生AI，房间数50，不支持私聊
 serverport=8910
-###房间服务器端口
 apiport=18910
-###true则是发送到房间服务端
-apiislocal=false
 ##############
 ###需要登录认证，AI任何时候都需要密码
 needauth=false
@@ -21,15 +14,8 @@ maxroom=500
 autoreplay=true
 replayfolder=replay
 recordwin=true
-###服务器公告
-servermsgs=server_msg.txt
-###登录验证，POST 传参， username，password
-loginurl=http://www.ygobbs.com/index.php?ctrl=api
 ###AI最大数
 maxai=100
-###AI界面隐藏
-aiishide=true
-###AI登录密码
 aipassword=kenan123
 ###################帐号管理
 ##### 0 不禁止；1 禁止列表帐号；2 只允许列表帐号

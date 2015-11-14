@@ -7,11 +7,10 @@
  * 要改变这种模板请点击 工具|选项|代码编写|编辑标准头文件
  */
 using AsyncServer;
-using OcgWrapper.Enums;
 using System.Windows.Forms;
-using GameClient.Data;
 using YGOCore.Game;
 using System.Collections.Generic;
+using YGOCore;
 
 namespace GameClient
 {
@@ -27,38 +26,32 @@ namespace GameClient
 			RegisterEvents();
 		}
 		static void RegisterEvents(){
-			EventHandler.Register((ushort)StocMessage.HsPlayerEnter, OnError);
-			EventHandler.Register((ushort)StocMessage.Chat, OnServerMsg);
-			EventHandler.Register((ushort)StocMessage.ServerInfo, OnServerInfo);
-			EventHandler.Register((ushort)StocMessage.ClientChat, OnClientChat);
-			EventHandler.Register((ushort)StocMessage.RoomCreate, OnRoomCreate);
-			EventHandler.Register((ushort)StocMessage.RoomStart, OnRoomStart);
-			EventHandler.Register((ushort)StocMessage.RoomClose, OnRoomClose);
-			EventHandler.Register((ushort)StocMessage.RoomList, OnRoomList);
+			EventHandler.Register((ushort)RoomMessage.Error, OnError);
+			EventHandler.Register((ushort)RoomMessage.Info, OnServerInfo);
+			EventHandler.Register((ushort)RoomMessage.Chat, OnClientChat);
+			EventHandler.Register((ushort)RoomMessage.RoomCreate, OnRoomCreate);
+			EventHandler.Register((ushort)RoomMessage.RoomStart, OnRoomStart);
+			EventHandler.Register((ushort)RoomMessage.RoomClose, OnRoomClose);
+			EventHandler.Register((ushort)RoomMessage.RoomList, OnRoomList);
+			EventHandler.Register((ushort)RoomMessage.PlayerEnter, OnPlayerEnter);
+			EventHandler.Register((ushort)RoomMessage.PlayerLeave, OnPlayerLeave);
 		}
 		public static void Handler(Client client, List<PacketReader> packets){
 			if(packets.Count==0) return;
 			
 			foreach(PacketReader packet in packets){
 				//			Parse(player, packet);
-				StocMessage msg = Byte2Ctos(packet.ReadByte());
-				EventHandler.Do((ushort)msg, client, packet);
+				ushort id = packet.ReadByte();
+				EventHandler.Do(id, client, packet);
 				packet.Close();
 			}
-		}
-		public static StocMessage Byte2Ctos(byte ctos)
-		{
-			if(StocMessage.IsDefined(typeof(StocMessage), ctos)){
-				return (StocMessage)ctos;
-			}
-			return StocMessage.Unknown;
 		}
 		#endregion
 		
 		#region msg
 		private static void OnError(Client client, PacketReader reader){
 			//错误
-			string err = reader.ReadUnicode(20);
+			string err = reader.ReadUnicode(256);
 			MessageBox.Show(err);
 			if(!client.IsLogin){
 				try{
@@ -66,22 +59,12 @@ namespace GameClient
 				}catch{}
 			}
 		}
-		private static void OnServerMsg(Client client, PacketReader reader){
-			//服务器消息
-			int type = (int)reader.ReadInt16();
-			string msg = reader.ReadUnicode(256);
-			client.ServerChat(null, null, msg);
-		}
 		private static void OnServerInfo(Client client, PacketReader reader){
 			//服务器信息
-			ServerInfo info =new ServerInfo();
-			info.Name = reader.ReadUnicode(20);
-			info.Host = reader.ReadUnicode(20);
-			info.Port = reader.ReadInt32();
-			info.NeedAuth = reader.ReadBoolean();
-			info.Token = reader.ReadUnicode(20);
-			info.Desc = reader.ReadUnicode(256);
-			client.OnServerInfo(info);
+			Program.Config.ChatPort = reader.ReadInt32(); 
+			Program.Config.DuelPort = reader.ReadInt32();
+			MessageBox.Show(Program.Config.ChatPort+":"+Program.Config.DuelPort);
+			client.OnLoginOk();
 		}
 		private static void OnClientChat(Client client, PacketReader reader){
 			//大厅聊天
@@ -95,51 +78,56 @@ namespace GameClient
 		#region room
 		private static void OnRoomCreate(Client client, PacketReader reader){
 			//房间创建
-			GameConfig config =new GameConfig();
-			config.Name = reader.ReadUnicode(20);
-			config.BanList = reader.ReadUnicode(20);
-			config.LfList = reader.ReadInt16();
-			config.Rule = reader.ReadInt16();
-			config.Mode = reader.ReadInt16();
-			config.EnablePriority = reader.ReadBoolean();
-			config.NoCheckDeck = reader.ReadBoolean();
-			config.NoShuffleDeck = reader.ReadBoolean();
-			config.StartLp = reader.ReadInt32();
-			config.StartHand = reader.ReadInt16();
-			config.DrawCount= reader.ReadInt16();
-			config.GameTimer = reader.ReadInt32();
-			config.IsStart = reader.ReadBoolean();
+			int port = reader.ReadInt32();
+			string room = reader.ReadUnicode(20);
+			string banlist = reader.ReadUnicode(20);
+			string info = reader.ReadUnicode(40);
+			GameConfig2 config = new GameConfig2();
+			config.Parse(info);
+			config.Name = room;
+			config.DeulPort = port;
+			config.BanList = banlist;
 			client.OnServerRoomCreate(config);
 		}
 		private static void OnRoomStart(Client client, PacketReader reader){
+			int port = reader.ReadInt32();
 			string room = reader.ReadUnicode(20);
-			client.OnServerRoomStart(room);
+			client.OnServerRoomStart(port, room);
 		}
 		private static void OnRoomClose(Client client, PacketReader reader){
+			int port = reader.ReadInt32();
 			string room = reader.ReadUnicode(20);
-			client.OnServerRoomClose(room);
+			client.OnServerRoomClose(port, room);
 		}
 		private static void OnRoomList(Client client, PacketReader reader){
+			int port = reader.ReadInt32();
 			int count = reader.ReadInt32();
-			List<GameConfig> configs=new List<GameConfig>();
+			List<GameConfig2> configs=new List<GameConfig2>();
 			for(int i=0;i<count;i++){
-				GameConfig config =new GameConfig();
-				config.Name = reader.ReadUnicode(20);
-				config.BanList = reader.ReadUnicode(20);
-				config.LfList = reader.ReadInt16();
-				config.Rule = reader.ReadInt16();
-				config.Mode = reader.ReadInt16();
-				config.EnablePriority = reader.ReadBoolean();
-				config.NoCheckDeck = reader.ReadBoolean();
-				config.NoShuffleDeck = reader.ReadBoolean();
-				config.StartLp = reader.ReadInt32();
-				config.StartHand = reader.ReadInt16();
-				config.DrawCount= reader.ReadInt16();
-				config.GameTimer = reader.ReadInt32();
-				config.IsStart = reader.ReadBoolean();
+				string name = reader.ReadUnicode(20);
+				string banlist = reader.ReadUnicode(20);
+				string info = reader.ReadUnicode(20);
+				GameConfig2 config =new GameConfig2();
+				config.Parse(info);
+				config.Name = name;
+				config.BanList = banlist;
+				config.DeulPort = port;
 				configs.Add(config);
 			}
+			MessageBox.Show("roomlist:"+configs.Count);
 			client.OnServerRoomList(configs);
+		}
+		private static void OnPlayerEnter(Client client, PacketReader reader){
+			int port = reader.ReadInt32();
+			string name = reader.ReadUnicode(20);
+			string room = reader.ReadUnicode(20);
+			client.OnServerPlayerEnter(port, name, room);
+		}
+		private static void OnPlayerLeave(Client client, PacketReader reader){
+			int port = reader.ReadInt32();
+			string name = reader.ReadUnicode(20);
+			string room = reader.ReadUnicode(20);
+			client.OnServerPlayerLeave(port, name, room);
 		}
 		#endregion
 		

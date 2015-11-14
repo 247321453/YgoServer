@@ -10,8 +10,6 @@
 		<!-- access these values via the property:
 			System.Configuration.ConfigurationManager.AppSettings[key]
 		-->
-		<add key="name" value="YgoServer 0.6" />
-		<add key="desc" value="Server is testing..."/>
 		<!-- 3的 倍数-->
 		<add key="timeout" value="15"/>
 		<add key="port" value="18910"/>

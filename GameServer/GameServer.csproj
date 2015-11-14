@@ -78,7 +78,6 @@
     <Compile Include="Info\Deck.cs" />
     <Compile Include="Info\Replay.cs" />
     <Compile Include="Info\ReplayHeader.cs" />
-    <Compile Include="Game\MsgSystem.cs" />
     <Compile Include="Game\RoomManager.cs" />
     <Compile Include="Info\WinInfo.cs" />
     <Compile Include="Messages.cs" />

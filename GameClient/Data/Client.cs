@@ -11,34 +11,37 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 
 using AsyncServer;
-using GameClient.Data;
-using OcgWrapper.Enums;
 using YGOCore;
 using YGOCore.Game;
 
 namespace GameClient
 {
-	public delegate void OnLoginHandler(ServerInfo info);
+	public delegate void OnLoginHandler();
 	public delegate void OnServerChatHandler(string pname, string tname, string msg);
-	public delegate void OnRoomCreateHandler(GameConfig config);
-	public delegate void OnRoomStartHandler(string name);
-	public delegate void OnRoomCloseHandler(string name);
-	public delegate void OnRoomListHandler(List<GameConfig> configs);
+	public delegate void OnRoomCreateHandler(GameConfig2 config);
+	public delegate void OnRoomStartHandler(int port, string name);
+	public delegate void OnRoomCloseHandler(int port, string name);
+	public delegate void OnRoomListHandler(List<GameConfig2> configs);
+	public delegate void OnPlayerEnterEvent(int port, string name, string room);
+	public delegate void OnPlayerLeaveEvent(int port, string name, string room);
+	public delegate void OnGameExitedEvent();
 	/// <summary>
 	/// Description of Client.
 	/// </summary>
 	public class Client
 	{
-		public event OnLoginHandler OnLogin;
+		public event OnGameExitedEvent OnGameExited;
+		public event OnLoginHandler OnLoginSuccess;
 		public event OnServerChatHandler OnServerChat;
 		public event OnRoomCreateHandler OnRoomCreate;
 		public event OnRoomStartHandler OnRoomStart;
 		public event OnRoomCloseHandler OnRoomClose;
 		public event OnRoomListHandler OnRoomList;
+		public event OnPlayerEnterEvent OnPlayerEnter;
+		public event OnPlayerLeaveEvent OnPlayerLeave;
 		private TcpClient client;
 		public string Name="???";
 		public string Pwd = "";
-		public ServerInfo GameServerInfo;
 		public bool IsLogin=false;
 		readonly ArrayQueue<byte> ReceviceQueue=new ArrayQueue<byte>();
 		//名字，房间名
@@ -47,7 +50,7 @@ namespace GameClient
 		}
 		
 		#region socket
-		public bool Connect(ServerInfo server){
+		public bool Connect(ClientConfig server){
 			if(server==null) return false;
 			if(client == null){
 				client = new TcpClient();
@@ -116,9 +119,11 @@ namespace GameClient
 			ClientEvent.Handler(this, packets);
 		}
 		
-		public void GetRooms(){
+		public void GetRooms(bool nolock, bool nostart){
 			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)CtosMessage.RoomList);
+				writer.Write((byte)RoomMessage.RoomList);
+				writer.Write(nolock);
+				writer.Write(nostart);
 				writer.Use();
 				Send(writer.Content);
 			}
@@ -163,8 +168,7 @@ namespace GameClient
 			Pwd = pwd;
 			pwd= Tool.GetMd5(pwd);
 			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)CtosMessage.PlayerInfo);
-				writer.WriteUnicode("client",20);
+				writer.Write((byte)RoomMessage.Info);
 				writer.WriteUnicode(Name, 20);
 				writer.WriteUnicode(pwd, 32);
 				writer.Use();
@@ -176,7 +180,7 @@ namespace GameClient
 		/// </summary>
 		public bool OnChat(string msg, bool hidename,string toname=""){
 			using(PacketWriter writer=new PacketWriter(2)){
-				writer.Write((byte)CtosMessage.Chat);
+				writer.Write((byte)RoomMessage.Chat);
 				if(string.IsNullOrEmpty(toname)){
 					if(hidename){
 						writer.WriteUnicode("匿名", 20);
@@ -191,11 +195,10 @@ namespace GameClient
 			}
 			return false;
 		}
-		public void OnServerInfo(ServerInfo info){
+		public void OnLoginOk(){
 			IsLogin = true;
-			GameServerInfo = info;
-			if(OnLogin!=null){
-				OnLogin(info);
+			if(OnLoginSuccess!=null){
+				OnLoginSuccess();
 			}
 		}
 		/// <summary>
@@ -208,27 +211,54 @@ namespace GameClient
 				OnServerChat(pname, tname, msg);
 			}
 		}
+		public void JoinRoom(string room){
+			string namepwd =Name + "$"+Pwd;
+			if(GameUtil.JoinRoom(Program.Config.Host, ""+Program.Config.DuelPort, namepwd, room, GameExited)){
+				//暂停游戏
+				using(PacketWriter writer=new PacketWriter(2)){
+					writer.Write((byte)RoomMessage.Pause);
+					writer.Use();
+					AsyncSend(writer.Content);
+				}
+			}
+		}
+		private void GameExited(){
+			GetRooms(false, true);
+			if(OnGameExited!=null){
+				OnGameExited();
+			}
+		}
 		#endregion
 		
 		#region room
-		public void OnServerRoomCreate(GameConfig config){
+		public void OnServerRoomCreate(GameConfig2 config){
 			if(OnRoomCreate!=null){
 				OnRoomCreate(config);
 			}
 		}
-		public void OnServerRoomClose(string name){
+		public void OnServerRoomClose(int port, string name){
 			if(OnRoomClose!=null){
-				OnRoomClose(name);
+				OnRoomClose(port, name);
 			}
 		}
-		public void OnServerRoomStart(string name){
+		public void OnServerRoomStart(int port, string name){
 			if(OnRoomStart!=null){
-				OnRoomStart(name);
+				OnRoomStart(port, name);
 			}
 		}
-		public void OnServerRoomList(List<GameConfig> configs){
+		public void OnServerRoomList(List<GameConfig2> configs){
 			if(OnRoomList!=null){
 				OnRoomList(configs);
+			}
+		}
+		public void OnServerPlayerEnter(int port, string name, string room){
+			if(OnPlayerEnter!=null){
+				OnPlayerEnter(port, name, room);
+			}
+		}
+		public void OnServerPlayerLeave(int port, string name, string room){
+			if(OnPlayerLeave!=null){
+				OnPlayerLeave(port, name, room);
 			}
 		}
 		#endregion

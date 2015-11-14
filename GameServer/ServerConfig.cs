@@ -10,7 +10,6 @@ namespace YGOCore
 		/// 服务端口
 		/// </summary>
 		public int ServerPort { get; private set; }
-		public string ServerIp{get;private set;}
 		/// <summary>
 		/// 工作目录
 		/// </summary>
@@ -65,19 +64,6 @@ namespace YGOCore
 		/// 记录
 		/// </summary>
 		public string WinDbName{get;private set;}
-		/// <summary>
-		/// 服务端名字
-		/// </summary>
-		public string ServerName{get;private set;}
-		/// <summary>
-		/// 服务端描述
-		/// </summary>
-		public string ServerDesc{get;private set;}
-		/// <summary>
-		/// 公告文本
-		/// </summary>
-		public string File_ServerMsgs{get;private set;}
-		
 		public int MaxAICount{get;private set;}
 		
 		public bool AIisHide{get;private set;}
@@ -102,9 +88,7 @@ namespace YGOCore
 		public ServerConfig()
 		{
 			ClientVersion = 0x1336;
-			ServerIp="127.0.0.1";
 			ServerPort = 8911;
-			ServerName="YGOserver";
 			//	ApiIp="127.0.0.1";
 			Path = ".";
 			ScriptFolder = "script";
@@ -118,8 +102,6 @@ namespace YGOCore
 			RecordWin=false;
 			//PrivateChat=false;
 			//SaveRecordTime=1;//
-			ServerDesc="Server is Testing.";
-			File_ServerMsgs="server_msg.txt";
 			MaxAICount=10;
 			AIPass="kenan123";
 			AIisHide=false;
@@ -173,23 +155,14 @@ namespace YGOCore
 			variable=variable.ToLower();
 			switch (variable)
 			{
-				case "serverip":
-					ServerIp = value;
-					break;
 				case "aipassword":
 					AIPass=value;
 					break;
 				case "maxai":
 					MaxAICount=Convert.ToInt32(value);
 					break;
-				case "servername":
-					ServerName=value;
-					break;
 				case "serverport":
 					ServerPort = Convert.ToInt32(value);
-					break;
-				case "servermsgs":
-					File_ServerMsgs=value;
 					break;
 				case "path":
 					Path = value;
@@ -238,12 +211,6 @@ namespace YGOCore
 					break;
 				case "recordwin":
 					RecordWin=(value.ToLower()=="true"||value=="1");
-					break;
-				case "aiishide":
-					AIisHide=(value.ToLower()=="true"||value=="1");
-					break;
-				case "serverdesc":
-					ServerDesc=value;
 					break;
 				case "asyncmode":
 					AsyncMode= (value.ToLower()=="true"||value=="1");

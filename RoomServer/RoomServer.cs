@@ -113,13 +113,20 @@ namespace YGOCore
 		/// </summary>
 		public int GetDuelPort(){
 			List<int> lens=new List<int>();
+			Server minsrv=null;
 			lock(Servers){
-				foreach(Server server in Servers){
-					lens.Add(server.RoomCount);
+				int min = int.MaxValue;
+				foreach(Server srv in Servers){
+					if(min > srv.Port){
+						min = srv.Port;
+						minsrv = srv;
+					}
 				}
 			}
-			if(lens.Count == 0)return 0 ;
-			return lens.Min();
+			if(minsrv!=null){
+				return minsrv.Port;
+			}
+			return 0;
 		}
 	}
 }
