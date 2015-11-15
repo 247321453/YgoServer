@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Collections.Generic;
 using AsyncServer;
+using System.IO;
 using System.Xml;
 
 namespace YGOCore

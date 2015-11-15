@@ -146,18 +146,12 @@ namespace GameClient
 			}
 			client = null;
 		}
+
 		private void Send(byte[] data){
-			try{
-				client.Client.Send(data, data.Length, SocketFlags.None);
-			}catch(Exception){
-				
-			}
-		}
-		private void AsyncSend(byte[] data){
 			try{
 				client.Client.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(EndSend), data);
 			}catch(Exception){
-				
+				System.Windows.Forms.MessageBox.Show("断开连接");
 			}
 		}
 		private void EndSend(IAsyncResult ar){
@@ -203,7 +197,7 @@ namespace GameClient
 				writer.WriteUnicode(toname, 20);
 				writer.WriteUnicode(msg, msg.Length+1);
 				writer.Use();
-				AsyncSend(writer.Content);
+				Send(writer.Content);
 			}
 			return false;
 		}
@@ -237,7 +231,7 @@ namespace GameClient
 					using(PacketWriter writer=new PacketWriter(2)){
 						writer.Write((byte)RoomMessage.Pause);
 						writer.Use();
-						AsyncSend(writer.Content);
+						Send(writer.Content);
 					}
 				}
 			}

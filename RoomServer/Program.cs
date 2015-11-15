@@ -19,6 +19,7 @@ namespace YGOCore
 		public static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+			Kernel32.SetConsoleCtrlHandler(new ControlCtrlDelegate(Console_Close), true);
 			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
 			Console.Title = "RoomServer";
 			Server=new RoomServer();
@@ -29,6 +30,10 @@ namespace YGOCore
 			}
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
+		}
+		private static bool Console_Close(int type){
+			Server.Stop();
+			return false;
 		}
 		private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
 		{
