@@ -5,7 +5,7 @@ clientversion=1337
 serverip=127.0.0.1
 servername=Ygopot服务器
 serverdesc=提供100只野生AI，房间数50，不支持私聊
-serverport=8910
+serverport=8911
 ###房间服务器端口
 apiport=18910
 ###true则是发送到房间服务端

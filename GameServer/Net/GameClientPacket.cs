@@ -7,7 +7,9 @@ namespace YGOCore.Net
     {
 		public byte[] Content { get{return Bytes;} }
 
-		public GameClientPacket(byte[] content):base(content)
+        public new int Length { get { return (int)(m_stream.Length- m_stream.Position); } }
+
+        public GameClientPacket(byte[] content):base(content)
         {
         }
 		private byte ctos = byte.MaxValue;

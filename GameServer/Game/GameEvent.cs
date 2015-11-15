@@ -101,11 +101,12 @@ namespace YGOCore.Net
                 return;
             }
 			string name = packet.ReadUnicode(20);
+            Logger.Debug("player name:"+name);
 			if(name == "client"){
                 client.LobbyError("[err]404");
                 return;
 			}
-			Logger.Debug("player name:"+name);
+			
 			if (string.IsNullOrEmpty(name)){
 				client.LobbyError(Messages.ERR_NO_NAME);
 			}
@@ -197,7 +198,6 @@ namespace YGOCore.Net
 					client.ServerMessage(Messages.MSG_ENABLE_PROIORITY);
 				}
 			}
-			Logger.Debug("room "+room.Name+" add "+client.Name);
 			client.Game = room;
 			room.AddPlayer(client);
             client.IsAuthentified = true;

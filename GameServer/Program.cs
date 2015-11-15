@@ -18,6 +18,7 @@ namespace YGOCore
 	class Program
 	{
 		public static ServerConfig Config;
+        public static readonly Random Random = new Random((int)(DateTime.Now.Ticks / 10000 / 1000));
         public static GameServer Server { get; private set; }
 
         public static void Main(string[] args)
@@ -45,18 +46,6 @@ namespace YGOCore
 				Console.WriteLine(">>server start fail.");
 				Console.ReadKey();
 			}else{
-                if (args.Length > 1)
-                {
-                    if ("true" == args[1].ToLower())
-                    {
-                        //关闭命令
-                        while (Server.IsListening)
-                        {
-                            Console.ReadLine();
-                        }
-                        return;
-                    }
-                }
                 Command(Server);
 			}
 		}

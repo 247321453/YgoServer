@@ -28,7 +28,6 @@ namespace YGOCore.Game
 	{
 		#region member
 		private static readonly SortedList<int, GameRoom> Games = new SortedList<int, GameRoom>();
-		private static readonly Random Random= new Random();
 		private static readonly Queue<WinInfo> WinInfos = new Queue<WinInfo>();
 		private static System.Timers.Timer WinSaveTimer;
 		private static List<string> banNames=new List<string>();
@@ -70,10 +69,10 @@ namespace YGOCore.Game
 			//服务器接口
 			return true;
 		}
-		public static void init(){
+        public static void init(string file){
             SatrtWinTimer();
-            ReadBanNames();
-		}
+            ReadBanNames(file);
+        }
 		#endregion
 		
 		#region 比赛记录
@@ -131,9 +130,8 @@ namespace YGOCore.Game
 				return banNames.Contains(name);
 			}
 		}
-		private static void ReadBanNames()
-		{
-            string file = Tool.Combine(Program.Config.Path, "namelist.txt");
+        private static void ReadBanNames(string file)
+        {
             if (File.Exists(file)) {
                 string[] lines = File.ReadAllLines(file);
                 foreach (string line in lines){
@@ -251,12 +249,12 @@ namespace YGOCore.Game
 			if(rooms.Count == 0){
 				return GetGuidString();
 			}
-			int index=Random.Next(rooms.Count);
+			int index=Program.Random.Next(rooms.Count);
 			GameRoom room = rooms[index];
 			return room.Config==null?null:room.Config.Name;
 		}
 		*/
-		private  static List<GameRoom> GetNoPwdRoom(SortedList<string, GameRoom> rooms, string tag=null)
+        private static List<GameRoom> GetNoPwdRoom(SortedList<string, GameRoom> rooms, string tag=null)
 		{
 			List<GameRoom> roomList=new List<GameRoom>();
 			foreach(GameRoom room in rooms.Values){

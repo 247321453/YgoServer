@@ -45,15 +45,19 @@ namespace YGOCore.Net
                 string cdb = Tool.Combine(Config.Path, "cards.cdb");
                 string windb = Tool.Combine(Config.Path, "win.db");
                 string lflist = Tool.Combine(Config.Path, "lflist.conf");
+                string namelist = Tool.Combine(Program.Config.Path, "namelist.txt");
+                string msgfile = Tool.Combine(Program.Config.Path, "server_msg.txt");
                 Logger.Debug("script:"+script);
                 Logger.Debug("cdb:"+cdb);
                 Logger.Debug("windb:"+windb);
                 Logger.Debug("lflist:"+lflist);
                 Api.Init(Config.Path, script, cdb);
                 BanlistManager.Init(lflist);
+                MsgSystem.Init("server_msg.txt");
                 WinInfo.Init(windb);
-                RoomManager.init();
-				m_listener = new AsyncTcpListener<GameSession>(IPAddress.Any, Config.ServerPort);
+                RoomManager.init(namelist);
+                Messages.Init(msgfile);
+                m_listener = new AsyncTcpListener<GameSession>(IPAddress.Any, Config.ServerPort);
 				m_listener.OnConnect    += new AsyncTcpListener<GameSession>.ConnectEventHandler(Listener_OnConnect);
 				m_listener.OnReceive    += new AsyncTcpListener<GameSession>.ReceiveEventHandler(Listener_OnReceive);
 				m_listener.OnDisconnect += new AsyncTcpListener<GameSession>.DisconnectEventHandler(Listener_OnDisconnect);
@@ -71,7 +75,7 @@ namespace YGOCore.Net
 				Logger.Error(e);
 				return false;
 			}
-			Logger.Info("Listening on port " + Config.ServerPort);
+			Logger.Debug("Listening on port " + Config.ServerPort);
 			return true;
 		}
 		/// <summary>
