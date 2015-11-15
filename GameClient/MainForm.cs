@@ -54,6 +54,7 @@ namespace GameClient
 		void Client_OnServerClose(int port)
 		{
 			panel_rooms.Clear(port);
+			OnServerChat(null, null, "服务端("+port+")发生异常。");
 		}
 
 		void m_login_Client_OnGameExited()
@@ -80,7 +81,7 @@ namespace GameClient
 			}
 		}
 		public void OnServerChat(string pname, string tname, string msg){
-			if(chb_closemsg.Checked) return;
+			if(chb_closemsg.Checked && !string.IsNullOrEmpty(pname)) return;
 			string time = DateTime.Now.ToString("HH:mm:ss");
 			if(pname==null)pname = "";
 			if(msg==null) msg="";
@@ -94,7 +95,10 @@ namespace GameClient
 			                       	rb_allmsg.AppendText(time+" ");
 			                       	// 	rb_allmsg.SelectionColor = Color.FromArgb(255,65,78,48);
 			                       	// 	rb_allmsg.Font = new Font(oldf, FontStyle.Bold);
-			                       	if(!string.IsNullOrEmpty(tname)){
+			                       	if(string.IsNullOrEmpty(pname)){
+			                       		rb_allmsg.AppendText("系统消息:");
+			                       	}
+			                       	else if(!string.IsNullOrEmpty(tname)){
 			                       		rb_allmsg.AppendText(pname+" 私聊:");
 			                       	}else{
 			                       		rb_allmsg.AppendText(pname+" 说: ");
