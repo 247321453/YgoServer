@@ -141,7 +141,7 @@ namespace OcgWrapper
 		{
 			try{
 				Marshal.FreeHGlobal(m_buffer);
-			}catch(Exception e){
+			}catch(Exception){
 				//Console.WriteLine(e.ToString());
 			}
 			lock(Duels)

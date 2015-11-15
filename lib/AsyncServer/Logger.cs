@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 
 namespace AsyncServer {
 	public enum LogLevel:byte {
@@ -10,6 +11,7 @@ namespace AsyncServer {
 	}
 	
 	public class Logger{
+		static readonly byte[] _lock = new byte[0];
 		static string ErrFile = "errors.log";
 		static LogLevel sLevel = LogLevel.Debug;
 		public static void SetLogLevel(int level){
@@ -44,7 +46,12 @@ namespace AsyncServer {
 			if(sLevel <= LogLevel.Error || ignoreLevel){
 				string str =DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") +" "+obj;
 				WriteLine(str, ConsoleColor.Red);
-				File.AppendAllText(ErrFile, str);
+				ThreadPool.QueueUserWorkItem(new WaitCallback(
+					(object o)=>{
+						lock(_lock)
+							File.AppendAllText(ErrFile, str);
+					}), str);
+				
 			}
 		}
 		private static void WriteLine(object obj, ConsoleColor color=ConsoleColor.White){

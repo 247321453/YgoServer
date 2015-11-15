@@ -28,6 +28,7 @@ namespace YGOCore
 			//
 			Config = new ServerConfig();
 			bool loaded = args.Length > 0 ? Config.Load(args[0]): Config.Load();
+			Logger.SetErrorFile(Tool.Combine(Config.Path, "error.log"));
 			Logger.SetLogLevel(Config.LogLevel);
 			#if DEBUG
 			Logger.SetLogLevel(LogLevel.Debug);
