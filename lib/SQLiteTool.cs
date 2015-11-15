@@ -43,7 +43,8 @@ namespace OcgWrapper
 		
 		public static List<string> GetColumns(string db, string table){
 			List<string> cols=new List<string>();
-			if(!File.Exists(db)){
+            
+            if (!File.Exists(db)){
 				return cols;
 			}
 			using(SQLiteConnection connection = new SQLiteConnection("Data Source=" + db)){
@@ -72,7 +73,7 @@ namespace OcgWrapper
 		/// <returns>返回影响行数</returns>
 		public static int Command(string DB, params string[] SQLs)
 		{
-			int result = 0;
+			int result = 0;/*
 			if ( File.Exists(DB) && SQLs != null )
 			{
 				using ( SQLiteConnection con = new SQLiteConnection(@"Data Source=" + DB) )
@@ -106,7 +107,7 @@ namespace OcgWrapper
 					}
 					con.Close();
 				}
-			}
+			}*/
 			return result;
 		}
 		#endregion

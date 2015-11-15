@@ -41,11 +41,18 @@ namespace YGOCore.Net
 			if(IsListening) return false;
 			try
 			{
-				Api.Init(Config.Path, Config.ScriptFolder, Config.CardCDB);
-				BanlistManager.Init(Config.BanlistFile);
-				MsgSystem.Init(Config.File_ServerMsgs);
-				WinInfo.Init(Config.WinDbName);
-				RoomManager.init();
+                string script = Tool.Combine(Config.Path, "script");
+                string cdb = Tool.Combine(Config.Path, "cards.cdb");
+                string windb = Tool.Combine(Config.Path, "win.db");
+                string lflist = Tool.Combine(Config.Path, "lflist.conf");
+                Logger.Debug("script:"+script);
+                Logger.Debug("cdb:"+cdb);
+                Logger.Debug("windb:"+windb);
+                Logger.Debug("lflist:"+lflist);
+                Api.Init(Config.Path, script, cdb);
+                BanlistManager.Init(lflist);
+                WinInfo.Init(windb);
+                RoomManager.init();
 				m_listener = new AsyncTcpListener<GameSession>(IPAddress.Any, Config.ServerPort);
 				m_listener.OnConnect    += new AsyncTcpListener<GameSession>.ConnectEventHandler(Listener_OnConnect);
 				m_listener.OnReceive    += new AsyncTcpListener<GameSession>.ReceiveEventHandler(Listener_OnReceive);

@@ -45,7 +45,9 @@
     <Compile Include="AsyncClient.cs" />
     <Compile Include="AsyncTcpListener.cs" />
     <Compile Include="BinaryExtensions.cs" />
-    <Compile Include="Connection.cs" />
+    <Compile Include="Connection.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="EventHandler.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="PacketReader.cs" />

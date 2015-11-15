@@ -142,7 +142,8 @@ namespace YGOCore.Net
 				m_client.PeekSend();
 			}catch{}
 		}
-		public void Close(bool sendpacket = true){
+        public bool IsClose { get { return m_close; } }
+        public void Close(bool sendpacket = true){
 			if(m_close) return;
 			m_close = true;
 			if(Game!=null){

@@ -96,24 +96,34 @@
     <Compile Include="..\lib\Tool.cs">
       <Link>Common\Tool.cs</Link>
     </Compile>
-    <Compile Include="CreateRoomForm.cs" />
+    <Compile Include="CreateRoomForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="CreateRoomForm.Designer.cs">
       <DependentUpon>CreateRoomForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Data\Client.cs" />
     <Compile Include="Data\ClientEvent.cs" />
     <Compile Include="Data\GameUtil.cs" />
-    <Compile Include="Data\RoomGrid.cs" />
+    <Compile Include="Data\RoomGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Data\ServerInfo.cs" />
-    <Compile Include="InputDialog.cs" />
+    <Compile Include="InputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="InputDialog.Designer.cs">
       <DependentUpon>InputDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="LoginForm.cs" />
+    <Compile Include="LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainForm.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
@@ -142,12 +152,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ygoclient.xml">
-	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data" />
-    <Folder Include="Common" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

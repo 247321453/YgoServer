@@ -38,9 +38,11 @@ namespace OcgWrapper
 		public string[] players;
 		public string date="";
 		public bool force=false;
-		
-		public static void Init(string file="wins.db"){
-			SQLiteTool.Create(file, SQL_Table);
+
+        public static string DB_FILE = "win.db";
+        public static void Init(string file = "win.db"){
+            DB_FILE = file;
+            SQLiteTool.Create(file, SQL_Table);
 			List<string> cols=SQLiteTool.GetColumns(file, "wins");
 			if(!cols.Contains("mode"))
 				SQLiteTool.Command(file, "ALTER TABLE wins ADD COLUMN mode INTEGER NOT NULL DEFAULT 0;");

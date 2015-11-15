@@ -20,7 +20,7 @@ namespace YGOCore.Game
         public GameConfig Config;
 		public GameSession[] Players;
 		public GameSession[] CurPlayers;
-		public readonly List<GameSession> Observers = new List<GameSession>();
+		private readonly List<GameSession> Observers = new List<GameSession>();
 		public GameState State;
 		private GameAnalyser m_analyser;
 		public bool[] IsReady ;
@@ -57,8 +57,9 @@ namespace YGOCore.Game
 		public int m_duelCount;
 		private bool m_swapped;
 		private bool m_matchKill;
-        private object LuaErrorsLock = new object();
 
+        private const string logFile = "LuaErrors.log";
+        private readonly byte[] _errLock = new byte[0];
         public bool isReading{
 			get{return State==GameState.Lobby;}
 		}
@@ -221,62 +222,69 @@ namespace YGOCore.Game
 			player.PeekSend();
 			ServerApi.OnPlayerJoin(player, this);
 		}
-		#endregion
-		
+        #endregion
+
 		#region 移除玩家
 		public void RemovePlayer(GameSession player){
-			if(player==null || !IsOpen){
-				return;
-			}
-			ServerApi.OnPlayerLeave(player, this);
-			if (player.Equals(HostPlayer) && State == GameState.Lobby){
-				//Logger.WriteLine("HostPlayer is leave", false);
-				//主机玩家离开
-				if(player.Type != (int)PlayerType.Observer){
-					Players[player.Type] = null;
-					IsReady[player.Type] = false;
-				}
-				Close(true);
-				return;
-			}
-			else if (player.Type == (int)PlayerType.Observer)
-			{
-                ObserversHandler(null,player);
-				if (State == GameState.Lobby)
-				{
-					GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
-                    nwatch.Write((short) ObserversHandler());
-					SendToAll(nwatch);
-				}
-				player.Close();
-			}
-			else if (State == GameState.Lobby)
-			{
-				if(player.Type > 0){
-					Players[player.Type] = null;
-					IsReady[player.Type] = false;
-					GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
-					change.Write((byte)((player.Type << 4) + (int) PlayerChange.Leave));
-					SendToAll(change);
-				}
-				player.Close();
-			}
-			else{
-				if(IsEnd){
-					return;
-				}
-				Surrender(player, 4, true);
-			}
-			//所有玩家都离开
-			foreach (GameSession p in Players)
-			{
-				if (p != null)
-					return;
-			}
-			if (ObserversHandler() == 0)
-			{
-				Close(true);
-			}
+                if (player == null || !IsOpen)
+                {
+                    return;
+                }
+                ServerApi.OnPlayerLeave(player, this);
+                if (player.Equals(HostPlayer) && State == GameState.Lobby)
+                {
+                    //Logger.WriteLine("HostPlayer is leave", false);
+                    //主机玩家离开
+                    if (player.Type != (int)PlayerType.Observer)
+                    {
+                        Players[player.Type] = null;
+                        IsReady[player.Type] = false;
+                        HostPlayer = null;
+                    }
+                    Close(true);
+                    return;
+                }
+                else if (player.Type == (int)PlayerType.Observer)
+                {
+                    ObserversHandler(null, player);
+                    if (State == GameState.Lobby)
+                    {
+                        GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
+                        nwatch.Write((short)ObserversHandler());
+                        SendToAll(nwatch);
+                    }
+                    player.Close();
+                }
+                else if (State == GameState.Lobby)
+                {
+                    if (player.Type > 0)
+                    {
+                        Players[player.Type] = null;
+                        IsReady[player.Type] = false;
+                        GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
+                        change.Write((byte)((player.Type << 4) + (int)PlayerChange.Leave));
+                        SendToAll(change);
+                    }
+                    player.Close();
+                }
+                else
+                {
+                    if (IsEnd)
+                    {
+                        return;
+                    }
+                    Surrender(player, 4, true);
+                }
+                //所有玩家都离开
+                foreach (GameSession p in Players)
+                {
+                    if (p != null)
+                        return;
+                }
+                if (ObserversHandler() == 0)
+                {
+                    Close(true);
+                }
 		}
 		#endregion
 		
@@ -450,16 +458,17 @@ namespace YGOCore.Game
 			}
 			else{
 				if(State == GameState.Side){
-					//Logger.WriteLine("side is lose");
-					GameSession pl= null;
+                    //Logger.WriteLine("side is lose");
+                    State = GameState.End;
+                    GameSession pl= null;
 					try{
 						if(Players[0] != null ){
 							pl = (Players[0].IsConnected)?Players[1]:Players[0];
 						}
 					}catch{}
-					
 					if(pl!=null){
-						Surrender(pl,  4,true);
+                        // && pl.Type != (int)PlayerType.Observer
+                        Surrender(pl,  4,true);
 					}
 				}
 				State = GameState.End;
@@ -475,8 +484,8 @@ namespace YGOCore.Game
 			return yrpName;
 		}
 		private static string GetYrpFileName(GameRoom room){
-			return Tool.Combine(Program.Config.replayFolder, GetYrpName(room));
-		}
+            return Tool.Combine(Program.Config.Path, "replay/" + GetYrpName(room));
+        }
 		private static string GetGameTagName(GameRoom room){
 			string filename="";
 			try{
@@ -1065,8 +1074,10 @@ namespace YGOCore.Game
 			MatchSaveResult(1 - team);
 
 			RecordWin(1 - team, reason, force);
-
-			EndDuel(reason == 4);
+            if (State != GameState.Side)
+            {
+                EndDuel(reason == 4);
+            }
 		}
 		/// <summary>
 		/// 洗牌
@@ -1155,9 +1166,8 @@ namespace YGOCore.Game
 				opt += 0x10;
 			if (IsTag)
 				opt += 0x20;
-			Replay = new Replay(GetYrpFileName(this),
-			                    Program.Config.AutoReplay, Program.Config.ClientVersion,
-			                    Config.Mode, (uint)seed, IsTag);
+            Replay = new Replay(GetYrpFileName(this), Program.Config.ClientVersion,
+                                Config.Mode, (uint)seed, IsTag);
 			Replay.Writer.WriteUnicode(Players[0].Name, 20);
 			Replay.Writer.WriteUnicode(Players[1].Name, 20);
 			if (IsTag)
@@ -1326,31 +1336,19 @@ namespace YGOCore.Game
 		#region 脚本错误
 		private void HandleError(string error)
 		{
-            const string log = "LuaErrors.log";
-            lock (LuaErrorsLock)
+            lock (_errLock)
             {
-                if (File.Exists(log))
-                {
-                    foreach (string line in File.ReadAllLines(log))
-                    {
-                        if (line == error)
-                            return;
-                    }
-                }
-
-                StreamWriter writer = new StreamWriter(log, true);
-                writer.WriteLine(error);
-                writer.Close();
+                File.AppendAllText(logFile, error);
             }
-            
-			GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
+
+            GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
 			packet.Write((short)PlayerType.Observer);
 			packet.WriteUnicode(error, error.Length + 1);
 			SendToAll(packet);
         }
         #endregion
 
-        private int ObserversHandler(GameSession add=null, GameSession remove = null, List<GameSession> copy=null)
+        public int ObserversHandler(GameSession add=null, GameSession remove = null, List<GameSession> copy=null)
         {
             int count;
             lock (Observers)

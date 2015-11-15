@@ -23,5 +23,8 @@
 		HsPlayerEnter = 0x20,
 		HsPlayerChange = 0x21,
 		HsWatchChange = 0x22,
-	}
+        STOP_CLIENT = 0xdf,
+        NETWORK_SERVER_ID = 0xdd,
+        VersionCheck = 0xdc
+    }
 }

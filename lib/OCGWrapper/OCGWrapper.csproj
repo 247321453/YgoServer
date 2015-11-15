@@ -77,11 +77,6 @@
     <Compile Include="Network\StocMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Enums" />
-    <Folder Include="Helpers" />
-    <Folder Include="Managers" />
-    <Folder Include="Network" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

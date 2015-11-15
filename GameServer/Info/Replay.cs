@@ -21,20 +21,14 @@ namespace YGOCore.Game
 		/// 保存路径
 		/// </summary>
 		private string fileName;
-		/// <summary>
-		/// 自动保存
-		/// </summary>
-		public bool AutoReplay;
-
-		public Replay(string filename,bool autosave, int clientVersion, int mode,uint seed, bool tag)
-		{
+        public Replay(string filename, int clientVersion, int mode, uint seed, bool tag)
+        {
 			Header.Id = 0x31707279;
 			Header.Version = (uint)clientVersion;
 			Header.Flag = tag ? FlagTag : 0;
 			Header.Seed = seed;
 
 			fileName = filename;
-			AutoReplay = autosave;
 			m_stream =new MemoryStream();
 			Writer = new BinaryWriter(m_stream);
 		}
@@ -85,10 +79,8 @@ namespace YGOCore.Game
 				m_data = ms.ToArray();
 			}
 			
-			if(AutoReplay){
-				ThreadPool.QueueUserWorkItem(new WaitCallback(saveYrp));
-			}
-		}
+            ThreadPool.QueueUserWorkItem(new WaitCallback(saveYrp));
+        }
 		
 		private void saveYrp(object obj){
 			if(!File.Exists(fileName)){

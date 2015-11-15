@@ -40,12 +40,23 @@ namespace YGOCore
 				Logger.Info("Config loaded.");
 			else
 				Logger.Warn("Unable to load config.txt, using default settings.");
-			
 			if (!Server.Start()){
 				Console.WriteLine(">>server start fail.");
 				Console.ReadKey();
 			}else{
-				Command(Server);
+                if (args.Length > 1)
+                {
+                    if ("true" == args[1].ToLower())
+                    {
+                        //关闭命令
+                        while (Server.IsListening)
+                        {
+                            Console.ReadLine();
+                        }
+                        return;
+                    }
+                }
+                Command(Server);
 			}
 		}
 		private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)

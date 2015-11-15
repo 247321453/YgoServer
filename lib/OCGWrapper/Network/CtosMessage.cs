@@ -20,5 +20,8 @@
 		HsNotReady = 0x23,
 		HsKick = 0x24,
 		HsStart = 0x25,
-	}
+
+        STOP_CLIENT = 0xdf,
+        NETWORK_CLIENT_ID = 0xdd,
+    }
 }

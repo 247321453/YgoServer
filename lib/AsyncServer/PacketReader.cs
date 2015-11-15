@@ -33,7 +33,12 @@ namespace AsyncServer
 			return m_reader.ReadByte();
 		}
 
-		public byte[] ReadToEnd()
+        public byte[] ReadBytes(int len)
+        {
+            return m_reader.ReadBytes(len);
+        }
+
+        public byte[] ReadBytes()
 		{
 			return m_reader.ReadBytes((int)m_reader.BaseStream.Length - (int)m_reader.BaseStream.Position);
 		}
