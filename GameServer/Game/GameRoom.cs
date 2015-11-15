@@ -57,9 +57,7 @@ namespace YGOCore.Game
 		public int m_duelCount;
 		private bool m_swapped;
 		private bool m_matchKill;
-
-        private const string logFile = "LuaErrors.log";
-        private readonly byte[] _errLock = new byte[0];
+        
         public bool isReading{
 			get{return State==GameState.Lobby;}
 		}
@@ -1336,15 +1334,11 @@ namespace YGOCore.Game
 		#region 脚本错误
 		private void HandleError(string error)
 		{
-            lock (_errLock)
-            {
-                File.AppendAllText(logFile, error);
-            }
-
             GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
 			packet.Write((short)PlayerType.Observer);
 			packet.WriteUnicode(error, error.Length + 1);
 			SendToAll(packet);
+            Logger.Error("Lua Error:" + error);
         }
         #endregion
 

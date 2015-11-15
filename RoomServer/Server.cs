@@ -15,28 +15,28 @@ using System.Threading;
 
 namespace YGOCore
 {
-	public delegate void OnServerInfoEvent(Server server);
-	
-	public delegate void OnRoomCreateEvent(Server server,GameConfig config);
-	
+	public delegate void OnRoomCreateEvent(Server server,string name,string banlist,string gameinfo);
 	public delegate void OnRoomStartEvent(Server server,string name);
 	public delegate void OnRoomCloseEvent(Server server,string name);
-	
 	public delegate void OnPlayerJoinEvent(Server server,string name,string room);
 	public delegate void OnPlayerLeaveEvent(Server server,string name,string room);
+	public delegate void OnCommandEvent(Server server, string line);
+	public delegate void OnServerCloseEvent(Server server);
+	                                
 	/// <summary>
-	/// Description of Server.
+	/// 服务信息
 	/// </summary>
 	public class Server
 	{
 		
 		#region
-		public event OnServerInfoEvent OnServerInfo;
+		public event OnServerCloseEvent OnServerClose;
 		public event OnRoomCreateEvent OnRoomCreate;
 		public event OnRoomStartEvent OnRoomStart;
 		public event OnRoomCloseEvent OnRoomClose;
 		public event OnPlayerJoinEvent OnPlayerJoin;
 		public event OnPlayerLeaveEvent OnPlayerLeave;
+		public event OnCommandEvent OnCommand;
 		private const char SEP = '\t';
 		private const string HEAD="::";
 		public bool IsOpen {get; private set;}
@@ -47,14 +47,13 @@ namespace YGOCore
 		private string m_fileName;
 		private Thread m_read;
 		public int Port{get;private set;}
-		public string Host{get;private set;}
-		public string Name{get;private set;}
-		public string Desc{get;private set;}
-		
+		public bool NeedAuth{get;private set;}
+		public int RoomCount{get{lock(Rooms)return Rooms.Count;}}
 		public Server(string fileName,string config="config.txt")
 		{
 			m_config = config;
 			m_fileName = fileName;
+			Logger.Debug(fileName+":"+config);
 		}
 
 		public override string ToString()
@@ -63,7 +62,7 @@ namespace YGOCore
 			int user = 0;
 			lock(Rooms) room = Rooms.Count;
 			lock(Users) user= Users.Count;
-			return Host+":"+Port+" "+Name+" "+Desc+"\n"+"Rooms:"+room+"Users:"+user;
+			return Port+" "+"Rooms:"+room+",Users:"+user;
 		}
 		#endregion
 
@@ -83,22 +82,21 @@ namespace YGOCore
 		#region 事件
 		private void OnEvent(string line){
 			if(line == null || !line.StartsWith(HEAD)){
+				if(OnCommand!=null){
+					OnCommand(this, line);
+				}
 				return;
 			}
 			line = line.Substring(HEAD.Length);
 			string[] args= line.Split(SEP);
+			Logger.Debug(""+line);
 			switch(args[0]){
 				case "server":
-					if(args.Length>4){
-						Host = args[1];
+					if(args.Length>2){
 						int p = 0;
-						int.TryParse(args[2], out p);
+						int.TryParse(args[1], out p);
 						Port = p;
-						Name = args[3];
-						Desc = args[4];
-						if(OnServerInfo!=null){
-							OnServerInfo(this);
-						}
+						NeedAuth = args[2].ToLower() == "true";
 					}
 					else{
 						Logger.Warn("server");
@@ -161,7 +159,7 @@ namespace YGOCore
 				}
 			}
 			if(OnRoomCreate!=null){
-				OnRoomCreate(this, config);
+				OnRoomCreate(this, name, banlist, gameinfo);
 			}
 		}
 		private void RoomClose(string name){
@@ -227,18 +225,23 @@ namespace YGOCore
 		
 		#region process
 		public void Start(){
+			IsOpen = true;
 			if(process==null||process.HasExited){
 				process=new Process();
 			}
 			process.StartInfo.FileName = m_fileName;
 			//设定程式执行参数
-			process.StartInfo.Arguments = m_config;
+			process.StartInfo.UseShellExecute = false;
+			process.StartInfo.Arguments = " "+m_config+" true";
 			process.EnableRaisingEvents=true;
-			process.StartInfo.RedirectStandardInput = true;
+			process.StartInfo.RedirectStandardInput = false;
 			process.StartInfo.RedirectStandardOutput = true;
-			process.StartInfo.RedirectStandardError = false;
-			#if !DEBUG
+			//		process.StartInfo.RedirectStandardError = false;
+			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
+			#if DEBUG
+			process.StartInfo.CreateNoWindow = false;
+			process.StartInfo.WindowStyle=ProcessWindowStyle.Normal;
 			#endif
 			process.Exited+=new EventHandler(Exited);
 			try{
@@ -253,26 +256,33 @@ namespace YGOCore
 					
 				}
 			}
-			m_read = new Thread(new ThreadStart(OnRead));
-			m_read.IsBackground = true;
-			m_read.Start();
+			if(m_read==null){
+				m_read = new Thread(new ThreadStart(OnRead));
+				m_read.IsBackground = true;
+				m_read.Start();
+			}
 		}
 		private void Exited(object sender, EventArgs e){
-			if(IsOpen){
-				//异常结束
-			}
-			Close();
-			process = null;
 			lock(Rooms){
 				Rooms.Clear();
 			}
 			lock(Users){
 				Users.Clear();
 			}
+			if(IsOpen){
+				Close();
+				//异常结束
+				Start();
+			}else{
+				Close();
+			}
 		}
 		public void Close(){
 			if(!IsOpen) return;
 			IsOpen = false;
+			if(OnServerClose!=null){
+				OnServerClose(this);
+			}
 			try{
 				m_read.Interrupt();
 				m_read= null;

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
-
+using System.Linq;
 using OcgWrapper.Managers;
 
 namespace OcgWrapper
@@ -68,7 +68,6 @@ namespace OcgWrapper
 		{
 			PathManager.Init(path, scripts, cards);
 			CardsManager.Init();
-			Duel.Duels = new ConcurrentDictionary<IntPtr, Duel>();
 
 			m_buffer = Marshal.AllocHGlobal(65536);
 
@@ -83,8 +82,14 @@ namespace OcgWrapper
 
 		public static void Dispose()
 		{
-			foreach (Duel duel in Duel.Duels.Values)
-				duel.Dispose();
+			Duel[] dules;
+			lock(Duel.Duels){
+				dules = Duel.Duels.Values.ToArray();
+			}
+			foreach (Duel duel in dules){
+				if(duel!=null)
+					duel.Dispose();
+			}
 			try{
 				Marshal.FreeHGlobal(m_buffer);
 			}catch{}
@@ -111,10 +116,12 @@ namespace OcgWrapper
 
 		private static UInt32 MyMessageHandler(IntPtr pDuel, UInt32 messageType)
 		{
-			if (Duel.Duels.ContainsKey(pDuel))
-			{
-				Duel duel = Duel.Duels[pDuel];
-				duel.OnMessage(messageType);
+			lock(Duel.Duels){
+				if (Duel.Duels.ContainsKey(pDuel))
+				{
+					Duel duel = Duel.Duels[pDuel];
+					duel.OnMessage(messageType);
+				}
 			}
 			return 0;
 		}

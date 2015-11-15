@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-
+using System.Collections.Concurrent;
 using OcgWrapper.Enums;
 using OcgWrapper.Helpers;
 
@@ -25,12 +25,12 @@ namespace OcgWrapper
 			m_errorHandler = errorHandler;
 		}
 		public byte[] QueryFieldInfo()
-        {
-            Api.query_field_info(m_pDuel,  m_buffer);
-            byte[] result = new byte[256];
-            Marshal.Copy(m_buffer, result, 0, 256);
-            return result;
-        }
+		{
+			Api.query_field_info(m_pDuel,  m_buffer);
+			byte[] result = new byte[256];
+			Marshal.Copy(m_buffer, result, 0, 256);
+			return result;
+		}
 		public void InitPlayers(int startLp, int startHand, int drawCount)
 		{
 			Api.set_player_info(m_pDuel, 0, startLp, startHand, drawCount);
@@ -131,17 +131,21 @@ namespace OcgWrapper
 		{
 			m_buffer = Marshal.AllocHGlobal(4096);
 			m_pDuel = pDuel;
-			Duels.Add(m_pDuel, this);
+			lock(Duels){
+				if(!Duels.ContainsKey(m_pDuel))
+					Duels.Add(m_pDuel, this);
+			}
 		}
 
 		internal void Dispose()
 		{
 			try{
 				Marshal.FreeHGlobal(m_buffer);
-				Duels.Remove(m_pDuel);
-			}catch(Exception e){
-				Console.WriteLine(e.ToString());
+			}catch(Exception){
+				//Console.WriteLine(e.ToString());
 			}
+			lock(Duels)
+				Duels.Remove(m_pDuel);
 		}
 
 		internal void OnMessage(UInt32 messageType)
@@ -170,7 +174,7 @@ namespace OcgWrapper
 			return 0;
 		}
 
-		internal static IDictionary<IntPtr, Duel> Duels;
+		internal readonly static IDictionary<IntPtr, Duel> Duels = new ConcurrentDictionary<IntPtr, Duel>();
 
 		public static Duel Create(uint seed)
 		{
@@ -184,6 +188,12 @@ namespace OcgWrapper
 		{
 			if (pDuel == IntPtr.Zero)
 				return null;
+			lock(Duels){
+				if(Duels.ContainsKey(pDuel)){
+					//返回存在的？
+					return Duels[pDuel];
+				}
+			}
 			return new Duel(pDuel);
 		}
 	}

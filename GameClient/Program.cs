@@ -20,6 +20,7 @@ namespace GameClient
 	/// </summary>
 	internal sealed class Program
 	{
+		public static readonly ClientConfig Config = new ClientConfig();
 		/// <summary>
 		/// Program entry point.
 		/// </summary>
@@ -29,11 +30,12 @@ namespace GameClient
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
+			Config.Load();
+			GameUtil.GamePath = Config.GamePath;
 			Logger.SetLogLevel(LogLevel.Info);
 			#if DEBUG
 			Logger.SetLogLevel(LogLevel.Debug);
 			#endif
-			ConfigManager.XmlFile = "ygoclient.xml";
 			Application.Run(new LoginForm());
 		}
 		

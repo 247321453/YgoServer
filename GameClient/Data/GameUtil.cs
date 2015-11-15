@@ -11,7 +11,7 @@ using System.IO;
 using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Xml;
 
 namespace GameClient
 {
@@ -20,10 +20,8 @@ namespace GameClient
 	/// </summary>
 	public class GameUtil
 	{
-		public static void JoinRoom(string ip, string port, string name, string room){
-			#if DEBUG
-			MessageBox.Show(ip+":"+port);
-			#endif
+		public static string GamePath = "";
+		public static bool JoinRoom(string ip, string port, string name, string room, Action OnExited=null){
 			Dictionary<string, string> args=new Dictionary<string, string>();
 			if(!string.IsNullOrEmpty(name)){
 				args.Add("nickname", name);
@@ -31,32 +29,44 @@ namespace GameClient
 			args.Add("lastip", ip);
 			args.Add("lastport", port);
 			args.Add("roompass", room);
-			string file = Combine(Application.StartupPath, "system.conf");
+			string file = Combine(GamePath, "system.conf");
 			if(Write(file, args)){
-				RunGame(" -j");
+				return RunGame(" -j",OnExited);
 			}
+			return false;
 		}
-		public static void RunGame(string arg){
-			string file= Combine(Application.StartupPath, "ygopro.exe");
+		public static bool RunGame(string arg, Action OnExited){
+			string file= Combine(GamePath, "ygopro.exe");
 			if(File.Exists(file)){
-				Run(file, arg);
-				return;
+				return Run(file, arg,OnExited);
 			}
-			file= Combine(Application.StartupPath, "ygopro_vs.exe");
+			file= Combine(GamePath, "ygopro_vs.exe");
 			if(File.Exists(file)){
-				Run(file, arg);
-				return;
+				return Run(file, arg,OnExited);
 			}
-			MessageBox.Show("no find ygopro.exe");
+			file = Program.Config.GamePath;
+			if(File.Exists(file)){
+				return Run(file, arg,OnExited);
+			}
+			return false;
 		}
-		private static void Run(string file, string arg=""){
+		private static bool Run(string file, string arg="", Action OnExited=null){
 			Process p =new Process();
 			p.StartInfo.FileName = file;
 			p.StartInfo.WorkingDirectory = Path.GetDirectoryName(file);
 			p.StartInfo.Arguments = arg;
 			p.EnableRaisingEvents=true;
-			p.Exited += delegate { p.Close(); p=null; };
-			p.Start();
+			p.Exited += delegate {
+				p.Close(); p=null;
+				if(OnExited!=null)
+					OnExited();
+			};
+			try{
+				p.Start();
+			}catch(Exception){
+				return false;
+			}
+			return true;
 		}
 		public static bool Write(string file, Dictionary<string, string> args){
 			if(File.Exists(file)){

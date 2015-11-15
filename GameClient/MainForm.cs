@@ -19,36 +19,64 @@ namespace GameClient
 	public partial class MainForm : Form
 	{
 		#region ...
-		LoginForm m_login;
+		DateTime? sendtime;
+		Client Client;
 		CreateRoomForm m_create;
-		public MainForm(LoginForm parent)
+		public MainForm(Client client)
 		{
+			Client = client;
 			InitializeComponent();
-			m_login = parent;
-			m_create = new CreateRoomForm(this);
-			panel_rooms.SetParent(this);
+			m_create = new CreateRoomForm(Client);
+			panel_rooms.SetClient(Client);
 		}
 		void MainFormLoad(object sender, EventArgs e)
 		{
-			m_login.Client.OnServerChat += new OnServerChatHandler(OnServerChat);
-			m_login.Client.OnRoomClose+=new OnRoomCloseHandler(panel_rooms.OnClose);
-			m_login.Client.OnRoomStart+=new OnRoomStartHandler(panel_rooms.OnStart);
-			m_login.Client.OnRoomCreate+=new OnRoomCreateHandler(panel_rooms.OnCreate);
-			m_login.Client.OnRoomList +=new OnRoomListHandler(panel_rooms.OnRoomList);
-			m_login.Client.GetRooms();
+			Client.OnServerChat += new OnServerChatHandler(OnServerChat);
+			Client.OnRoomClose+=new OnRoomCloseHandler(panel_rooms.OnClose);
+			Client.OnRoomStart+=new OnRoomStartHandler(panel_rooms.OnStart);
+			Client.OnRoomCreate+=new OnRoomCreateHandler(panel_rooms.OnCreate);
+			Client.OnRoomList +=new OnRoomListHandler(panel_rooms.OnRoomList);
+			Client.OnPlayerEnter+=new OnPlayerEnterEvent(m_login_Client_OnPlayerEnter);
+			Client.OnPlayerLeave+=new OnPlayerLeaveEvent(m_login_Client_OnPlayerLeave);
+			Client.OnGameExited+=new OnGameExitedEvent(m_login_Client_OnGameExited);
+			Client.OnServerClose+=new OnServerCloseEvent(Client_OnServerClose);
+			Client.GetRooms(false, true);
+		}
+
+		void Client_OnServerClose(int port)
+		{
+			panel_rooms.Clear(port);
+		}
+
+		void m_login_Client_OnGameExited()
+		{
+			if(Program.Config.JoinPause){
+				panel_rooms.ClearRooms();
+			}
+		}
+
+		void m_login_Client_OnPlayerLeave(PlayerInfo player)
+		{
+			
+		}
+
+		void m_login_Client_OnPlayerEnter(PlayerInfo player)
+		{
+			
 		}
 		
 		void MainFormFormClosed(object sender, FormClosedEventArgs e)
 		{
-			m_login.Client.Close();
-			m_login.Close();
+			Client.Close();
+			System.Diagnostics.Process.GetCurrentProcess().Kill();
+			//	m_login.Close();
 		}
 		#endregion
 
 		#region chat
 		private void SendMsg(string toname, string msg){
 			try{
-				m_login.Client.OnChat(msg, chb_nonane.Checked, toname);
+				Client.OnChat(msg, chb_nonane.Checked, toname);
 			}catch(Exception){
 				MessageBox.Show("发送失败");
 			}
@@ -107,26 +135,22 @@ namespace GameClient
 					}catch{}
 				}
 			}
+			if(sendtime!=null && string.IsNullOrEmpty(toname)){
+				DateTime now = DateTime.Now;
+				if(((now.Ticks-sendtime.Value.Ticks)/10000/1000) < 10){
+					MessageBox.Show("发送间隔10秒，私聊不受影响");
+					return;
+				}
+				sendtime = now;
+			}
 			rb_msg.Text = "";
 			SendMsg(toname, msg);
 		}
 		#endregion
 		
 		#region quick mode
-		public void JoinRoom(string room){
-			if(m_login.Client.GameServerInfo==null){
-				MessageBox.Show("服务器信息错误");
-				return;
-			}
-			string namepwd =m_login.Client.Name;
-			if(m_login.Client.GameServerInfo.NeedAuth){
-				if(string.IsNullOrEmpty(m_login.Client.GameServerInfo.Token)){
-					namepwd += "$"+m_login.Client.Pwd;
-				}else{
-					namepwd += "$"+m_login.Client.GameServerInfo.Token;
-				}
-			}
-			GameUtil.JoinRoom(m_login.Client.GameServerInfo.Host, ""+m_login.Client.GameServerInfo.Port, namepwd, room);
+		private void JoinRoom(string room){
+			Client.JoinRoom(room, Program.Config.DuelPort, Program.Config.NeedAuth);
 		}
 		void Btn_singleClick(object sender, EventArgs e)
 		{

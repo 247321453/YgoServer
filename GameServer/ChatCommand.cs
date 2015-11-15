@@ -57,8 +57,8 @@ namespace YGOCore
         /// <param name="room"></param>
         /// <param name="deck"></param>
         /// <returns></returns>
-        private static bool AddAI(ServerConfig Config, string room)
-        {/*
+        /*private static bool AddAI(ServerConfig Config, string room)
+        {
             lock (AIs)
             {
                 if (AIs.Count >= Config.MaxAICount)
@@ -95,9 +95,9 @@ namespace YGOCore
             lock (AIs)
             {
                 AIs.Add(ai);
-            }*/
+            }
             return true;
-        }
+        }*/
 
         static void ai_Exited(object sender, EventArgs e)
         {
@@ -124,7 +124,7 @@ namespace YGOCore
         /// <param name="msg"></param>
         /// <returns>处理返回true，未处理返回false</returns>
         public static bool OnChatCommand(this GameSession client, string msg)
-        {
+        {/*
             if (msg == null)
             {
                 return true;
@@ -149,7 +149,7 @@ namespace YGOCore
                     client.ServerMessage(Messages.MSG_NO_FREE_AI);
                 }
                 return false;
-            }
+            }*/
             return false;
         }
         #endregion
@@ -233,8 +233,7 @@ namespace YGOCore
                 }
                 AIs.Clear();
             }
-        }
-        /*
+        }/*
         private static void AddAI(GameServer Server)
         {
             string name = null;

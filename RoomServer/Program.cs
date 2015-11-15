@@ -1,38 +1,27 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
+using System.Xml;
 
 namespace YGOCore
 {
 	class Program
 	{
 		/// <summary>
-		/// port GameServer.exe config.txt config1.txt config2.txt ...
+		/// 负责房间列表和在线列表。
+		/// <para>客户端登录，验证后，返回聊天服务端(目前本端负责)和（人数最少的）对战服务端的地址，全部的房间列表由本端提供</para>
+		/// <para>请求房间列表，返回等待的房间
+		/// <para>当房间变化，推送</para></para>
+		/// <para>当客户端进入游戏，发送暂停消息，暂停推送，退出游戏，则请求房间列表</para>
 		/// </summary>
-		/// <param name="args"></param>
+		/// <param name="args">port GameServer.exe config.txt config1.txt config2.txt ...</param>
 		public static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
-			int port = 0;
-			string serverExe="";
-			string[] configs=null;
-			try{
-				port = int.Parse(args[0]);
-				serverExe = args[1];
-				configs = new string[args.Length-2];
-				for(int i=1;i<configs.Length;i++){
-					configs[i] = args[i+2];
-				}
-			}catch(Exception e){
-				Console.WriteLine("port GameServer.exe config.txt config1.txt config2.txt ...");
-				Console.WriteLine(e.ToString());
-				Console.ReadKey(true);
-				return;
-			}
-			RoomServer server=new RoomServer(port, serverExe, configs);
+			RoomServer server=new RoomServer();
 			if(server.Start()){
-				
+				Command(server);
 			}else{
 				Console.WriteLine("start fail.");
 			}
@@ -51,7 +40,7 @@ namespace YGOCore
 		private static void Command(RoomServer server){
 			string cmd="";
 			while(server.IsListening){
-				cmd=Console.ReadLine();
+				cmd = Console.ReadLine();
 				server.OnCommand(cmd);
 			}
 		}

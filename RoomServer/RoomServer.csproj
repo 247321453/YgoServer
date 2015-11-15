@@ -47,14 +47,27 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GameServer\Game\GameConfig.cs">
       <Link>Common\GameConfig.cs</Link>
     </Compile>
-    <Compile Include="Clinet.cs" />
-    <Compile Include="Command.cs" />
+    <Compile Include="..\lib\ConfigManager.cs">
+      <Link>Common\ConfigManager.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\OCGWrapper\Network\CtosMessage.cs">
+      <Link>Common\CtosMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\lib\OCGWrapper\Network\StocMessage.cs">
+      <Link>Common\StocMessage.cs</Link>
+    </Compile>
+    <Compile Include="Helper\ClinetEvent.cs" />
+    <Compile Include="Helper\Command.cs" />
+    <Compile Include="Helper\RoomEvent.cs" />
+    <Compile Include="RoomConfig.cs" />
+    <Compile Include="Session.cs" />
     <Compile Include="Common\RoomMessage.cs" />
     <Compile Include="RoomServer.cs" />
     <Compile Include="Program.cs" />
@@ -69,6 +82,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common" />
+    <Folder Include="Helper" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="roomserver.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

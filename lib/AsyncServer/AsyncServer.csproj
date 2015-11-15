@@ -50,6 +50,9 @@
     </Compile>
     <Compile Include="EventHandler.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="MyTimer.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="PacketReader.cs" />
     <Compile Include="PacketWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

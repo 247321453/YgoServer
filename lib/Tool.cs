@@ -205,7 +205,7 @@ namespace YGOCore
 			else
 			{
 				StringBuilder builder = new StringBuilder();
-				string spliter = Path.DirectorySeparatorChar.ToString();
+				string spliter = "/";
 				string firstPath = paths[0];
 				if (firstPath.StartsWith("HTTP", StringComparison.OrdinalIgnoreCase))
 				{
@@ -236,7 +236,7 @@ namespace YGOCore
 					}
 					builder.Append(nextPath);
 				}
-				return builder.ToString();
+				return Path.GetFullPath(builder.ToString());
 			}
 		}
 		#endregion

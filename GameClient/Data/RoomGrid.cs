@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 using YGOCore;
 using YGOCore.Game;
@@ -21,10 +22,10 @@ namespace System.Windows.Forms
 	public class RoomBlock : FlowLayoutPanel
 	{
 		RoomGrid parent;
-		GameConfig config;
+		GameConfig2 config;
 		Label lb_statu;
 		string RoomName;
-		public RoomBlock(RoomGrid parent, GameConfig config){
+		public RoomBlock(RoomGrid parent, GameConfig2 config){
 			this.parent=parent;
 			this.config = config;
 			Init();
@@ -33,27 +34,30 @@ namespace System.Windows.Forms
 		#region init
 		private void Init(){
 			RoomName = Password.OnlyName(config.Name);
-			this.Tag = RoomName;
-			this.Size=new Size(186, 150);
+			this.Tag = config.DeulPort+":"+RoomName;
+			this.Size=new Size(186, 186);
 			if(config!=null){
 				this.SuspendLayout();
-				lb_statu = new Label();
-				lb_statu.TextAlign = ContentAlignment.MiddleCenter;
-				lb_statu.Size = new Size(182, 30);
+				Label lb_title = new Label();
+				lb_title.TextAlign = ContentAlignment.MiddleCenter;
+				lb_title.Size = new Size(182, 30);
 				//label.Location = new Point(3,3);
-				lb_statu.ForeColor = Color.White;
+				lb_title.ForeColor = Color.White;
+				lb_title.Text = RoomName;
 				if(config.NoCheckDeck | config.NoShuffleDeck){
-					lb_statu.BackColor=Color.FromArgb(0xee, 0xdd, 0, 0);
-					lb_statu.Text = RoomName;
+					lb_title.BackColor=Color.FromArgb(0xee, 0xdd, 0, 0);
 				}else{
 					if(config.HasPassword()){
 						//label.BackColor=Color.FromArgb(0xdd, 0, 0x68, 0x8b);
-						lb_statu.BackColor=Color.FromArgb(0xee, 0xee, 0xad, 0x0e);
+						lb_title.BackColor=Color.FromArgb(0xee, 0xee, 0xad, 0x0e);
 					}else{
-						lb_statu.BackColor=Color.FromArgb(0xdd, 0, 0x64, 0);
+						lb_title.BackColor=Color.FromArgb(0xdd, 0, 0x64, 0);
 					}
 				}
-				
+				lb_statu = new Label();
+				lb_statu.TextAlign = ContentAlignment.MiddleCenter;
+				lb_statu.Size = new Size(182, 30);
+				this.Controls.Add(lb_title);
 				this.Controls.Add(lb_statu);
 				
 				Label label2 = new Label();
@@ -93,14 +97,14 @@ namespace System.Windows.Forms
 						using(InputDialog input=new InputDialog("请输入密码", true)){
 							if(input.ShowDialog()==DialogResult.OK){
 								if(pass == input.InputText){
-									if(parent!=null)parent.JoinRoom(config.Name);
+									if(parent!=null)parent.JoinRoom(config.Name, config.DeulPort, config.NeedAuth);
 								}else{
 									MessageBox.Show("密码不正确");
 								}
 							}
 						}
 					}else{
-						if(parent!=null)parent.JoinRoom(config.Name);
+						if(parent!=null)parent.JoinRoom(config.Name, config.DeulPort, config.NeedAuth);
 					}
 				};
 				join.BackColor= SystemColors.Control;
@@ -115,9 +119,9 @@ namespace System.Windows.Forms
 		public void StartGame(bool start){
 			if(lb_statu!=null){
 				if(start){
-					lb_statu.Text=RoomName+" 【决斗中】";
+					lb_statu.Text="【决斗中】";
 				}else{
-					lb_statu.Text=RoomName+" 【等待中】";
+					lb_statu.Text="【等待中】";
 				}
 			}
 		}
@@ -127,41 +131,76 @@ namespace System.Windows.Forms
 	#region panel
 	public class RoomGrid : FlowLayoutPanel
 	{
-		private MainForm form;
-		private readonly SortedList<string, GameConfig> Rooms=new SortedList<string, GameConfig>();
+		private Client client;
+		private readonly SortedList<string, GameConfig2> Rooms=new SortedList<string, GameConfig2>();
 		private readonly byte[] _lock =new byte[0];
-		public void SetParent(MainForm form){
-			this.form=form;
+		public void SetClient(Client client){
+			this.client=client;
 		}
 		
-		public void JoinRoom(string room){
-			if(form!=null){
-				form.JoinRoom(room);
+		public void JoinRoom(string room,int port, bool needauth){
+			if(client!=null){
+				client.JoinRoom(room, port, needauth);
+			}
+		}
+		public void ClearRooms(){
+			lock(Rooms){
+				Rooms.Clear();
+				BeginInvoke(new Action(
+					()=>{
+						lock(_lock)
+						this.Controls.Clear();
+					})
+				           );
+				
+			}
+		}
+		
+		public void Clear(int port){
+			BeginInvoke(new Action(
+				()=>{
+					lock(_lock)
+						CloseRoom(port);
+				})
+			           );
+		}
+		
+		private void CloseRoom(int port){
+			for(int i= Controls.Count-1;i>=0;i--){
+				Control c = Controls[i];
+				if(c is RoomBlock && c.Tag!=null){
+					string key  = c.Tag.ToString();
+					if(key.StartsWith(port+":")){
+						this.Controls.Remove(c);
+						lock(Rooms)
+							Rooms.Remove(key);
+					}
+				}
 			}
 		}
 		
 		#region allrooms
-		public void OnRoomList(List<GameConfig> configs){
+		public void OnRoomList(List<GameConfig2> configs){
 			lock(Rooms){
-				Rooms.Clear();
-				foreach(GameConfig config in configs){
-					Rooms.Add(Password.OnlyName(config.Name), config);
+				foreach(GameConfig2 config in configs){
+					string name = Password.OnlyName(config.Name);
+					if(!Rooms.ContainsKey(name))
+						Rooms.Add(name, config);
 				}
 			}
 			BeginInvoke(new Action(
 				()=>{
-					MessageBox.Show("count:"+configs.Count);
 					lock(_lock)
 						UpdateAll(configs);
 				})
 			           );
 		}
 		
-		private void UpdateAll(List<GameConfig> configs){
+		private void UpdateAll(List<GameConfig2> configs){
 			this.SuspendLayout();
 			this.Controls.Clear();
 			//MessageBox.Show("共有"+rooms.Length+"房间");
-			foreach(GameConfig config in configs){
+			foreach(GameConfig2 config in configs){
 				AddRoom(config);
 			}
 			this.ResumeLayout(true);
@@ -169,7 +208,8 @@ namespace System.Windows.Forms
 		#endregion
 		
 		#region close
-		public void OnClose(string name){
+		public void OnClose(RoomInfo room){
+			string name = room.ToString();
 			lock(Rooms){
 				if(Rooms.ContainsKey(name)){
 					Rooms.Remove(name);
@@ -195,7 +235,8 @@ namespace System.Windows.Forms
 		#endregion
 		
 		#region start
-		public void OnStart(string name){
+		public void OnStart(RoomInfo room){
+			string name = room.ToString();
 			lock(Rooms){
 				if(Rooms.ContainsKey(name)){
 					Rooms[name].IsStart = true;
@@ -221,7 +262,7 @@ namespace System.Windows.Forms
 		#endregion
 		
 		#region create
-		public void OnCreate(GameConfig config){
+		public void OnCreate(GameConfig2 config){
 			string name = Password.OnlyName(config.Name);
 			lock(Rooms){
 				if(Rooms.ContainsKey(name)){
@@ -238,7 +279,7 @@ namespace System.Windows.Forms
 			           );
 		}
 
-		private void AddRoom(GameConfig config){
+		private void AddRoom(GameConfig2 config){
 			RoomBlock b = new RoomBlock(this, config);
 			Controls.Add(b);
 		}

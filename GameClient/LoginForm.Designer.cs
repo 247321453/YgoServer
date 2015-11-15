@@ -44,15 +44,12 @@ namespace GameClient
 			this.tb_password = new System.Windows.Forms.TextBox();
 			this.chb_record = new System.Windows.Forms.CheckBox();
 			this.chb_autologin = new System.Windows.Forms.CheckBox();
-			this.btn_register = new System.Windows.Forms.Button();
-			this.label3 = new System.Windows.Forms.Label();
-			this.cb_serverlist = new System.Windows.Forms.ComboBox();
 			this.SuspendLayout();
 			// 
 			// btn_login
 			// 
 			this.btn_login.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.btn_login.Location = new System.Drawing.Point(229, 66);
+			this.btn_login.Location = new System.Drawing.Point(229, 27);
 			this.btn_login.Name = "btn_login";
 			this.btn_login.Size = new System.Drawing.Size(75, 54);
 			this.btn_login.TabIndex = 0;
@@ -117,49 +114,15 @@ namespace GameClient
 			this.chb_autologin.Text = "自动登录";
 			this.chb_autologin.UseVisualStyleBackColor = true;
 			// 
-			// btn_register
-			// 
-			this.btn_register.Enabled = false;
-			this.btn_register.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.btn_register.Location = new System.Drawing.Point(229, 24);
-			this.btn_register.Name = "btn_register";
-			this.btn_register.Size = new System.Drawing.Size(75, 23);
-			this.btn_register.TabIndex = 5;
-			this.btn_register.Text = "注册";
-			this.btn_register.UseVisualStyleBackColor = true;
-			this.btn_register.Click += new System.EventHandler(this.Do_RegisterButton_Click);
-			// 
-			// label3
-			// 
-			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(12, 133);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(41, 12);
-			this.label3.TabIndex = 1;
-			this.label3.Text = "服务器";
-			// 
-			// cb_serverlist
-			// 
-			this.cb_serverlist.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cb_serverlist.FormattingEnabled = true;
-			this.cb_serverlist.Location = new System.Drawing.Point(61, 131);
-			this.cb_serverlist.Name = "cb_serverlist";
-			this.cb_serverlist.Size = new System.Drawing.Size(162, 20);
-			this.cb_serverlist.TabIndex = 6;
-			this.cb_serverlist.SelectedIndexChanged += new System.EventHandler(this.Do_ServerList_SelectedIndexChanged);
-			// 
 			// LoginForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(325, 164);
-			this.Controls.Add(this.cb_serverlist);
-			this.Controls.Add(this.btn_register);
+			this.ClientSize = new System.Drawing.Size(317, 136);
 			this.Controls.Add(this.chb_autologin);
 			this.Controls.Add(this.chb_record);
 			this.Controls.Add(this.tb_password);
 			this.Controls.Add(this.tb_username);
-			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.btn_login);
@@ -169,13 +132,9 @@ namespace GameClient
 			this.Name = "LoginForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "登录";
-			this.Load += new System.EventHandler(this.LoginFormLoad);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
-		private System.Windows.Forms.ComboBox cb_serverlist;
-		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Button btn_register;
 		private System.Windows.Forms.CheckBox chb_autologin;
 		private System.Windows.Forms.CheckBox chb_record;
 		private System.Windows.Forms.TextBox tb_password;

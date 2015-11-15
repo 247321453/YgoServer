@@ -90,9 +90,7 @@
     <Compile Include="Game\GameConfigBuilder.cs" />
     <Compile Include="Game\GameEvent.cs" />
     <Compile Include="Game\GameRoom.cs" />
-    <Compile Include="Game\GameTimer.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Game\GameTimer.cs" />
     <Compile Include="Helper\StructTransformer.cs" />
     <Compile Include="Info\Banlist.cs" />
     <Compile Include="Info\ClientCard.cs" />
