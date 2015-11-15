@@ -8,8 +8,10 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+
+using YGOCore;
 
 namespace GameClient
 {
@@ -21,7 +23,10 @@ namespace GameClient
 		#region ...
 		DateTime? sendtime;
 		Client Client;
+		string SelectName;
 		CreateRoomForm m_create;
+		private readonly SortedList<string, PlayerInfo> Players=new SortedList<string, PlayerInfo>();
+		private readonly byte[] _lvlock=new byte[0];
 		public MainForm(Client client)
 		{
 			Client = client;
@@ -40,9 +45,9 @@ namespace GameClient
 			Client.OnPlayerLeave+=new OnPlayerLeaveEvent(m_login_Client_OnPlayerLeave);
 			Client.OnGameExited+=new OnGameExitedEvent(m_login_Client_OnGameExited);
 			Client.OnServerClose+=new OnServerCloseEvent(Client_OnServerClose);
+			Client.OnPlayerList+=new OnPlayerListEvent(Client_OnPlayerList);
 			Client.GetRooms(false, true);
 		}
-
 		void Client_OnServerClose(int port)
 		{
 			panel_rooms.Clear(port);
@@ -55,16 +60,6 @@ namespace GameClient
 			}
 		}
 
-		void m_login_Client_OnPlayerLeave(PlayerInfo player)
-		{
-			
-		}
-
-		void m_login_Client_OnPlayerEnter(PlayerInfo player)
-		{
-			
-		}
-		
 		void MainFormFormClosed(object sender, FormClosedEventArgs e)
 		{
 			Client.Close();
@@ -96,12 +91,10 @@ namespace GameClient
 			                       	rb_allmsg.AppendText(time+" ");
 			                       	// 	rb_allmsg.SelectionColor = Color.FromArgb(255,65,78,48);
 			                       	// 	rb_allmsg.Font = new Font(oldf, FontStyle.Bold);
-			                       	rb_allmsg.AppendText(pname);
 			                       	if(!string.IsNullOrEmpty(tname)){
-			                       		rb_allmsg.AppendText(":@"+tname+" ");
-			                       	}else{
-			                       		rb_allmsg.AppendText(":");
+			                       		rb_allmsg.AppendText("[私聊]");
 			                       	}
+			                       	rb_allmsg.AppendText(pname+" 说 ");
 			                       	// 	rb_allmsg.Font = new Font(oldf, olds);
 			                       	// 	rb_allmsg.Font = oldf;
 			                       	//	rb_allmsg.SelectionColor = Color.FromArgb(255,65,188,48);
@@ -143,14 +136,24 @@ namespace GameClient
 				}
 				sendtime = now;
 			}
-			rb_msg.Text = "";
+			if(string.IsNullOrEmpty(toname)){
+				SelectName = "";
+			}
+			if(!string.IsNullOrEmpty(SelectName)){
+				rb_msg.Text = "@"+SelectName+" ";
+			}else{
+				rb_msg.Text = "";
+			}
 			SendMsg(toname, msg);
 		}
 		#endregion
 		
 		#region quick mode
-		private void JoinRoom(string room){
-			Client.JoinRoom(room, Program.Config.DuelPort, Program.Config.NeedAuth);
+		private void JoinRoom(string room,int port=0){
+			if(port==0){
+				port = Program.Config.DuelPort;
+			}
+			Client.JoinRoom(room, port, Program.Config.NeedAuth);
 		}
 		void Btn_singleClick(object sender, EventArgs e)
 		{
@@ -167,7 +170,53 @@ namespace GameClient
 			JoinRoom("T#");
 		}
 		#endregion
-		
+		#region player
+
+		void Client_OnPlayerList(List<PlayerInfo> players)
+		{
+			lock(Players){
+				Players.Clear();
+				foreach(PlayerInfo p in players){
+					if(!Players.ContainsKey(p.Name)){
+						Players.Add(p.Name, p);
+					}
+				}
+			}
+			BeginInvoke(new Action(()=>{
+			                       	RefreshPlayers();
+			                       })
+			           );
+		}
+
+		void m_login_Client_OnPlayerLeave(PlayerInfo player)
+		{
+			lock(Players){
+				if(Players.ContainsKey(player.Name)){
+					if(string.IsNullOrEmpty(player.Room.Name)){
+						Players.Remove(player.Name);
+						UpdatePlayer(player, true);
+					}else{
+						Players[player.Name].Room = null;
+					}
+				}
+			}
+		}
+
+		void m_login_Client_OnPlayerEnter(PlayerInfo player)
+		{
+			lock(Players){
+				if(Players.ContainsKey(player.Name)){
+					Players[player.Name].Room = player.Room;
+				}else{
+					Players.Add(player.Name, player);
+					BeginInvoke(new Action(()=>{
+					                       	UpdatePlayer(player, false);
+					                       })
+					           );
+				}
+			}
+		}
+		#endregion
 		void Btn_otherClick(object sender, EventArgs e)
 		{
 			m_create.ShowDialog();
@@ -176,6 +225,89 @@ namespace GameClient
 		void Btn_joinClick(object sender, EventArgs e)
 		{
 			JoinRoom(tb_join.Text);
+		}
+		private void RefreshPlayers(){
+			lock(_lvlock){
+				lv_user.BeginUpdate();
+				lv_user.Items.Clear();
+			}
+			ListViewItem[] items;
+			lock(Players){
+				items = new ListViewItem[Players.Count];
+				for (int i = 0; i < Players.Count; i++)
+				{
+					PlayerInfo p = Players.Values[i];
+					items[i] = new ListViewItem();
+					items[i].Text = p.Name;
+				}
+			}
+			lock(_lvlock){
+				lv_user.Items.AddRange(items);
+				lv_user.EndUpdate();
+			}
+		}
+		private void UpdatePlayer(PlayerInfo player,bool delete){
+			lock(_lvlock){
+				if(delete){
+					foreach(ListViewItem item in lv_user.Items){
+						if(item.Text == player.Name){
+							lv_user.Items.Remove(item);
+							break;
+						}
+					}
+				}else{
+					ListViewItem item = new ListViewItem();
+					item.Text = player.Name;
+					lv_user.Items.Add(item);
+				}
+			}
+		}
+		
+		void Menuitem_chatClick(object sender, EventArgs e)
+		{
+			lock(_lvlock){
+				if (lv_user.SelectedItems.Count > 0)
+				{
+					string name = lv_user.SelectedItems[0].Text;
+					SelectName = name;
+					rb_msg.Text = "@"+SelectName+" ";
+				}
+			}
+		}
+		
+		void Menuitem_joinClick(object sender, EventArgs e)
+		{
+			string name = null;
+			lock(_lvlock){
+				if (lv_user.SelectedItems.Count > 0)
+				{
+					name = lv_user.SelectedItems[0].Text;
+				}
+			}
+			if(name != null){
+				RoomInfo room =null;
+				lock(Players){
+					if(Players.ContainsKey(name)){
+						room = Players[name].Room;
+					}
+				}
+				if(room !=null){
+					if(room.Name.Contains("$")){
+						string pass = Password.GetPwd(room.Name);
+						using(InputDialog input=new InputDialog("请输入密码", true)){
+							if(input.ShowDialog()==DialogResult.OK){
+								if(pass == input.InputText){
+									JoinRoom(room.Name, room.Port);
+								}else{
+									MessageBox.Show("密码不正确");
+								}
+							}
+						}
+					}else{
+						JoinRoom(room.Name);
+					}
+				}
+			}
 		}
 	}
 }

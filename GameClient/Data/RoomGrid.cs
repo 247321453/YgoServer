@@ -129,7 +129,7 @@ namespace System.Windows.Forms
 	#endregion
 	
 	#region panel
-	public class RoomGrid : FlowLayoutPanel
+	public class RoomGrid : DFlowLayoutPanel
 	{
 		private Client client;
 		private readonly SortedList<string, GameConfig2> Rooms=new SortedList<string, GameConfig2>();

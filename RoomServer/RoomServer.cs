@@ -89,6 +89,7 @@ namespace YGOCore
 				lock(Clients){
 					Clients.Remove(Client.Tag.Name);
 				}
+				this.server_OnPlayerLeave(Client.Tag.ServerInfo, Client.Tag.Name, null);
 				Client.Tag.Close();
 				Client.Tag = null;
 			}

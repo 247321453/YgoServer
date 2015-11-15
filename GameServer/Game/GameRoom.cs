@@ -500,7 +500,6 @@ namespace YGOCore.Game
 			if(IsEnd){
 				return;
 			}
-			//TODO Record user win here
 			try{
 				string yrpName = GetYrpName(this);
 				string[] names=new string[]{Players[0].Name,Players[1].Name,
@@ -1350,6 +1349,9 @@ namespace YGOCore.Game
 		#region 观战
 		private void InitNewSpectator(GameSession player, int pos=-1)
 		{
+			if(m_duel == null){
+				return;
+			}
 			int deck1 = m_duel.QueryFieldCount(0, CardLocation.Deck);
 			int deck2 = m_duel.QueryFieldCount(1, CardLocation.Deck);
 

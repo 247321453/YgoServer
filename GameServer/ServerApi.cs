@@ -40,11 +40,11 @@ namespace YGOCore
 		}
 
 		public static void OnPlayerLeave(GameSession player, GameRoom room){
-			Println("leave"+SEP+player.Name+SEP+room.Name);
+			Println("leave"+SEP+player.Name+SEP+room.Config.Name);
 		}
 		
 		public static void OnPlayerJoin(GameSession player, GameRoom room){
-			Println("join"+SEP+player.Name+SEP+room.Name);
+			Println("join"+SEP+player.Name+SEP+room.Config.Name);
 			string tip = Messages.RandomMessage();
 			if(!string.IsNullOrEmpty(tip))
 				player.ServerMessage(Messages.RandomMessage());

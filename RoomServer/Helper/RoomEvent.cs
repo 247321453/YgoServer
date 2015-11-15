@@ -84,13 +84,25 @@ namespace YGOCore
 		
 		#region msg
 		public static void OnChatMessage(this RoomServer roomServer,string name, string toname, string msg){
+			Console.WriteLine(name+":"+toname+":"+msg);
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.Chat);
 				writer.WriteUnicode(name, 20);
 				writer.WriteUnicode(toname, 20);
 				writer.WriteUnicode(msg, msg.Length+1);
 				writer.Use();
-				roomServer.SendAll(writer.Content, true, true);
+				if(!string.IsNullOrEmpty(toname)){
+					lock(roomServer.Clients){
+						if(roomServer.Clients.ContainsKey(name)){
+							roomServer.Clients[name].Client.SendPackage(writer.Content, true);
+						}
+						if(roomServer.Clients.ContainsKey(toname)){
+							roomServer.Clients[toname].Client.SendPackage(writer.Content, true);
+						}
+					}
+				}else{
+					roomServer.SendAll(writer.Content, true, true);
+				}
 			}
 		}
 		public static void SendError(this Session session, string err){

@@ -93,6 +93,7 @@
     <Compile Include="..\RoomServer\Common\RoomMessage.cs">
       <Link>Common\RoomMessage.cs</Link>
     </Compile>
+    <Compile Include="Common\DoubleContorl.cs" />
     <Compile Include="CreateRoomForm.cs" />
     <Compile Include="CreateRoomForm.Designer.cs">
       <DependentUpon>CreateRoomForm.cs</DependentUpon>

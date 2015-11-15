@@ -57,7 +57,12 @@ namespace OcgWrapper
 			int fail = 0;
 			while (true)
 			{
-				int result = Api.process(m_pDuel);
+				int result = 0;
+				try{
+					result = Api.process(m_pDuel);
+				}catch(Exception){
+					
+				}
 				int len = result & 0xFFFF;
 
 				if (len > 0)

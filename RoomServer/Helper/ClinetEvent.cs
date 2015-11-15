@@ -72,7 +72,6 @@ namespace YGOCore
 				//返回聊天端口，对战端口
 				if(session.Server!=null){
 					session.Server.OnSendServerInfo(session);
-					session.Server.server_OnPlayerJoin(session.ServerInfo, session.Name, null);
 					lock(session.Server.Clients){
 						if(session.Server.Clients.ContainsKey(session.Name)){
 							session.Server.Clients[session.Name].Close();
@@ -81,6 +80,7 @@ namespace YGOCore
 							session.Server.Clients.Add(session.Name, session);
 						}
 					}
+					session.Server.server_OnPlayerJoin(session.ServerInfo, session.Name, null);
 				}
 			}else{
 				session.SendError("认证失败");
