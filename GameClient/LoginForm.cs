@@ -57,5 +57,10 @@ namespace GameClient
 			Client.Login(username, pwd);
 		}
 		#endregion
+		
+		void Btn_addaiClick(object sender, EventArgs e)
+		{
+			
+		}
 	}
 }

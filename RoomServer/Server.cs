@@ -232,7 +232,7 @@ namespace YGOCore
 			process.StartInfo.FileName = m_fileName;
 			//设定程式执行参数
 			process.StartInfo.UseShellExecute = false;
-			process.StartInfo.Arguments = " "+m_config+" true";
+			process.StartInfo.Arguments = " "+m_config;
 			process.EnableRaisingEvents=true;
 			process.StartInfo.RedirectStandardInput = false;
 			process.StartInfo.RedirectStandardOutput = true;

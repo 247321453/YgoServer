@@ -36,15 +36,19 @@ namespace GameClient
 			return false;
 		}
 		public static bool RunGame(string arg, Action OnExited){
-			string file= Combine(GamePath, "ygopro.exe");
+			string file= Program.Config.GamePath;
 			if(File.Exists(file)){
 				return Run(file, arg,OnExited);
 			}
-			file= Combine(GamePath, "ygopro_vs.exe");
+			file= Combine(AppDomain.CurrentDomain.BaseDirectory, "ygopro_vs.exe");
 			if(File.Exists(file)){
 				return Run(file, arg,OnExited);
 			}
-			file = Program.Config.GamePath;
+			file= Combine(AppDomain.CurrentDomain.BaseDirectory, "ygopot.exe");
+			if(File.Exists(file)){
+				return Run(file, arg,OnExited);
+			}
+			file = Combine(AppDomain.CurrentDomain.BaseDirectory, "ygopro.exe");
 			if(File.Exists(file)){
 				return Run(file, arg,OnExited);
 			}

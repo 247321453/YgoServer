@@ -19,10 +19,7 @@ namespace YGOCore
 	{
 		public const char SEP = '\t';
 		public const string HEAD="::";
-		public static void OnClientLogout(GameSession client){ }
 
-		public static void OnClientLogin(GameSession client,string name,string pwd){ }
-		
 		public static void OnServerInfo(GameServer server){
 			ServerConfig Config = server.Config;
 			Println("server"+SEP+Config.ServerPort+SEP+Config.isNeedAuth);
@@ -48,6 +45,9 @@ namespace YGOCore
 		
 		public static void OnPlayerJoin(GameSession player, GameRoom room){
 			Println("join"+SEP+player.Name+SEP+room.Name);
+			string tip = Messages.RandomMessage();
+			if(!string.IsNullOrEmpty(tip))
+				player.ServerMessage(Messages.RandomMessage());
 		}
 		public static void Println(string str){
 			if(Program.Config.ConsoleApi){

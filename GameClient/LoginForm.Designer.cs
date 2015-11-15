@@ -44,6 +44,9 @@ namespace GameClient
 			this.tb_password = new System.Windows.Forms.TextBox();
 			this.chb_record = new System.Windows.Forms.CheckBox();
 			this.chb_autologin = new System.Windows.Forms.CheckBox();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.btn_addai = new System.Windows.Forms.Button();
+			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// btn_login
@@ -114,11 +117,33 @@ namespace GameClient
 			this.chb_autologin.Text = "自动登录";
 			this.chb_autologin.UseVisualStyleBackColor = true;
 			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.btn_addai);
+			this.groupBox1.Location = new System.Drawing.Point(12, 126);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(293, 72);
+			this.groupBox1.TabIndex = 5;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "离线功能";
+			// 
+			// btn_addai
+			// 
+			this.btn_addai.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.btn_addai.Location = new System.Drawing.Point(73, 20);
+			this.btn_addai.Name = "btn_addai";
+			this.btn_addai.Size = new System.Drawing.Size(104, 37);
+			this.btn_addai.TabIndex = 0;
+			this.btn_addai.Text = "添加局域网AI";
+			this.btn_addai.UseVisualStyleBackColor = true;
+			this.btn_addai.Click += new System.EventHandler(this.Btn_addaiClick);
+			// 
 			// LoginForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(317, 136);
+			this.ClientSize = new System.Drawing.Size(317, 207);
+			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.chb_autologin);
 			this.Controls.Add(this.chb_record);
 			this.Controls.Add(this.tb_password);
@@ -132,9 +157,12 @@ namespace GameClient
 			this.Name = "LoginForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "登录";
+			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.Button btn_addai;
+		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.CheckBox chb_autologin;
 		private System.Windows.Forms.CheckBox chb_record;
 		private System.Windows.Forms.TextBox tb_password;

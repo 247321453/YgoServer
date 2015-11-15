@@ -227,7 +227,7 @@ namespace YGOCore.Game
 		
 		#region 移除玩家
 		public void RemovePlayer(GameSession player){
-			if(player==null || player.IsClose){
+			if(player==null){
 				return;
 			}
 			ServerApi.OnPlayerLeave(player, this);
@@ -256,7 +256,7 @@ namespace YGOCore.Game
 			}
 			else if (State == GameState.Lobby)
 			{
-				if(player.Type > 0){
+				if(player.Type != (int)PlayerType.Observer){
 					Players[player.Type] = null;
 					IsReady[player.Type] = false;
 					GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
@@ -387,6 +387,7 @@ namespace YGOCore.Game
 		public void Close(bool forceclose=false)
 		{
 			if(!IsOpen) return;
+			Logger.Debug("room "+Name+" close");
 			IsOpen = false;
 			RoomManager.Remove(this);
 			if(forceclose){

@@ -7,6 +7,9 @@
  * 要改变这种模板请点击 工具|选项|代码编写|编辑标准头文件
  */
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace YGOCore
 {
@@ -43,5 +46,26 @@ namespace YGOCore
 		public const string ERR_LOW_VERSION="游戏版本太低";
 		public const string ERR_PASSWORD="房间密码错误";
 		public const string ERR_NO_CLIENT ="用户:{0}未在线";
+		
+		public static void Init(string file){
+			if(File.Exists(file)){
+				Msgs.Clear();
+				string[] msgs = File.ReadAllLines(file);
+				foreach(string msg in msgs){
+					if(string.IsNullOrEmpty(msg) || msg.StartsWith("#")){
+						continue;
+					}
+					Msgs.Add(msg);
+				}
+			}
+		}
+		static readonly List<string> Msgs=new List<string>();
+		public static string RandomMessage(){
+			if(Msgs.Count==0){
+				return null;
+			}
+			int i = Program.Random.Next(Msgs.Count);
+			return Msgs[i];
+		}
 	}
 }

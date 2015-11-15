@@ -184,7 +184,6 @@ namespace YGOCore.Net
 					client.ServerMessage(Messages.MSG_ENABLE_PROIORITY);
 				}
 			}
-			Logger.Debug("room "+room.Name+" add "+client.Name);
 			client.Game = room;
 			room.AddPlayer(client);
 		}
