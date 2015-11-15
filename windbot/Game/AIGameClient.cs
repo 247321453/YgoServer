@@ -26,24 +26,32 @@ namespace WindBot.Game
 			:this(username, deck, "localhost", serverPort,roomInfos)
 		{
 		}
-		public AIGameClient(string username, string deck, string serverHost, int serverPort, string roomInfos)
+		public AIGameClient(string pass, string deck, string serverHost, int serverPort, string roomInfos)
 		{
-			Username = username;
-			Deck_ = deck;
 			_serverHost = serverHost;
 			_serverPort = serverPort;
 			_roomInfos = roomInfos;
 			Random random=new Random(Environment.TickCount);
-			if(string.IsNullOrEmpty(Deck_)){
+			if(string.IsNullOrEmpty(deck)){
 				DirectoryInfo dir=new DirectoryInfo("Decks/");
 				FileInfo[] files=dir.GetFiles("*.ydk");
 				if(files.Length>0){
 					int index=random.Next(files.Length);
-					Deck_=files[index].Name;
+					deck=files[index].Name;
+				}else{
+					deck = "";
 				}
 			}
-			Deck_=Deck_.Replace(".ydk", "");
-			Logger.WriteLine("use deck is "+Deck_);
+			Deck_=deck.Replace(".ydk", "");
+			Username = "[AI]"+Deck_;
+			if(!string.IsNullOrEmpty(pass)){
+				int i = pass.IndexOf("$");
+				if(i >= 0){
+					pass = pass.EndsWith("$")?"":pass.Substring(i+1);
+				}
+				Username += "$"+pass;
+			}
+			Console.WriteLine(Username+" use deck is "+Deck_);
 		}
 
 		public void Start()
@@ -67,6 +75,7 @@ namespace WindBot.Game
 			if(deck == null) {
 				Logger.WriteLine("read deck fail.");
 				Connection.Close();
+				return;
 			}
 
 			packet.Write((byte)CtosMessage.UpdateDeck);

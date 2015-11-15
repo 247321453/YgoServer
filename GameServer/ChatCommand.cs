@@ -65,16 +65,14 @@ namespace YGOCore
 			ai.StartInfo.FileName = "ai";
 			//设定程式执行参数
 			ai.StartInfo.Arguments =
-				" [AI]Robot$"+Config.AIPass
+				" "+Config.AIPass
 				+" 127.0.0.1 "
 				+Config.ServerPort
 				+" "+ Config.ClientVersion
 				+ " "+room;
 			ai.EnableRaisingEvents=true;
 			#if !DEBUG
-			if(Config.AIisHide){
-				ai.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
-			}
+			ai.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
 			#endif
 			ai.Exited+=new EventHandler(ai_Exited);
 			try{

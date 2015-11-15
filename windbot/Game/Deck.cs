@@ -74,7 +74,8 @@ namespace WindBot.Game.Data {
 
                 return deck;
             }
-            catch (Exception) {
+            catch (Exception e) {
+            	Logger.WriteLine(e.ToString());
                 if (reader != null)
                     reader.Close();
                 return null;

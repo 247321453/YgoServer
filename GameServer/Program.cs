@@ -18,7 +18,7 @@ namespace YGOCore
 	class Program
 	{
 		public static ServerConfig Config;
-		public static readonly Random Random = new Random((int)(DateTime.Now.Ticks/10000/1000));
+		public static readonly Random Random = new Random(Environment.TickCount);
 		public static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;

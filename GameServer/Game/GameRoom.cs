@@ -256,7 +256,7 @@ namespace YGOCore.Game
 			}
 			else if (State == GameState.Lobby)
 			{
-				if(player.Type != (int)PlayerType.Observer){
+				if(player.Type>0 && player.Type != (int)PlayerType.Observer){
 					Players[player.Type] = null;
 					IsReady[player.Type] = false;
 					GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);

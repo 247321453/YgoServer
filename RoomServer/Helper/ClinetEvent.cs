@@ -29,6 +29,7 @@ namespace YGOCore
 			EventHandler.Register((ushort)RoomMessage.Info,	OnInfo);
 			EventHandler.Register((ushort)RoomMessage.Chat,	OnChat);
 			EventHandler.Register((ushort)RoomMessage.Pause,OnPause);
+			EventHandler.Register((ushort)RoomMessage.PlayerList, OnPlayerList);
 			//EventHandler.Register((ushort)RoomMessage.SystemChat,	OnSystemChat);
 			//EventHandler.Register((ushort)RoomMessage.RoomCreate,	OnRoomCreate);
 			//EventHandler.Register((ushort)RoomMessage.RoomStart,	OnRoomStart);
@@ -60,6 +61,9 @@ namespace YGOCore
 			if(session.Server!=null){
 				session.Server.OnRoomList(session, nolock, nostart);
 			}
+		}
+		private static void OnPlayerList(Session session, PacketReader packet){
+			session.OnPlayerList();
 		}
 		//登录
 		private static void OnInfo(Session session, PacketReader packet){

@@ -66,12 +66,6 @@ namespace AsyncServer
 		public string ReadUnicode(int len)
 		{
 			//0 2 4
-			if(m_stream.Position == m_stream.Length){
-				return "";
-			}
-			if(m_stream.Position + len > m_stream.Length ){
-				len = (int)(m_stream.Length - m_stream.Position);
-			}
 			return m_reader.ReadUnicode(len);
 		}
 

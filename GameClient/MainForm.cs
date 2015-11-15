@@ -47,6 +47,7 @@ namespace GameClient
 			Client.OnServerClose+=new OnServerCloseEvent(Client_OnServerClose);
 			Client.OnPlayerList+=new OnPlayerListEvent(Client_OnPlayerList);
 			Client.GetRooms(false, true);
+			Client.GetPlayerList();
 		}
 		void Client_OnServerClose(int port)
 		{
@@ -80,10 +81,10 @@ namespace GameClient
 			if(chb_closemsg.Checked) return;
 			string time = DateTime.Now.ToString("HH:mm:ss");
 			if(pname==null)pname = "";
-			if(msg==null) return;
-			msg = msg.Replace("\r", "");
-			msg = msg.Replace("\n", "\n\t ");
-			msg +="\n";
+			if(msg==null) msg="";
+//			msg = msg.Replace("\r", "");
+//			msg = msg.Replace("\n", "\n\t ");
+//			msg +="\n";
 			BeginInvoke(new Action(()=>{
 			                       	//	Color old= 	rb_allmsg.SelectionColor;
 			                       	//	Font oldf= rb_allmsg.Font;
@@ -92,13 +93,14 @@ namespace GameClient
 			                       	// 	rb_allmsg.SelectionColor = Color.FromArgb(255,65,78,48);
 			                       	// 	rb_allmsg.Font = new Font(oldf, FontStyle.Bold);
 			                       	if(!string.IsNullOrEmpty(tname)){
-			                       		rb_allmsg.AppendText("[私聊]");
+			                       		rb_allmsg.AppendText(" 私聊:");
+			                       	}else{
+			                       		rb_allmsg.AppendText(pname+" 说: ");
 			                       	}
-			                       	rb_allmsg.AppendText(pname+" 说 ");
 			                       	// 	rb_allmsg.Font = new Font(oldf, olds);
 			                       	// 	rb_allmsg.Font = oldf;
 			                       	//	rb_allmsg.SelectionColor = Color.FromArgb(255,65,188,48);
-			                       	rb_allmsg.AppendText(msg);
+			                       	rb_allmsg.AppendText(msg+"\n");
 			                       	//	rb_allmsg.SelectionColor=old;
 			                       })
 			           );
@@ -135,6 +137,8 @@ namespace GameClient
 					return;
 				}
 				sendtime = now;
+			}else{
+				sendtime = DateTime.Now;
 			}
 			if(string.IsNullOrEmpty(toname)){
 				SelectName = "";
@@ -224,7 +228,9 @@ namespace GameClient
 		
 		void Btn_joinClick(object sender, EventArgs e)
 		{
-			JoinRoom(tb_join.Text);
+			string room = tb_join.Text;
+			JoinRoom(room);
+			tb_join.Text = "";
 		}
 		private void RefreshPlayers(){
 			lock(_lvlock){

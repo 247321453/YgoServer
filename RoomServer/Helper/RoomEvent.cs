@@ -84,7 +84,6 @@ namespace YGOCore
 		
 		#region msg
 		public static void OnChatMessage(this RoomServer roomServer,string name, string toname, string msg){
-			Console.WriteLine(name+":"+toname+":"+msg);
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.Chat);
 				writer.WriteUnicode(name, 20);
@@ -95,9 +94,19 @@ namespace YGOCore
 					lock(roomServer.Clients){
 						if(roomServer.Clients.ContainsKey(name)){
 							roomServer.Clients[name].Client.SendPackage(writer.Content, true);
+						}else{
+							#if DEBUG
+							Console.WriteLine("no find "+name);
+							#endif
 						}
-						if(roomServer.Clients.ContainsKey(toname)){
-							roomServer.Clients[toname].Client.SendPackage(writer.Content, true);
+						if(name != toname){
+							if(roomServer.Clients.ContainsKey(toname)){
+								roomServer.Clients[toname].Client.SendPackage(writer.Content, true);
+							}else{
+								#if DEBUG
+								Console.WriteLine("no find "+toname);
+								#endif
+							}
 						}
 					}
 				}else{
@@ -178,7 +187,7 @@ namespace YGOCore
 						writer.WriteUnicode(session.RoomName, 20);
 					}
 					writer.Use();
-					client.Server.SendAll(writer.Content);
+					client.Client.SendPackage(writer.Content);
 				}
 			}
 		}

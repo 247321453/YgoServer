@@ -18,6 +18,9 @@ namespace System.IO
 		{
 			byte[] unicode = reader.ReadBytes(len * 2);
 			string text = Encoding.Unicode.GetString(unicode);
+			if(string.IsNullOrEmpty(text)){
+				return "";
+			}
 			text = text.Substring(0, text.IndexOf('\0'));
 			return text;
 		}

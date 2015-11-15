@@ -122,7 +122,13 @@ namespace GameClient
 			}
 			ClientEvent.Handler(this, packets);
 		}
-		
+		public void GetPlayerList(){
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)RoomMessage.PlayerList);
+				writer.Use();
+				Send(writer.Content);
+			}
+		}
 		public void GetRooms(bool nolock, bool nostart){
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomList);
@@ -191,6 +197,8 @@ namespace GameClient
 					}else{
 						writer.WriteUnicode(Name, 20);
 					}
+				}else{
+					writer.WriteUnicode(Name, 20);
 				}
 				writer.WriteUnicode(toname, 20);
 				writer.WriteUnicode(msg, msg.Length+1);
@@ -220,7 +228,9 @@ namespace GameClient
 			if(needauth){
 				Name += "$"+Pwd;
 			}
+			#if DEBUG
 			System.Windows.Forms.MessageBox.Show(port+":"+room);
+			#endif
 			if(GameUtil.JoinRoom(Program.Config.Host, ""+port, namepwd, room, GameExited)){
 				//暂停游戏
 				if(Program.Config.JoinPause){

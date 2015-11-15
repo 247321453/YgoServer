@@ -37,7 +37,6 @@ namespace GameClient
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.btn_single = new System.Windows.Forms.Button();
 			this.btn_match = new System.Windows.Forms.Button();
 			this.tbn_tag = new System.Windows.Forms.Button();
@@ -103,6 +102,7 @@ namespace GameClient
 			this.panel_rooms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 									| System.Windows.Forms.AnchorStyles.Left) 
 									| System.Windows.Forms.AnchorStyles.Right)));
+			this.panel_rooms.BackColor = System.Drawing.Color.Gainsboro;
 			this.panel_rooms.Location = new System.Drawing.Point(7, 34);
 			this.panel_rooms.Name = "panel_rooms";
 			this.panel_rooms.Size = new System.Drawing.Size(813, 513);
@@ -261,19 +261,19 @@ namespace GameClient
 									this.menuitem_chat,
 									this.menuitem_join});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(153, 70);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(125, 48);
 			// 
 			// menuitem_chat
 			// 
 			this.menuitem_chat.Name = "menuitem_chat";
-			this.menuitem_chat.Size = new System.Drawing.Size(152, 22);
+			this.menuitem_chat.Size = new System.Drawing.Size(124, 22);
 			this.menuitem_chat.Text = "私聊";
 			this.menuitem_chat.Click += new System.EventHandler(this.Menuitem_chatClick);
 			// 
 			// menuitem_join
 			// 
 			this.menuitem_join.Name = "menuitem_join";
-			this.menuitem_join.Size = new System.Drawing.Size(152, 22);
+			this.menuitem_join.Size = new System.Drawing.Size(124, 22);
 			this.menuitem_join.Text = "加入房间";
 			this.menuitem_join.Click += new System.EventHandler(this.Menuitem_joinClick);
 			// 
@@ -314,7 +314,7 @@ namespace GameClient
 			this.Controls.Add(this.btn_send);
 			this.Controls.Add(this.rb_allmsg);
 			this.Controls.Add(this.panel_rooms);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.Icon = res.favicon;
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "游戏大厅";

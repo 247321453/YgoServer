@@ -36,7 +36,7 @@ namespace GameClient
 			return false;
 		}
 		public static bool RunGame(string arg, Action OnExited){
-			string file= Program.Config.GamePath;
+			string file= Program.Config.GameExe;
 			if(File.Exists(file)){
 				return Run(file, arg,OnExited);
 			}

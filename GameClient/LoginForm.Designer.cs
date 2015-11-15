@@ -36,7 +36,6 @@ namespace GameClient
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
 			this.btn_login = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
@@ -130,7 +129,7 @@ namespace GameClient
 			// btn_addai
 			// 
 			this.btn_addai.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.btn_addai.Location = new System.Drawing.Point(73, 20);
+			this.btn_addai.Location = new System.Drawing.Point(93, 20);
 			this.btn_addai.Name = "btn_addai";
 			this.btn_addai.Size = new System.Drawing.Size(104, 37);
 			this.btn_addai.TabIndex = 0;
@@ -142,7 +141,7 @@ namespace GameClient
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(317, 207);
+			this.ClientSize = new System.Drawing.Size(317, 204);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.chb_autologin);
 			this.Controls.Add(this.chb_record);
@@ -151,7 +150,7 @@ namespace GameClient
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.btn_login);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.Icon = res.favicon;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "LoginForm";

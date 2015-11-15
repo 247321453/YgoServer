@@ -66,7 +66,9 @@ namespace GameClient
 			Program.Config.ChatPort = reader.ReadInt32();
 			Program.Config.DuelPort = reader.ReadInt32();
 			Program.Config.NeedAuth = reader.ReadBoolean();
+			#if DEBUG
 			MessageBox.Show(Program.Config.ChatPort+":"+Program.Config.DuelPort);
+			#endif
 			client.OnLoginOk();
 		}
 		private static void OnClientChat(Client client, PacketReader reader){
@@ -122,7 +124,6 @@ namespace GameClient
 				config.NeedAuth = needauth;
 				configs.Add(config);
 			}
-			MessageBox.Show("roomlist:"+configs.Count);
 			client.ServerRoomList(configs);
 		}
 		private static void OnPlayerList(Client client, PacketReader reader){
