@@ -67,7 +67,7 @@ namespace OcgWrapper
 		public static void Init(string path = ".", string scripts = "script", string cards = "cards.cdb")
 		{
 			PathManager.Init(path, scripts, cards);
-			CardsManager.Init();
+			CardsManager.Init(cards);
 
 			m_buffer = Marshal.AllocHGlobal(65536);
 

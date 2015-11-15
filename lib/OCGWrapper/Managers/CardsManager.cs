@@ -15,17 +15,15 @@ namespace OcgWrapper.Managers
 	{
 		private static IDictionary<int, Card> m_cards;
 
-		public static void Init()
+		public static void Init(string absolutePath="cards.cdb")
 		{
 			m_cards = new Dictionary<int, Card>();
-
-			string absolutePath = PathManager.GetCardsDb();
 			using(SQLiteConnection connection = new SQLiteConnection("Data Source=" + absolutePath)){
 				connection.Open();
 				using(SQLiteCommand command = new SQLiteCommand("SELECT datas.id, ot, alias, "
-				                              +"setcode, type, level, race, attribute, atk, def ,"
-				                              +" name , desc FROM datas,texts WHERE datas.id=texts.id",
-				                              connection)){
+				                                                +"setcode, type, level, race, attribute, atk, def ,"
+				                                                +" name , desc FROM datas,texts WHERE datas.id=texts.id",
+				                                                connection)){
 					using(SQLiteDataReader reader = command.ExecuteReader()){
 						while (reader.Read())
 						{

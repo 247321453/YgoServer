@@ -150,7 +150,6 @@ namespace GameClient
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.btn_login);
-			this.Icon = res.favicon;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "LoginForm";

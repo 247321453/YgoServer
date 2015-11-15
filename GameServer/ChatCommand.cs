@@ -69,7 +69,8 @@ namespace YGOCore
 				+" 127.0.0.1 "
 				+Config.ServerPort
 				+" "+ Config.ClientVersion
-				+ " "+room;
+				+ " "+room
+				+" "+Tool.Combine(Config.Path, "cards.cdb");
 			ai.EnableRaisingEvents=true;
 			#if !DEBUG
 			ai.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;

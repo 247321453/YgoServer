@@ -36,9 +36,6 @@ namespace WindBot
 				}else if(args.Length==5){
 					Run(args[0], args[1], int.Parse(args[2]), int.Parse(args[3]), args[4]);
 				}else{
-					if(args[6].Trim() == "hide"){
-						
-					}
 					Run(args[0], args[1], int.Parse(args[2]), int.Parse(args[3]), args[4], args[5]);
 				}
 			}
@@ -49,20 +46,22 @@ namespace WindBot
 			}
 		}
 
-		private static void Run(String pass, String serverIP, int serverPort,int version, String room="", String deck="")
+		private static void Run(String pass, String serverIP, int serverPort,int version,String room="", string cdb="cards.cdb")
 		{
 			ProVersion = version;
 			if(pass=="--"){
 				pass="";
 			}
-			Console.WriteLine(pass+" "+serverIP+":"+serverPort+" 0x"+version.ToString("x")+" room:"+room+" deck "+deck);
+			if(room=="[null]"){
+				room="";
+			}
+			Console.WriteLine(pass+" "+serverIP+":"+serverPort+" 0x"+version.ToString("x")+" room:"+room);
 			Rand = new Random();
-			PathManager.Init(".", "script", "cards.cdb");
-			CardsManager.Init();
+			CardsManager.Init(cdb);
 			DecksManager.Init();
 
 			// Start two clients and connect them to the same room. Which deck is gonna win?
-			AIGameClient clientA = new AIGameClient(pass, deck, serverIP, serverPort, room);
+			AIGameClient clientA = new AIGameClient(pass, serverIP, serverPort, room);
 			clientA.Start();
 			while (clientA.Connection.IsConnected)
 			{

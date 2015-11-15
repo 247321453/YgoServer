@@ -171,7 +171,6 @@ namespace AsyncServer{
 				connection.Timer.Elapsed += OnTimeoutEventHandler;
 				connection.Timer.Start();
 			}
-			Logger.Debug("accpet client");
 			Connected(connection);
 			BeginRead(connection);
 		}
@@ -261,7 +260,6 @@ namespace AsyncServer{
 		/// </summary>
 		/// <param name="connection">Disconnected connection.</param>
 		private void DisconnectHandler(Connection<T> connection) {
-			Logger.Debug("Disconnect client");
 			lock(m_clients) {
 				m_clients.Remove(connection);
 			}

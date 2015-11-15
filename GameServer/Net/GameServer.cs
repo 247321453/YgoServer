@@ -45,7 +45,6 @@ namespace YGOCore.Net
 				string namelist = Tool.Combine(Program.Config.Path, "namelist.txt");
 				string msgfile = Tool.Combine(Program.Config.Path, "server_msg.txt");
 			//	Logger.Debug("script:"+script);
-			//	Logger.Debug("cdb:"+cdb);
 			//	Logger.Debug("windb:"+windb);
 			//	Logger.Debug("lflist:"+lflist);
 				Api.Init(Config.Path, script, cdb);
@@ -71,7 +70,7 @@ namespace YGOCore.Net
 				Logger.Error(e);
 				return false;
 			}
-			Logger.Debug("Listening on port " + Config.ServerPort);
+			Logger.Info("Listening on port " + Config.ServerPort);
 			return true;
 		}
 		/// <summary>
@@ -100,7 +99,8 @@ namespace YGOCore.Net
 		{
 			if(Client!=null && Client.Tag!=null){
 				//处理接收数据
-				ThreadPool.QueueUserWorkItem(Client.Tag.OnReceive);
+				Client.Tag.OnReceive(null);
+				//ThreadPool.QueueUserWorkItem(Client.Tag.OnReceive);
 			}
 		}
 		

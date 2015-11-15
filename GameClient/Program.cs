@@ -28,6 +28,12 @@ namespace GameClient
 		private static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+			if(args.Length > 0){
+				if(args[0] == "-ai"){
+					GameUtil.AddAi();
+					return;
+				}
+			}
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Config.Load();

@@ -90,9 +90,6 @@
     <Compile Include="..\lib\OCGWrapper\Managers\CardsManager.cs">
       <Link>Common\CardsManager.cs</Link>
     </Compile>
-    <Compile Include="..\lib\OCGWrapper\Managers\PathManager.cs">
-      <Link>Common\PathManager.cs</Link>
-    </Compile>
     <Compile Include="..\lib\OCGWrapper\Network\CtosMessage.cs">
       <Link>Common\CtosMessage.cs</Link>
     </Compile>

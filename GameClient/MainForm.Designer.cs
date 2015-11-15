@@ -153,9 +153,9 @@ namespace GameClient
 			// 
 			this.btn_other.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.btn_other.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.btn_other.Location = new System.Drawing.Point(970, 557);
+			this.btn_other.Location = new System.Drawing.Point(970, 573);
 			this.btn_other.Name = "btn_other";
-			this.btn_other.Size = new System.Drawing.Size(90, 83);
+			this.btn_other.Size = new System.Drawing.Size(90, 52);
 			this.btn_other.TabIndex = 0;
 			this.btn_other.Text = "自定义建房";
 			this.btn_other.UseVisualStyleBackColor = true;
@@ -314,7 +314,6 @@ namespace GameClient
 			this.Controls.Add(this.btn_send);
 			this.Controls.Add(this.rb_allmsg);
 			this.Controls.Add(this.panel_rooms);
-			this.Icon = res.favicon;
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "游戏大厅";

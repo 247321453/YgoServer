@@ -22,25 +22,24 @@ namespace WindBot.Game
 
 		private GameBehavior _behavior;
 
-		public AIGameClient(string username, string deck, int serverPort, string roomInfos)
-			:this(username, deck, "localhost", serverPort,roomInfos)
+		public AIGameClient(string username, int serverPort, string roomInfos)
+			:this(username, "localhost", serverPort,roomInfos)
 		{
 		}
-		public AIGameClient(string pass, string deck, string serverHost, int serverPort, string roomInfos)
+		public AIGameClient(string pass, string serverHost, int serverPort, string roomInfos)
 		{
 			_serverHost = serverHost;
 			_serverPort = serverPort;
 			_roomInfos = roomInfos;
 			Random random=new Random(Environment.TickCount);
-			if(string.IsNullOrEmpty(deck)){
-				DirectoryInfo dir=new DirectoryInfo("Decks/");
-				FileInfo[] files=dir.GetFiles("*.ydk");
-				if(files.Length>0){
-					int index=random.Next(files.Length);
-					deck=files[index].Name;
-				}else{
-					deck = "";
-				}
+			DirectoryInfo dir=new DirectoryInfo("Decks/");
+			FileInfo[] files=dir.GetFiles("*.ydk");
+			string deck;
+			if(files.Length>0){
+				int index=random.Next(files.Length);
+				deck=files[index].Name;
+			}else{
+				deck = "";
 			}
 			Deck_=deck.Replace(".ydk", "");
 			Username = "[AI]"+Deck_;

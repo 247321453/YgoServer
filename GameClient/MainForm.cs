@@ -31,11 +31,13 @@ namespace GameClient
 		{
 			Client = client;
 			InitializeComponent();
+			this.Icon = res.favicon;
 			m_create = new CreateRoomForm(Client);
 			panel_rooms.SetClient(Client);
 		}
 		void MainFormLoad(object sender, EventArgs e)
 		{
+			this.Text = "游戏大厅"+Client.Name+":"+Program.Config.DuelPort;
 			Client.OnServerChat += new OnServerChatHandler(OnServerChat);
 			Client.OnRoomClose+=new OnRoomCloseHandler(panel_rooms.OnClose);
 			Client.OnRoomStart+=new OnRoomStartHandler(panel_rooms.OnStart);
@@ -93,7 +95,7 @@ namespace GameClient
 			                       	// 	rb_allmsg.SelectionColor = Color.FromArgb(255,65,78,48);
 			                       	// 	rb_allmsg.Font = new Font(oldf, FontStyle.Bold);
 			                       	if(!string.IsNullOrEmpty(tname)){
-			                       		rb_allmsg.AppendText(" 私聊:");
+			                       		rb_allmsg.AppendText(pname+" 私聊:");
 			                       	}else{
 			                       		rb_allmsg.AppendText(pname+" 说: ");
 			                       	}
