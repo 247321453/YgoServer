@@ -119,10 +119,17 @@ namespace YGOCore
 			List<int> lens=new List<int>();
 			Server minsrv=null;
 			lock(Servers){
-				int min = int.MaxValue;
 				foreach(Server srv in Servers){
-					if(min > srv.Port){
-						min = srv.Port;
+					if(minsrv!=null){
+						int i = 0, j =0;
+						lock(minsrv.AsyncLock)
+							i = minsrv.Count;
+						lock(srv.AsyncLock)
+							j = srv.Count;
+						if(i > j){
+							minsrv = srv;
+						}
+					}else{
 						minsrv = srv;
 					}
 				}

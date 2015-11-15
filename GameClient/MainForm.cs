@@ -37,7 +37,7 @@ namespace GameClient
 		}
 		void MainFormLoad(object sender, EventArgs e)
 		{
-			this.Text = "游戏大厅"+Client.Name+":"+Program.Config.DuelPort;
+			this.Text = "游戏大厅 "+Client.Name+":"+Program.Config.DuelPort;
 			Client.OnServerChat += new OnServerChatHandler(OnServerChat);
 			Client.OnRoomClose+=new OnRoomCloseHandler(panel_rooms.OnClose);
 			Client.OnRoomStart+=new OnRoomStartHandler(panel_rooms.OnStart);

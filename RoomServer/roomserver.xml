@@ -15,6 +15,6 @@
 		<add key="port" value="18910"/>
 		<add key="gameserver" value="GameServer.exe"/>
 		<!-- 数组,隔开-->
-		<add key="configs" value="config.txt,config1.txt"/>
+		<add key="configs" value="config.txt,config1.txt,config2.txt,config3.txt,config4.txt"/>
 	</appSettings>
 </configuration>

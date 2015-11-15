@@ -15,6 +15,7 @@
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <WarningLevel>4</WarningLevel>
+    <ApplicationIcon>..\GameServer\favicon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>

@@ -23,6 +23,9 @@ namespace YGOCore
 				writer.Write((byte)RoomMessage.Info);
 				writer.Write(roomServer.GetChatPort());
 				Server srv = roomServer.GetMinServer();
+				lock(srv.AsyncLock){
+					srv.Count++;
+				}
 				session.ServerInfo = srv;
 				if(srv!=null){
 					writer.Write(srv.Port);
@@ -42,6 +45,9 @@ namespace YGOCore
 				writer.Write((byte)RoomMessage.ServerClose);
 				writer.Write(server.Port);
 				Server srv = roomServer.GetMinServer();
+				lock(srv.AsyncLock){
+					srv.Count = 0;
+				}
 				if(srv!=null){
 					writer.Write(srv.Port);
 					writer.Write(srv.NeedAuth);
@@ -193,7 +199,13 @@ namespace YGOCore
 		}
 		public static void server_OnPlayerLeave(this RoomServer roomServer, Server server, string name, string room)
 		{
+			if(server!=null){
+				lock(server.AsyncLock){
+					server.Count--;
+				}
+			}
 			if(string.IsNullOrEmpty(name))return ;
+			
 			lock(roomServer.Clients){
 				if(roomServer.Clients.ContainsKey(name)){
 					Session player = roomServer.Clients[name];

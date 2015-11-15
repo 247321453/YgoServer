@@ -39,10 +39,11 @@ namespace YGOCore
 		public event OnCommandEvent OnCommand;
 		private const char SEP = '\t';
 		private const string HEAD="::";
+		public readonly byte[] AsyncLock = new byte[0];
+		public int Count;
 		public bool IsOpen {get; private set;}
 		private Process process;
 		public readonly SortedList<string, GameConfig> Rooms=new SortedList<string, GameConfig>();
-		public readonly SortedList<string, List<string>> Users=new SortedList<string, List<string>>();
 		private string m_config;
 		private string m_fileName;
 		private Thread m_read;
@@ -61,7 +62,7 @@ namespace YGOCore
 			int room = 0;
 			int user = 0;
 			lock(Rooms) room = Rooms.Count;
-			lock(Users) user= Users.Count;
+			lock(AsyncLock) user= Count;
 			return Port+" "+"Rooms:"+room+",Users:"+user;
 		}
 		#endregion
@@ -189,28 +190,6 @@ namespace YGOCore
 		}
 		
 		private void OnPlayer(string name,string room,bool join){
-			List<string> rooms;
-			lock(Users){
-				if(join){
-					if(Users.ContainsKey(name)){
-						rooms= Users[name];
-						if(!rooms.Contains(room)){
-							rooms.Add(room);
-						}
-					}else{
-						rooms = new List<string>();
-						rooms.Add(room);
-						Users.Add(name, rooms);
-					}
-				}else{
-					if(Users.ContainsKey(name)){
-						rooms= Users[name];
-						if(rooms.Contains(room)){
-							rooms.Remove(room);
-						}
-					}
-				}
-			}
 			if(join){
 				if(OnPlayerJoin!=null){
 					OnPlayerJoin(this, name, room);
@@ -265,9 +244,6 @@ namespace YGOCore
 		private void Exited(object sender, EventArgs e){
 			lock(Rooms){
 				Rooms.Clear();
-			}
-			lock(Users){
-				Users.Clear();
 			}
 			if(IsOpen){
 				Close();
