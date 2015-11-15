@@ -172,6 +172,7 @@ namespace YGOCore
 		}
 		public static void server_OnPlayerLeave(this RoomServer roomServer, Server server, string name, string room)
 		{
+			if(string.IsNullOrEmpty(name))return ;
 			lock(roomServer.Clients){
 				if(roomServer.Clients.ContainsKey(name)){
 					Session player = roomServer.Clients[name];
@@ -190,6 +191,7 @@ namespace YGOCore
 
 		public static void server_OnPlayerJoin(this RoomServer roomServer, Server server, string name, string room)
 		{
+			if(string.IsNullOrEmpty(name))return ;
 			lock(roomServer.Clients){
 				if(roomServer.Clients.ContainsKey(name)){
 					Session player = roomServer.Clients[name];

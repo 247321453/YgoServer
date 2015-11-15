@@ -172,5 +172,10 @@ namespace GameClient
 		{
 			m_create.ShowDialog();
 		}
+		
+		void Btn_joinClick(object sender, EventArgs e)
+		{
+			JoinRoom(tb_join.Text);
+		}
 	}
 }

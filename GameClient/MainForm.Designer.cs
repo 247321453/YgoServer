@@ -51,6 +51,8 @@ namespace GameClient
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.chb_nonane = new System.Windows.Forms.CheckBox();
+			this.tb_join = new System.Windows.Forms.TextBox();
+			this.btn_join = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -90,6 +92,9 @@ namespace GameClient
 			// 
 			// panel_rooms
 			// 
+			this.panel_rooms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
 			this.panel_rooms.Location = new System.Drawing.Point(7, 34);
 			this.panel_rooms.Name = "panel_rooms";
 			this.panel_rooms.Size = new System.Drawing.Size(598, 576);
@@ -110,7 +115,8 @@ namespace GameClient
 			// 
 			// rb_msg
 			// 
-			this.rb_msg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.rb_msg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Right)));
 			this.rb_msg.BackColor = System.Drawing.SystemColors.Window;
 			this.rb_msg.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.rb_msg.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -122,7 +128,8 @@ namespace GameClient
 			// 
 			// btn_send
 			// 
-			this.btn_send.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btn_send.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Right)));
 			this.btn_send.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.btn_send.Location = new System.Drawing.Point(926, 582);
 			this.btn_send.Name = "btn_send";
@@ -159,7 +166,8 @@ namespace GameClient
 			// 
 			// btn_clean
 			// 
-			this.btn_clean.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btn_clean.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Right)));
 			this.btn_clean.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.btn_clean.Location = new System.Drawing.Point(730, 582);
 			this.btn_clean.Name = "btn_clean";
@@ -171,7 +179,8 @@ namespace GameClient
 			// 
 			// chb_closemsg
 			// 
-			this.chb_closemsg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.chb_closemsg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Right)));
 			this.chb_closemsg.AutoSize = true;
 			this.chb_closemsg.Location = new System.Drawing.Point(612, 581);
 			this.chb_closemsg.Name = "chb_closemsg";
@@ -201,7 +210,8 @@ namespace GameClient
 			// 
 			// chb_nonane
 			// 
-			this.chb_nonane.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.chb_nonane.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Right)));
 			this.chb_nonane.AutoSize = true;
 			this.chb_nonane.Location = new System.Drawing.Point(612, 601);
 			this.chb_nonane.Name = "chb_nonane";
@@ -210,11 +220,31 @@ namespace GameClient
 			this.chb_nonane.Text = "匿名消息";
 			this.chb_nonane.UseVisualStyleBackColor = true;
 			// 
+			// tb_join
+			// 
+			this.tb_join.Location = new System.Drawing.Point(430, 10);
+			this.tb_join.Name = "tb_join";
+			this.tb_join.Size = new System.Drawing.Size(120, 21);
+			this.tb_join.TabIndex = 8;
+			this.tb_join.WordWrap = false;
+			// 
+			// btn_join
+			// 
+			this.btn_join.Location = new System.Drawing.Point(556, 9);
+			this.btn_join.Name = "btn_join";
+			this.btn_join.Size = new System.Drawing.Size(49, 23);
+			this.btn_join.TabIndex = 9;
+			this.btn_join.Text = "加入";
+			this.btn_join.UseVisualStyleBackColor = true;
+			this.btn_join.Click += new System.EventHandler(this.Btn_joinClick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1014, 622);
+			this.Controls.Add(this.btn_join);
+			this.Controls.Add(this.tb_join);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.chb_nonane);
@@ -227,7 +257,6 @@ namespace GameClient
 			this.Controls.Add(this.rb_allmsg);
 			this.Controls.Add(this.panel_rooms);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.MaximizeBox = false;
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "游戏大厅";
@@ -237,6 +266,8 @@ namespace GameClient
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.Button btn_join;
+		private System.Windows.Forms.TextBox tb_join;
 		private System.Windows.Forms.CheckBox chb_nonane;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;

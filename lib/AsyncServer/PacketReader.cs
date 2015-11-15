@@ -18,6 +18,7 @@ namespace AsyncServer
 		public int Length {get{return data==null?0: data.Length;}}
 		public PacketReader(byte[] data)
 		{
+			this.data=data;
 			m_stream = new MemoryStream(data);
 			m_reader = new BinaryReader(m_stream);
 		}

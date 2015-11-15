@@ -220,6 +220,7 @@ namespace GameClient
 			if(needauth){
 				Name += "$"+Pwd;
 			}
+			System.Windows.Forms.MessageBox.Show(port+":"+room);
 			if(GameUtil.JoinRoom(Program.Config.Host, ""+port, namepwd, room, GameExited)){
 				//暂停游戏
 				if(Program.Config.JoinPause){
@@ -232,7 +233,9 @@ namespace GameClient
 			}
 		}
 		private void GameExited(){
-			GetRooms(false, true);
+			if(Program.Config.JoinPause){
+				GetRooms(false, true);
+			}
 			if(OnGameExited!=null){
 				OnGameExited();
 			}

@@ -92,11 +92,11 @@ namespace YGOCore.Net
 			if (client.Name != null)
 				return;
 			string name = packet.ReadUnicode(20);
+			Logger.Debug("player name:"+name);
 			if(name == "client"){
 				client.LobbyError("[err]404");
 				return;
 			}
-			Logger.Debug("player name:"+name);
 			if (string.IsNullOrEmpty(name)){
 				client.LobbyError(Messages.ERR_NO_NAME);
 			}

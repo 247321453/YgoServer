@@ -67,6 +67,7 @@ namespace YGOCore
 			string pwd = packet.ReadUnicode(32);//md5
 			//登录
 			if(Login(name, pwd)){
+				session.Name = name;
 				session.IsPause = false;
 				//返回聊天端口，对战端口
 				if(session.Server!=null){

@@ -68,7 +68,7 @@ namespace YGOCore.Net
 				Logger.Error(e);
 				return false;
 			}
-			Logger.Info("Listening on port " + Config.ServerPort);
+			Logger.Debug("Listening on port " + Config.ServerPort);
 			return true;
 		}
 		/// <summary>
