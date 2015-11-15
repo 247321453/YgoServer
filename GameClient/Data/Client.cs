@@ -19,13 +19,14 @@ namespace GameClient
 	public delegate void OnLoginHandler();
 	public delegate void OnServerChatHandler(string pname, string tname, string msg);
 	public delegate void OnRoomCreateHandler(GameConfig2 config);
-	public delegate void OnRoomStartHandler(int port, string name);
-	public delegate void OnRoomCloseHandler(int port, string name);
+	public delegate void OnRoomStartHandler(RoomInfo room);
+	public delegate void OnRoomCloseHandler(RoomInfo room);
 	public delegate void OnRoomListHandler(List<GameConfig2> configs);
-	public delegate void OnPlayerEnterEvent(int port, string name, string room);
-	public delegate void OnPlayerLeaveEvent(int port, string name, string room);
+	public delegate void OnPlayerEnterEvent(PlayerInfo player);
+	public delegate void OnPlayerLeaveEvent(PlayerInfo player);
 	public delegate void OnGameExitedEvent();
 	public delegate void OnServerCloseEvent(int port);
+	public delegate void OnPlayerListEvent(List<PlayerInfo> players);
 	/// <summary>
 	/// Description of Client.
 	/// </summary>
@@ -41,6 +42,7 @@ namespace GameClient
 		public event OnRoomListHandler OnRoomList;
 		public event OnPlayerEnterEvent OnPlayerEnter;
 		public event OnPlayerLeaveEvent OnPlayerLeave;
+		public event OnPlayerListEvent OnPlayerList;
 		private TcpClient client;
 		public string Name="???";
 		public string Pwd = "";
@@ -243,14 +245,14 @@ namespace GameClient
 				OnRoomCreate(config);
 			}
 		}
-		public void ServerRoomClose(int port, string name){
+		public void ServerRoomClose(RoomInfo room){
 			if(OnRoomClose!=null){
-				OnRoomClose(port, name);
+				OnRoomClose(room);
 			}
 		}
-		public void ServerRoomStart(int port, string name){
+		public void ServerRoomStart(RoomInfo room){
 			if(OnRoomStart!=null){
-				OnRoomStart(port, name);
+				OnRoomStart(room);
 			}
 		}
 		public void ServerRoomList(List<GameConfig2> configs){
@@ -258,14 +260,19 @@ namespace GameClient
 				OnRoomList(configs);
 			}
 		}
-		public void ServerPlayerEnter(int port, string name, string room){
-			if(OnPlayerEnter!=null){
-				OnPlayerEnter(port, name, room);
+		public void ServerPlayerList(List<PlayerInfo> players){
+			if(OnPlayerList!=null){
+				OnPlayerList(players);
 			}
 		}
-		public void ServerPlayerLeave(int port, string name, string room){
+		public void ServerPlayerEnter(PlayerInfo player){
+			if(OnPlayerEnter!=null){
+				OnPlayerEnter(player);
+			}
+		}
+		public void ServerPlayerLeave(PlayerInfo player){
 			if(OnPlayerLeave!=null){
-				OnPlayerLeave(port, name, room);
+				OnPlayerLeave(player);
 			}
 		}
 		public void ServerClose(int port){

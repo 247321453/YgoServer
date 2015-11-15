@@ -141,11 +141,11 @@ namespace OcgWrapper
 		{
 			try{
 				Marshal.FreeHGlobal(m_buffer);
-				lock(Duels)
-					Duels.Remove(m_pDuel);
 			}catch(Exception e){
-				Console.WriteLine(e.ToString());
+				//Console.WriteLine(e.ToString());
 			}
+			lock(Duels)
+				Duels.Remove(m_pDuel);
 		}
 
 		internal void OnMessage(UInt32 messageType)
@@ -191,6 +191,7 @@ namespace OcgWrapper
 			lock(Duels){
 				if(Duels.ContainsKey(pDuel)){
 					//返回存在的？
+					return Duels[pDuel];
 				}
 			}
 			return new Duel(pDuel);

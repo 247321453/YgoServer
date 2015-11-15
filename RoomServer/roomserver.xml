@@ -11,7 +11,7 @@
 			System.Configuration.ConfigurationManager.AppSettings[key]
 		-->
 		<!-- 3的 倍数-->
-		<add key="timeout" value="15"/>
+		<add key="timeout" value="10"/>
 		<add key="port" value="18910"/>
 		<add key="gameserver" value="GameServer.exe"/>
 		<!-- 数组,隔开-->

@@ -208,8 +208,8 @@ namespace System.Windows.Forms
 		#endregion
 		
 		#region close
-		public void OnClose(int port, string name){
-			name = port+":"+name;
+		public void OnClose(RoomInfo room){
+			string name = room.ToString();
 			lock(Rooms){
 				if(Rooms.ContainsKey(name)){
 					Rooms.Remove(name);
@@ -235,8 +235,8 @@ namespace System.Windows.Forms
 		#endregion
 		
 		#region start
-		public void OnStart(int port, string name){
-			name = port+":"+name;
+		public void OnStart(RoomInfo room){
+			string name = room.ToString();
 			lock(Rooms){
 				if(Rooms.ContainsKey(name)){
 					Rooms[name].IsStart = true;

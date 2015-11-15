@@ -102,6 +102,7 @@
     <Compile Include="Data\ClientEvent.cs" />
     <Compile Include="Data\GameConfig2.cs" />
     <Compile Include="Data\GameUtil.cs" />
+    <Compile Include="Data\PlayerInfo.cs" />
     <Compile Include="Data\RoomGrid.cs" />
     <Compile Include="InputDialog.cs" />
     <Compile Include="InputDialog.Designer.cs">

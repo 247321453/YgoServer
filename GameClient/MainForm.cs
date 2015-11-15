@@ -19,6 +19,7 @@ namespace GameClient
 	public partial class MainForm : Form
 	{
 		#region ...
+		DateTime? sendtime;
 		Client Client;
 		CreateRoomForm m_create;
 		public MainForm(Client client)
@@ -54,12 +55,12 @@ namespace GameClient
 			}
 		}
 
-		void m_login_Client_OnPlayerLeave(int port, string name, string room)
+		void m_login_Client_OnPlayerLeave(PlayerInfo player)
 		{
 			
 		}
 
-		void m_login_Client_OnPlayerEnter(int port, string name, string room)
+		void m_login_Client_OnPlayerEnter(PlayerInfo player)
 		{
 			
 		}
@@ -133,6 +134,14 @@ namespace GameClient
 						msg = msg.Substring(i+1);
 					}catch{}
 				}
+			}
+			if(sendtime!=null && string.IsNullOrEmpty(toname)){
+				DateTime now = DateTime.Now;
+				if(((now.Ticks-sendtime.Value.Ticks)/10000/1000) < 10){
+					MessageBox.Show("发送间隔10秒，私聊不受影响");
+					return;
+				}
+				sendtime = now;
 			}
 			rb_msg.Text = "";
 			SendMsg(toname, msg);

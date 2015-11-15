@@ -23,7 +23,7 @@ namespace YGOCore
 		#region member
 		public bool IsListening{get;private set;}
 		public readonly List<Server> Servers=new List<Server>();
-		public readonly List<Session> Clients=new List<Session>();
+		public readonly SortedList<string, Session> Clients=new SortedList<string, Session>();
 		private AsyncTcpListener<Session> m_listener;
 		public readonly RoomConfig Config=new RoomConfig();
 		public RoomServer()
@@ -87,7 +87,7 @@ namespace YGOCore
 		{
 			if(Client.Tag!=null){
 				lock(Clients){
-					Clients.Remove(Client.Tag);
+					Clients.Remove(Client.Tag.Name);
 				}
 				Client.Tag.Close();
 				Client.Tag = null;
@@ -103,11 +103,8 @@ namespace YGOCore
 		private void Listener_OnConnect(Connection<Session> Client)
 		{
 			Session session= new Session(Client);
-			lock(Clients){
-				//分配对战端
-				session.Server = this;
-				Clients.Add(session);
-			}
+			//分配对战端
+			session.Server = this;
 		}
 		#endregion
 		

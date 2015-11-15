@@ -36,6 +36,7 @@ namespace GameClient
 			EventHandler.Register((ushort)RoomMessage.PlayerEnter, OnPlayerEnter);
 			EventHandler.Register((ushort)RoomMessage.PlayerLeave, OnPlayerLeave);
 			EventHandler.Register((ushort)RoomMessage.ServerClose, OnServerClose);
+			EventHandler.Register((ushort)RoomMessage.PlayerList,OnPlayerList);
 		}
 		public static void Handler(Client client, List<PacketReader> packets){
 			if(packets.Count==0) return;
@@ -62,7 +63,7 @@ namespace GameClient
 		}
 		private static void OnServerInfo(Client client, PacketReader reader){
 			//服务器信息
-			Program.Config.ChatPort = reader.ReadInt32(); 
+			Program.Config.ChatPort = reader.ReadInt32();
 			Program.Config.DuelPort = reader.ReadInt32();
 			Program.Config.NeedAuth = reader.ReadBoolean();
 			MessageBox.Show(Program.Config.ChatPort+":"+Program.Config.DuelPort);
@@ -97,12 +98,12 @@ namespace GameClient
 		private static void OnRoomStart(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
 			string room = reader.ReadUnicode(20);
-			client.ServerRoomStart(port, room);
+			client.ServerRoomStart(new RoomInfo(port, room));
 		}
 		private static void OnRoomClose(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
 			string room = reader.ReadUnicode(20);
-			client.ServerRoomClose(port, room);
+			client.ServerRoomClose(new RoomInfo(port, room));
 		}
 		private static void OnRoomList(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
@@ -124,17 +125,37 @@ namespace GameClient
 			MessageBox.Show("roomlist:"+configs.Count);
 			client.ServerRoomList(configs);
 		}
+		private static void OnPlayerList(Client client, PacketReader reader){
+			int count = reader.ReadInt32();
+			List<PlayerInfo> players=new List<PlayerInfo>();
+			for(int i=0;i<count;i++){
+				int port = reader.ReadInt32();
+				string name = reader.ReadUnicode(20);
+				string room = reader.ReadUnicode(20);
+				PlayerInfo player=new PlayerInfo();
+				player.Name = name;
+				player.Room=new RoomInfo(room, port);
+				players.Add(player);
+			}
+			client.ServerPlayerList(players);
+		}
 		private static void OnPlayerEnter(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
 			string name = reader.ReadUnicode(20);
 			string room = reader.ReadUnicode(20);
-			client.ServerPlayerEnter(port, name, room);
+			PlayerInfo player=new PlayerInfo();
+			player.Name = name;
+			player.Room=new RoomInfo(room, port);
+			client.ServerPlayerEnter(player);
 		}
 		private static void OnPlayerLeave(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
 			string name = reader.ReadUnicode(20);
 			string room = reader.ReadUnicode(20);
-			client.ServerPlayerLeave(port, name, room);
+			PlayerInfo player=new PlayerInfo();
+			player.Name = name;
+			player.Room=new RoomInfo(room, port);
+			client.ServerPlayerLeave(player);
 		}
 		private static void OnServerClose(Client client, PacketReader reader){
 			int port = reader.ReadInt32();

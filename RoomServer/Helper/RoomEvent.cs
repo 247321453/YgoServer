@@ -23,6 +23,7 @@ namespace YGOCore
 				writer.Write((byte)RoomMessage.Info);
 				writer.Write(roomServer.GetChatPort());
 				Server srv = roomServer.GetMinServer();
+				session.ServerInfo = srv;
 				if(srv!=null){
 					writer.Write(srv.Port);
 					writer.Write(srv.NeedAuth);
@@ -48,6 +49,7 @@ namespace YGOCore
 					writer.Write((byte)0);
 					writer.Write((byte)0);
 				}
+				//session.ServerInfo = srv;
 				writer.Use();
 				roomServer.SendAll(writer.Content);
 			}
@@ -103,7 +105,7 @@ namespace YGOCore
 		
 		private static void SendAll(this RoomServer roomServer,byte[] data,bool isNow = true,bool Force=false){
 			lock(roomServer.Clients){
-				foreach(Session client in roomServer.Clients){
+				foreach(Session client in roomServer.Clients.Values){
 					if(Force || !client.IsPause){
 						client.Client.SendPackage(data, isNow);
 					}
@@ -119,7 +121,7 @@ namespace YGOCore
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomCreate);
 				writer.Write(server.Port);
-				wrtier.Write(server.NeedAuth);
+				writer.Write(server.NeedAuth);
 				writer.WriteUnicode(name, 20);
 				writer.WriteUnicode(banlist, 20);
 				writer.WriteUnicode(gameinfo, gameinfo.Length+1);
@@ -153,8 +155,29 @@ namespace YGOCore
 		#endregion
 		
 		#region player
+		public static void OnPlayerList(this Session client){
+			lock(client.Server.Clients){
+				using(PacketWriter writer = new PacketWriter(2)){
+					writer.Write((byte)RoomMessage.PlayerList);
+					writer.Write(client.Server.Clients.Count);
+					foreach(Session session in client.Server.Clients.Values){
+						writer.Write(session.ServerInfo==null?0:session.ServerInfo.Port);
+						writer.WriteUnicode(session.Name, 20);
+						writer.WriteUnicode(session.RoomName, 20);
+					}
+					writer.Use();
+					client.Server.SendAll(writer.Content);
+				}
+			}
+		}
 		public static void server_OnPlayerLeave(this RoomServer roomServer, Server server, string name, string room)
 		{
+			lock(roomServer.Clients){
+				if(roomServer.Clients.ContainsKey(name)){
+					Session player = roomServer.Clients[name];
+					player.RoomName = null;
+				}
+			}
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.PlayerLeave);
 				writer.Write(server.Port);
@@ -167,6 +190,12 @@ namespace YGOCore
 
 		public static void server_OnPlayerJoin(this RoomServer roomServer, Server server, string name, string room)
 		{
+			lock(roomServer.Clients){
+				if(roomServer.Clients.ContainsKey(name)){
+					Session player = roomServer.Clients[name];
+					player.RoomName = room;
+				}
+			}
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.PlayerEnter);
 				writer.Write(server.Port);

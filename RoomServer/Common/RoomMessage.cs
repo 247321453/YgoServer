@@ -38,5 +38,6 @@ namespace YGOCore
 		PlayerEnter,
 		PlayerLeave,
 		ServerClose,
+		PlayerList,
 	}
 }

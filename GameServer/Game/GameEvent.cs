@@ -41,6 +41,9 @@ namespace YGOCore.Net
 		public static void Handler(GameSession player, List<GameClientPacket> packets){
 			foreach(GameClientPacket packet in packets){
 				//			Parse(player, packet);
+				if(packet.Length==0){
+					continue;
+				}
 				CtosMessage msg = packet.ReadCtos();
 				EventHandler.Do((ushort)msg, player, packet);
 				packet.Close();
@@ -90,9 +93,7 @@ namespace YGOCore.Net
 				return;
 			string name = packet.ReadUnicode(20);
 			if(name == "client"){
-				name = packet.ReadUnicode(20);
-				string pwd = packet.ReadUnicode(32);
-				ServerApi.OnClientLogin(client, name, pwd);
+				client.LobbyError("[err]404");
 				return;
 			}
 			Logger.Debug("player name:"+name);
