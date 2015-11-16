@@ -52,9 +52,9 @@ namespace System.Xml
 		public static int[] readIntegers(string key, int length)
 		{
 			string temp = readString(key);
-			int[] ints = new int[length];
 			string[] ws = string.IsNullOrEmpty(temp) ? null : temp.Split(',');
-
+			length = Math.Max(ws.Length,length);
+			int[] ints = new int[Math.Max(ws.Length,length)];
 			if (ws != null && ws.Length > 0 && ws.Length <= length)
 			{
 				for (int i = 0; i < ws.Length; i++)

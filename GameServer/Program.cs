@@ -29,6 +29,13 @@ namespace YGOCore
 			//
 			Config = new ServerConfig();
 			bool loaded = args.Length > 0 ? Config.Load(args[0]): Config.Load();
+			if(args.Length>1){
+				int p =0;
+				int.TryParse(args[1], out p);
+				if(p > 0){
+					Config.setServerPort(p);
+				}
+			}
 			Logger.SetErrorFile(Tool.Combine(Config.Path, "error_"+Environment.TickCount+".log"));
 			Logger.SetLogLevel(Config.LogLevel);
 			#if DEBUG

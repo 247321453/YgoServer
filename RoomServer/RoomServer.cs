@@ -37,9 +37,9 @@ namespace YGOCore
 			if(IsListening) return true;
 			IsListening = true;
 			Config.Load();
-			if(Config.Configs!=null){
-				foreach(string config in Config.Configs){
-					Server server=new Server(Config.ServerExe, config);
+			if(Config.Ports!=null){
+				foreach(int port in Config.Ports){
+					Server server=new Server(Config.ServerExe, port, Config.Config);
 					server.OnPlayerJoin += new OnPlayerJoinEvent(this.server_OnPlayerJoin);
 					server.OnPlayerLeave+=new OnPlayerLeaveEvent(this.server_OnPlayerLeave);
 					server.OnRoomClose+=new OnRoomCloseEvent(this.server_OnRoomClose);

@@ -17,28 +17,29 @@ namespace YGOCore
 	public class RoomConfig
 	{
 		public int Port;
-		public string[] Configs;
+		public int[] Ports;
 		public string ServerExe;
+		public string Config;
 		public int Timeout =15;
 		
 		public RoomConfig(){
 			Port = 18910;
 			ServerExe = "GameServer.exe";
-			Configs = new string[]{"config.txt"};
+			Ports = new int[]{8910};
+			Config = "config.txt";
+			ConfigManager.XmlFile = "roomserver.xml";
 		}
 		public void Load(){
-			ConfigManager.XmlFile = "roomserver.xml";
 			Port = ConfigManager.readInteger("port", 18910);
 			ServerExe = ConfigManager.readString("gameserver");
 			if(string.IsNullOrEmpty(ServerExe)){
 				ServerExe = "GameServer.exe";
 			}
 			Timeout = ConfigManager.readInteger("timeout", 15);
-			string cfgstr = ConfigManager.readString("configs");
-			if(cfgstr==null){
-				Configs = new string[]{"config.txt"};
-			}else{
-				Configs =cfgstr.Split(',');					 
+			Ports = ConfigManager.readIntegers("ports",0);
+			Config =  ConfigManager.readString("config");
+			if(string.IsNullOrEmpty(Config)){
+				Config = "config.txt";
 			}
 		}
 	}

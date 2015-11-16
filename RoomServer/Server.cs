@@ -22,7 +22,7 @@ namespace YGOCore
 	public delegate void OnPlayerLeaveEvent(Server server,string name,string room);
 	public delegate void OnCommandEvent(Server server, string line);
 	public delegate void OnServerCloseEvent(Server server);
-	                                
+	
 	/// <summary>
 	/// 服务信息
 	/// </summary>
@@ -50,8 +50,9 @@ namespace YGOCore
 		public int Port{get;private set;}
 		public bool NeedAuth{get;private set;}
 		public int RoomCount{get{lock(Rooms)return Rooms.Count;}}
-		public Server(string fileName,string config="config.txt")
+		public Server(string fileName,int port, string config="config.txt")
 		{
+			this.Port= port;
 			m_config = config;
 			m_fileName = fileName;
 			Logger.Debug(fileName+":"+config);
@@ -96,7 +97,8 @@ namespace YGOCore
 					if(args.Length>2){
 						int p = 0;
 						int.TryParse(args[1], out p);
-						Port = p;
+						if(Port!=p)
+							Port = p;
 						NeedAuth = args[2].ToLower() == "true";
 					}
 					else{
@@ -211,7 +213,7 @@ namespace YGOCore
 			process.StartInfo.FileName = m_fileName;
 			//设定程式执行参数
 			process.StartInfo.UseShellExecute = false;
-			process.StartInfo.Arguments = " "+m_config;
+			process.StartInfo.Arguments = " "+m_config +(Port>0?" "+Port:"");
 			process.EnableRaisingEvents=true;
 			process.StartInfo.RedirectStandardInput = false;
 			process.StartInfo.RedirectStandardOutput = true;
