@@ -261,7 +261,8 @@ namespace AsyncServer{
 		/// <param name="connection">Disconnected connection.</param>
 		private void DisconnectHandler(Connection<T> connection) {
 			lock(m_clients) {
-				m_clients.Remove(connection);
+			    if(connection!=null && m_clients.Contains(connection))
+				    m_clients.Remove(connection);
 			}
 			Disconnected(connection);
 			try{
