@@ -64,7 +64,9 @@ namespace YGOCore
 
 		#region room list
 		public static void OnRoomList(this RoomServer roomServer,Session session,bool nolock=false,bool nostart = false){
+			#if DEBUG
 			Logger.Debug("roomlist");
+			#endif
 			lock(roomServer.Servers){
 				foreach(Server srv in roomServer.Servers){
 					using(PacketWriter wrtier=new PacketWriter(20)){

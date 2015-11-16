@@ -2,6 +2,7 @@
 using System.IO;
 using System.Diagnostics;
 using System.Xml;
+using AsyncServer;
 
 namespace YGOCore
 {
@@ -22,7 +23,12 @@ namespace YGOCore
 			Kernel32.SetConsoleCtrlHandler(new ControlCtrlDelegate(Console_Close), true);
 			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
 			Console.Title = "RoomServer";
+			Logger.SetLogLevel(LogLevel.Info);
+			#if DEBUG
+			Logger.SetLogLevel(LogLevel.Debug);
+			#endif
 			Server=new RoomServer();
+			
 			if(Server.Start()){
 				Command(Server);
 			}else{
