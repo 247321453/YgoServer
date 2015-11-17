@@ -1370,27 +1370,27 @@ namespace YGOCore.Game
 			packet.Write((short)m_duel.QueryFieldCount(0, CardLocation.Extra));
 			packet.Write((short)(deck2 + hand2));
 			packet.Write((short)m_duel.QueryFieldCount(1, CardLocation.Extra));
-			player.Send(packet);
+			player.Send(packet, false);
 			
 			GameServerPacket draw = new GameServerPacket(GameMessage.Draw);
 			draw.Write((byte)0);
 			draw.Write((byte)hand1);
 			for (int i = 0; i < hand1; i++)
 				draw.Write(0);
-			player.Send(draw);
+			player.Send(draw, false);
 			
 			draw = new GameServerPacket(GameMessage.Draw);
 			draw.Write((byte)1);
 			draw.Write((byte)hand2);
 			for (int i = 0; i < hand2; i++)
 				draw.Write(0);
-			player.Send(draw);
+			player.Send(draw, false);
 
 			//回合数
 			for(int i=0;i<TurnCount;i++){
 				GameServerPacket turn = new GameServerPacket(GameMessage.NewTurn);
 				turn.Write((byte)(i%2));
-				player.Send(turn);
+				player.Send(turn, false);
 			}
 //			if (CurrentPlayer == 1)
 //			{
