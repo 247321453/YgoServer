@@ -46,6 +46,12 @@ namespace YGOCore.Net
 					continue;
 				}
 				CtosMessage msg = packet.ReadCtos();
+				if(msg != CtosMessage.PlayerInfo){
+					if(!player.IsAuthentified){
+						Logger.Warn("auth error:"+player.Name);
+						continue;
+					}
+				}
 				EventHandler.Do((ushort)msg, player, packet);
 				packet.Close();
 			}

@@ -10,13 +10,11 @@ namespace System.IO
 			if(text==null)text="";
 			byte[] unicode = Encoding.Unicode.GetBytes(text);
 			if(len <= 0 ){
-				len = unicode.Length;
-			}else{
-				int max = len * 2 - 2;
-				len = Math.Min(max, unicode.Length);
+				len = text.Length + 1;
 			}
-			byte[] result = new byte[len];
-			Array.Copy(unicode, result, len);
+			byte[] result = new byte[len * 2];
+			int max = len * 2 - 2;
+			Array.Copy(unicode, result, unicode.Length > max ? max : unicode.Length);
 			writer.Write(result);
 		}
 		public static void Write(this BinaryWriter writer,bool value)

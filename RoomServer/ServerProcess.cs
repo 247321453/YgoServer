@@ -29,9 +29,6 @@ namespace YGOCore
 			process.StartInfo.Arguments = " "+m_config +(m_port>0?" "+m_port:"");
 			process.EnableRaisingEvents=true;
 			process.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
-			#if DEBUG
-			process.StartInfo.WindowStyle=ProcessWindowStyle.Normal;
-			#endif
 			process.Exited+=new EventHandler(Exited);
 			try{
 				process.Start();
