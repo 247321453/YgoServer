@@ -15,14 +15,6 @@ using System.Threading;
 
 namespace YGOCore
 {
-	public delegate void OnRoomCreateEvent(Server server,string name,string banlist,string gameinfo);
-	public delegate void OnRoomStartEvent(Server server,string name);
-	public delegate void OnRoomCloseEvent(Server server,string name);
-	public delegate void OnPlayerJoinEvent(Server server,string name,string room);
-	public delegate void OnPlayerLeaveEvent(Server server,string name,string room);
-	public delegate void OnCommandEvent(Server server, string line);
-	public delegate void OnServerCloseEvent(Server server);
-	
 	/// <summary>
 	/// 服务信息
 	/// </summary>
@@ -30,13 +22,6 @@ namespace YGOCore
 	{
 		
 		#region
-		public event OnServerCloseEvent OnServerClose;
-		public event OnRoomCreateEvent OnRoomCreate;
-		public event OnRoomStartEvent OnRoomStart;
-		public event OnRoomCloseEvent OnRoomClose;
-		public event OnPlayerJoinEvent OnPlayerJoin;
-		public event OnPlayerLeaveEvent OnPlayerLeave;
-		public event OnCommandEvent OnCommand;
 		private const char SEP = '\t';
 		private const string HEAD="::";
 		public readonly byte[] AsyncLock = new byte[0];
@@ -50,9 +35,11 @@ namespace YGOCore
 		public int Port{get;private set;}
 		public bool NeedAuth{get;private set;}
 		public int RoomCount{get{lock(Rooms)return Rooms.Count;}}
-		public Server(string fileName,int port, string config="config.txt")
+		public RoomServer Server{get;private set;}
+		public Server(RoomServer server,string fileName,int port, string config="config.txt")
 		{
 			this.Port= port;
+			this.Server=server;
 			m_config = config;
 			m_fileName = fileName;
 			Logger.Debug(fileName+":"+config);
@@ -276,5 +263,10 @@ namespace YGOCore
 			}
 		}
 		#endregion
+		
+		
+		public void OnRecevice(){
+			
+		}
 	}
 }

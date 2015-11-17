@@ -75,7 +75,15 @@ namespace AsyncServer
 		{
 			m_writer.Write(value);
 		}
-
+		public void Write(string text)
+		{
+			if(text==null)text="";
+			m_writer.WriteUnicode(text, text.Length+1);
+		}
+		public void Write(string text, int len)
+		{
+			m_writer.WriteUnicode(text, len);
+		}
 		public void WriteUnicode(string text, int len)
 		{
 			if(text==null){

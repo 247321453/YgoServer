@@ -23,9 +23,10 @@ namespace YGOCore
 	{
 		#region member
 		public bool IsListening{get;private set;}
-		public readonly List<Server> Servers=new List<Server>();
-		public readonly SortedList<string, Session> Clients=new SortedList<string, Session>();
+		private AsyncTcpListener<DuelServer> m_apilistener;
 		private AsyncTcpListener<Session> m_listener;
+		public readonly List<DuelServer> DuelServers=new List<DuelServer>();
+		public readonly SortedList<string, Session> Clients=new SortedList<string, Session>();
 		public readonly RoomConfig Config=new RoomConfig();
 		public RoomServer()
 		{
@@ -37,29 +38,23 @@ namespace YGOCore
 			if(IsListening) return true;
 			IsListening = true;
 			Config.Load();
+			//本地api
+			InitDeulListener();
+			try{
+				m_apilistener.Start();
+			}catch(Exception e){
+				Logger.Error(e);
+			}
 			if(Config.Ports!=null){
 				foreach(int port in Config.Ports){
-					Server server=new Server(Config.ServerExe, port, Config.Config);
-					server.OnPlayerJoin += new OnPlayerJoinEvent(this.server_OnPlayerJoin);
-					server.OnPlayerLeave+=new OnPlayerLeaveEvent(this.server_OnPlayerLeave);
-					server.OnRoomClose+=new OnRoomCloseEvent(this.server_OnRoomClose);
-					server.OnRoomCreate+=new OnRoomCreateEvent(this.server_OnRoomCreate);
-					server.OnRoomStart+=new OnRoomStartEvent(this.server_OnRoomStart);
-					server.OnCommand +=new OnCommandEvent(server_OnCommand);
-					server.OnServerClose+=new OnServerCloseEvent(this.OnServerClose);
-					Servers.Add(server);
+					ServerProcess server=new ServerProcess(port, Config.ServerExe, Config.Config);
 					server.Start();
 				}
 			}else{
 				Logger.Error("no configs");
 			}
+			InitRoomListener();
 			try{
-				if(m_listener == null){
-					m_listener = new AsyncTcpListener<Session>(IPAddress.Any, Config.Port);
-					m_listener.OnConnect +=new AsyncTcpListener<Session>.ConnectEventHandler(Listener_OnConnect);
-					m_listener.OnDisconnect +=new AsyncTcpListener<Session>.DisconnectEventHandler(Listener_OnDisconnect);
-					m_listener.OnReceive += new AsyncTcpListener<Session>.ReceiveEventHandler(Listener_OnReceive);
-				}
 				m_listener.Start();
 			}catch(Exception e){
 				Logger.Error(e);
@@ -67,23 +62,74 @@ namespace YGOCore
 			}
 			return IsListening;
 		}
-		void server_OnCommand(Server server, string line)
-		{
-			this.OnCommand(line, false);
-		}
 		public void Stop(){
 			//Server.Close();
 			if(!IsListening) return;
 			IsListening = false;
-			lock(Servers){
-				foreach(Server server in Servers){
+			lock(DuelServers){
+				foreach(DuelServer server in DuelServers){
 					server.Close();
+				}
+				lock(Clients){
+					foreach(Session client in Clients.Values){
+						client.Close();
+					}
 				}
 			}
 		}
 		#endregion
 		
-		#region listener
+		#region duleserver
+		private void InitDeulListener(){
+			if(m_apilistener==null){
+				m_apilistener = new AsyncTcpListener<DuelServer>(IPAddress.Parse("127.0.0.1"), Config.ApiPort);
+				m_apilistener.OnConnect+= new AsyncTcpListener<DuelServer>.ConnectEventHandler(ApiListener_OnConnect);
+				m_apilistener.OnDisconnect+=new AsyncTcpListener<DuelServer>.DisconnectEventHandler(ApiListener_OnDisconnect);
+				m_apilistener.OnReceive+=new AsyncTcpListener<DuelServer>.ReceiveEventHandler(ApiListener_OnReceive);
+			}
+		}
+		private void ApiListener_OnReceive(Connection<DuelServer> Client)
+		{
+			if(Client!=null&&Client.Tag!=null){
+				Client.Tag.OnRecevice();
+			}
+		}
+
+		private void ApiListener_OnDisconnect(Connection<DuelServer> Client)
+		{
+			if(Client!=null && Client.Tag!=null){
+				lock(DuelServers){
+					if(DuelServers.Contains(Client.Tag)){
+						DuelServers.Remove(Client.Tag);
+					}
+				}
+			}
+		}
+
+		private void ApiListener_OnConnect(Connection<DuelServer> Client)
+		{
+			if(Client==null)return;
+			if(!IsListening){
+				Client.Close();
+				return;
+			}
+			DuelServer server=new DuelServer(this, Client);
+			Client.Tag = server;
+			lock(DuelServers){
+				DuelServers.Add(server);
+			}
+		}
+		#endregion
+		
+		#region client listener
+		private void InitRoomListener(){
+			if(m_listener == null){
+				m_listener = new AsyncTcpListener<Session>(IPAddress.Any, Config.Port);
+				m_listener.OnConnect +=new AsyncTcpListener<Session>.ConnectEventHandler(Listener_OnConnect);
+				m_listener.OnDisconnect +=new AsyncTcpListener<Session>.DisconnectEventHandler(Listener_OnDisconnect);
+				m_listener.OnReceive += new AsyncTcpListener<Session>.ReceiveEventHandler(Listener_OnReceive);
+			}
+		}
 		private void Listener_OnDisconnect(Connection<Session> Client)
 		{
 			if(Client.Tag!=null){
@@ -104,9 +150,12 @@ namespace YGOCore
 		
 		private void Listener_OnConnect(Connection<Session> Client)
 		{
-			Session session= new Session(Client);
+			if(!IsListening){
+				Client.Close();
+				return;
+			}
+			Session session= new Session(Client,this);
 			//分配对战端
-			session.Server = this;
 		}
 		#endregion
 		
@@ -116,27 +165,23 @@ namespace YGOCore
 		/// <summary>
 		/// 返回最少人数的服务端
 		/// </summary>
-		public Server GetMinServer(){
+		public DuelServer GetMinServer(){
 			List<int> lens=new List<int>();
-			Server minsrv=null;
-			lock(Servers){
-				foreach(Server srv in Servers){
-					if(minsrv!=null){
-						int i = 0, j =0;
-						lock(minsrv.AsyncLock)
-							i = minsrv.Count;
-						lock(srv.AsyncLock)
-							j = srv.Count;
-						if(i > j){
-							minsrv = srv;
-						}
-					}else{
-						minsrv = srv;
-					}
+			DuelServer[] servers;
+			lock(DuelServers){
+				servers = DuelServers.ToArray();
+			}
+			int c = int.MaxValue;
+			int index = -1;
+			for(int i=0;i<servers.Length;i++){
+				if(servers[i]==null)continue;
+				if(c > servers[i].Count){
+					c = servers[i].Count;
+					index = i;
 				}
 			}
-			if(minsrv!=null){
-				return minsrv;
+			if(index>=0 && index < servers.Length){
+				return servers[index];
 			}
 			return null;
 		}

@@ -22,7 +22,7 @@ namespace YGOCore
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.Info);
 				writer.Write(roomServer.GetChatPort());
-				Server srv = roomServer.GetMinServer();
+				DuelServer srv = roomServer.GetMinServer();
 				lock(srv.AsyncLock){
 					srv.Count++;
 				}
@@ -39,12 +39,12 @@ namespace YGOCore
 			}
 		}
 		
-		public static void OnServerClose(this RoomServer roomServer,Server server)
+		public static void OnServerClose(this RoomServer roomServer, DuelServer server)
 		{
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.ServerClose);
 				writer.Write(server.Port);
-				Server srv = roomServer.GetMinServer();
+				DuelServer srv = roomServer.GetMinServer();
 				lock(srv.AsyncLock){
 					srv.Count = 0;
 				}
@@ -67,8 +67,8 @@ namespace YGOCore
 			#if DEBUG
 			Logger.Debug("roomlist");
 			#endif
-			lock(roomServer.Servers){
-				foreach(Server srv in roomServer.Servers){
+			lock(roomServer.DuelServers){
+				foreach(DuelServer srv in roomServer.DuelServers){
 					using(PacketWriter wrtier=new PacketWriter(20)){
 						wrtier.Write((byte)RoomMessage.RoomList);
 						wrtier.Write(srv.Port);
@@ -145,7 +145,7 @@ namespace YGOCore
 		#endregion
 		
 		#region room
-		public static void server_OnRoomCreate(this RoomServer roomServer, Server server, string name,string banlist,string gameinfo)
+		public static void server_OnRoomCreate(this RoomServer roomServer, DuelServer server, string name,string banlist,string gameinfo)
 		{
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomCreate);
@@ -159,7 +159,7 @@ namespace YGOCore
 			}
 		}
 
-		public static void server_OnRoomStart(this RoomServer roomServer, Server server, string name)
+		public static void server_OnRoomStart(this RoomServer roomServer, DuelServer server, string name)
 		{
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomStart);
@@ -171,7 +171,7 @@ namespace YGOCore
 		}
 
 		
-		public static void server_OnRoomClose(this RoomServer roomServer, Server server, string name)
+		public static void server_OnRoomClose(this RoomServer roomServer, DuelServer server, string name)
 		{
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomClose);
@@ -199,7 +199,7 @@ namespace YGOCore
 				}
 			}
 		}
-		public static void server_OnPlayerLeave(this RoomServer roomServer, Server server, string name, string room)
+		public static void server_OnPlayerLeave(this RoomServer roomServer, DuelServer server, string name, string room)
 		{
 			if(server!=null){
 				lock(server.AsyncLock){
@@ -224,7 +224,7 @@ namespace YGOCore
 			}
 		}
 
-		public static void server_OnPlayerJoin(this RoomServer roomServer, Server server, string name, string room)
+		public static void server_OnPlayerJoin(this RoomServer roomServer, DuelServer server, string name, string room)
 		{
 			if(string.IsNullOrEmpty(name))return ;
 			lock(roomServer.Clients){

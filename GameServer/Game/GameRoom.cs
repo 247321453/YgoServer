@@ -161,7 +161,7 @@ namespace YGOCore.Game
 				}else if(State == GameState.Side){
 					player.ServerMessage(Messages.MSG_WATCH_SIDE);
 				}
-				ServerApi.OnPlayerJoin(player, this);
+				ServerApi.OnPlayerEnter(player, this);
 				return;
 			}
 
@@ -221,7 +221,7 @@ namespace YGOCore.Game
 				player.Send(nwatch, false);
 			}
 			player.PeekSend();
-			ServerApi.OnPlayerJoin(player, this);
+			ServerApi.OnPlayerEnter(player, this);
 		}
 		#endregion
 		

@@ -63,6 +63,9 @@
     <Compile Include="..\lib\Tool.cs">
       <Link>Helper\Tool.cs</Link>
     </Compile>
+    <Compile Include="..\RoomServer\Common\RoomMessage.cs">
+      <Link>Game\RoomMessage.cs</Link>
+    </Compile>
     <Compile Include="ChatCommand.cs" />
     <Compile Include="Game\BanlistManager.cs" />
     <Compile Include="Game\CoreMessage.cs" />

@@ -63,9 +63,7 @@ namespace YGOCore.Game
 				using(MemoryStream rawsream = new MemoryStream(raw)){
 					try{
 						lzma.Code(rawsream, compressed, raw.LongLength, -1, null);
-					}catch(Exception){
-						
-					}
+					}catch{}
 					raw = compressed.ToArray();
 				}
 			}

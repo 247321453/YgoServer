@@ -64,7 +64,7 @@ namespace YGOCore
 		/// <summary>
 		/// ¿ØÖÆÌ¨api 
 		/// </summary>
-		public bool ConsoleApi{get;private set;}
+		public bool UseApi{get;private set;}
 
 		public ServerConfig()
 		{
@@ -82,7 +82,7 @@ namespace YGOCore
 			AsyncMode=false;
 			BanMode = 0;
 			Timeout = 15;
-			ConsoleApi = true;
+			UseApi = true;
 			//	Timeout = 20;
 		}
 
@@ -173,7 +173,7 @@ namespace YGOCore
 					Timeout = Convert.ToInt32(value);
 					break;
 				case "consoleapi":
-					ConsoleApi = Convert.ToBoolean(value);
+					UseApi = Convert.ToBoolean(value);
 					break;
 				default:
 					return false;

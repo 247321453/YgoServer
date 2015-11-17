@@ -26,18 +26,9 @@ namespace YGOCore
 						int i = 0;
 						int.TryParse(args[1], out i);
 						//服务信息，玩家数，房间数
-						lock(server.Servers){
-							if(i<server.Servers.Count){
-								Console.WriteLine(">>"+server.Servers[i].ToString());
-							}else{
-								Console.WriteLine(">>no find "+i);
-							}
-						}
+
 					}else{
 						//数量
-						lock(server.Servers){
-							Console.WriteLine(">>"+server.Servers.Count);
-						}
 					}
 					break;
 				case "close":
@@ -45,23 +36,8 @@ namespace YGOCore
 						int i = 0;
 						int.TryParse(args[1], out i);
 						//服务信息，玩家数，房间数
-						lock(server.Servers){
-							if(i<server.Servers.Count){
-								Console.WriteLine(">>close "+server.Servers[i].Port);
-								server.Servers[i].Close();
-								server.Servers.RemoveAt(i);
-							}else{
-								Console.WriteLine(">>no find "+i);
-							}
-						}
 					}else{
 						//数量
-						lock(server.Servers){
-							foreach(Server srv in server.Servers){
-								Console.WriteLine(">>close:"+srv.Port);
-								srv.Close();
-							}
-						}
 					}
 					break;
 				default:

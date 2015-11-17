@@ -8,6 +8,8 @@
  */
 using System;
 using YGOCore.Game;
+using AsyncServer;
+using YGOCore;
 using YGOCore.Net;
 
 namespace YGOCore
@@ -17,42 +19,80 @@ namespace YGOCore
 	/// </summary>
 	public static class ServerApi
 	{
-		public const char SEP = '\t';
-		public const string HEAD="::";
-
 		public static void OnServerInfo(GameServer server){
 			ServerConfig Config = server.Config;
-			Println("server"+SEP+Config.ServerPort+SEP+Config.isNeedAuth);
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)RoomMessage.Info);
+				writer.Write(Config.ServerPort);
+				writer.Write(Config.isNeedAuth);
+				writer.Use();
+				Send(writer.Content);
+			}
 		}
 		public static void OnRoomCreate(GameRoom room){
 			if(room==null||room.Config==null){
 				return;
 			}
-			Println("create"+SEP+room.Name+SEP+room.Config.BanList+SEP+room.Config.Name);
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)RoomMessage.RoomCreate);
+				writer.Write(room.Name, 20);
+				writer.Write(room.Config.Name, 20);
+				writer.Write(room.Config.BanList);
+				writer.Use();
+				Send(writer.Content);
+			}
 		}
 		
 		public static void OnRoomStart(GameRoom room){
-			Println("start"+SEP+room.Name);
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)RoomMessage.RoomStart);
+				writer.Write(room.Name, 20);
+				writer.Use();
+				Send(writer.Content);
+			}
 		}
 		
 		public static void OnRoomClose(GameRoom room){
-			Println("close"+SEP+room.Name);
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)RoomMessage.RoomClose);
+				writer.Write(room.Name, 20);
+				writer.Use();
+				Send(writer.Content);
+			}
 		}
 
 		public static void OnPlayerLeave(GameSession player, GameRoom room){
-			Println("leave"+SEP+player.Name+SEP+room.Config.Name);
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)RoomMessage.PlayerLeave);
+				writer.Write(player.Name, 20);
+				writer.Write(room.Config.Name, 20);
+				writer.Use();
+				Send(writer.Content);
+			}
 		}
 		
-		public static void OnPlayerJoin(GameSession player, GameRoom room){
-			Println("join"+SEP+player.Name+SEP+room.Config.Name);
+		public static void OnPlayerEnter(GameSession player, GameRoom room){
+			using(PacketWriter writer=new PacketWriter(2)){
+				writer.Write((byte)RoomMessage.PlayerEnter);
+				writer.Write(player.Name, 20);
+				writer.Write(room.Config.Name, 20);
+				writer.Use();
+				Send(writer.Content);
+			}
 			string tip = Messages.RandomMessage();
 			if(!string.IsNullOrEmpty(tip))
 				player.ServerMessage(Messages.RandomMessage());
 		}
-		public static void Println(string str){
-			if(Program.Config.ConsoleApi){
-				Console.WriteLine(HEAD+str);
+		private static void Send(byte[] data){
+			if(Client!=null&& Client.Connected){
+				Client.AsyncSend(data);
 			}
+		}
+		
+		static AsyncClient Client;
+		public static bool Init(int port){
+			Client = new AsyncClient();
+			return Client.Connect("127.0.0.1", port);
 		}
 	}
 }

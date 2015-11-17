@@ -18,7 +18,7 @@ namespace YGOCore
 	public class Session
 	{
 		#region member
-		public RoomServer Server;
+		public RoomServer Server{get; private set;}
 		public Connection<Session> Client{get; private set;}
 		private bool m_close = false;
 		/// <summary>
@@ -36,15 +36,16 @@ namespace YGOCore
 		/// <summary>
 		/// 当前所在的服务器
 		/// </summary>
-		public Server ServerInfo;
+		public DuelServer ServerInfo;
 		#endregion
 		
 		#region public
-		public Session(Connection<Session> client,int timeout=15)
+		public Session(Connection<Session> client,RoomServer server,int timeout=15)
 		{
-			Client = client;
-			Client.Tag = this;
-			MyTimer CheckTimer = new MyTimer(1000, timeout*1000);
+			this.Client = client;
+			this.Client.Tag = this;
+			this.Server = server;
+			MyTimer CheckTimer = new MyTimer(1000, timeout);
 			CheckTimer.AutoReset = true;
 			CheckTimer.Elapsed += delegate {
 				if( !string.IsNullOrEmpty(Name) ){

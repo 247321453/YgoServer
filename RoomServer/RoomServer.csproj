@@ -64,17 +64,19 @@
     <Compile Include="..\lib\OCGWrapper\Network\StocMessage.cs">
       <Link>Common\StocMessage.cs</Link>
     </Compile>
+    <Compile Include="DuelServer.cs" />
     <Compile Include="Helper\ClinetEvent.cs" />
     <Compile Include="Helper\Command.cs" />
     <Compile Include="Helper\RoomEvent.cs" />
+    <Compile Include="Helper\ServerEvent.cs" />
     <Compile Include="Kernel32.cs" />
     <Compile Include="RoomConfig.cs" />
+    <Compile Include="ServerProcess.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="Common\RoomMessage.cs" />
     <Compile Include="RoomServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lib\AsyncServer\AsyncServer.csproj">

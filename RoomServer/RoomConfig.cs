@@ -16,30 +16,34 @@ namespace YGOCore
 	/// </summary>
 	public class RoomConfig
 	{
-		public int Port;
-		public int[] Ports;
-		public string ServerExe;
-		public string Config;
-		public int Timeout =15;
+		public int Port{get; private set;}
+		public int ApiPort{get; private set;}
+		public int[] Ports{get; private set;}
+		public string ServerExe{get; private set;}
+		public string Config{get; private set;}
+		public int Timeout{get; private set;}
 		
 		public RoomConfig(){
 			Port = 18910;
+			Timeout = 15;
 			ServerExe = "GameServer.exe";
 			Ports = new int[]{8910};
 			Config = "config.txt";
 			ConfigManager.XmlFile = "roomserver.xml";
+			ApiPort = 10001;
 		}
 		public void Load(){
-			Port = ConfigManager.readInteger("port", 18910);
-			ServerExe = ConfigManager.readString("gameserver");
-			if(string.IsNullOrEmpty(ServerExe)){
-				ServerExe = "GameServer.exe";
+			Port = ConfigManager.readInteger("port", Port);
+			ApiPort = ConfigManager.readInteger("apiport", ApiPort);
+			string tmp = ConfigManager.readString("gameserver");
+			if(!string.IsNullOrEmpty(tmp)){
+				ServerExe = tmp;
 			}
-			Timeout = ConfigManager.readInteger("timeout", 15);
+			Timeout = ConfigManager.readInteger("timeout", Timeout);
 			Ports = ConfigManager.readIntegers("ports",0);
-			Config =  ConfigManager.readString("config");
-			if(string.IsNullOrEmpty(Config)){
-				Config = "config.txt";
+			tmp =  ConfigManager.readString("config");
+			if(!string.IsNullOrEmpty(tmp)){
+				Config = tmp;
 			}
 		}
 	}
