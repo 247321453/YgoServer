@@ -1,15 +1,13 @@
 ﻿
 using System;
-using System.IO;
 
-namespace AsyncServer
+namespace System.IO
 {
 	/// <summary>
 	/// Description of PacketWriter.
 	/// </summary>
-	public class PacketWriter : IDisposable
+	public class PacketWriter : BinaryWriter
 	{
-		protected BinaryWriter m_writer;
 		protected MemoryStream m_stream;
 		protected int m_PacketByteLength = 4;
 		public byte[] Bytes{
@@ -22,88 +20,16 @@ namespace AsyncServer
 				return content;
 			}
 		}
-		private bool appendLength = false;
-		private byte[] content;
-		
-		public PacketWriter(int packetByteLength)
-		{
-			m_PacketByteLength = (packetByteLength == 2 )?2:4;
-			m_stream = new MemoryStream();
-			m_writer = new BinaryWriter(m_stream);
-		}
-		
 		public int PacketByteLength{
 			get{return m_PacketByteLength;}
 		}
-		public BinaryWriter Writer(){
-			return m_writer;
-		}
-		public void Write(byte[] array)
+		private bool appendLength = false;
+		private byte[] content;
+		
+		public PacketWriter(int packetByteLength):base(new MemoryStream())
 		{
-			m_writer.Write(array);
-		}
-		public void Write(byte[] array, int index, int count)
-		{
-			m_writer.Write(array, index, count);
-		}
-		public void Write(bool value)
-		{
-			m_writer.Write((byte)(value ? 1 : 0));
-		}
-
-		public void Write(sbyte value)
-		{
-			m_writer.Write(value);
-		}
-
-		public void Write(byte value)
-		{
-			m_writer.Write(value);
-		}
-
-		public void Write(short value)
-		{
-			m_writer.Write(value);
-		}
-
-		public void Write(int value)
-		{
-			m_writer.Write(value);
-		}
-
-		public void Write(uint value)
-		{
-			m_writer.Write(value);
-		}
-		public void Write(string text)
-		{
-			if(text==null)text="";
-			m_writer.WriteUnicode(text, text.Length+1);
-		}
-		public void Write(string text, int len)
-		{
-			m_writer.WriteUnicode(text, len);
-		}
-		public void WriteUnicode(string text, int len)
-		{
-			if(text==null){
-				text="";
-			}
-			m_writer.WriteUnicode(text, len);
-		}
-
-		public void Close(){
-			if(m_stream!=null){
-				m_stream.Close();
-			}
-			if(m_writer!=null){
-				m_writer.Close();
-			}
-		}
-		public void Dispose(){
-			Close();
-			m_stream = null;
-			m_writer = null;
+			m_PacketByteLength = (packetByteLength == 2 )?2:4;
+			m_stream = (MemoryStream)OutStream;
 		}
 		/// <summary>
 		/// 添加包长度

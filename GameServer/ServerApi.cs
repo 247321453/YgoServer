@@ -10,6 +10,7 @@ using System;
 using YGOCore.Game;
 using AsyncServer;
 using YGOCore;
+using System.IO;
 using YGOCore.Net;
 
 namespace YGOCore
@@ -35,9 +36,9 @@ namespace YGOCore
 			}
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomCreate);
-				writer.Write(room.Name, 20);
-				writer.Write(room.Config.Name, 20);
-				writer.Write(room.Config.BanList);
+				writer.WriteUnicode(room.Name, 20);
+				writer.WriteUnicode(room.Config.Name, 20);
+				writer.WriteUnicode(room.Config.BanList);
 				writer.Use();
 				Send(writer.Content);
 			}
@@ -46,7 +47,7 @@ namespace YGOCore
 		public static void OnRoomStart(GameRoom room){
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomStart);
-				writer.Write(room.Config.Name, 20);
+				writer.WriteUnicode(room.Config.Name, 20);
 				writer.Use();
 				Send(writer.Content);
 			}
@@ -55,7 +56,7 @@ namespace YGOCore
 		public static void OnRoomClose(GameRoom room){
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomClose);
-				writer.Write(room.Config.Name, 20);
+				writer.WriteUnicode(room.Config.Name, 20);
 				writer.Use();
 				Send(writer.Content);
 			}
@@ -64,8 +65,8 @@ namespace YGOCore
 		public static void OnPlayerLeave(GameSession player, GameRoom room){
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.PlayerLeave);
-				writer.Write(player.Name, 20);
-				writer.Write(room.Config.Name, 20);
+				writer.WriteUnicode(player.Name, 20);
+				writer.WriteUnicode(room.Config.Name, 20);
 				writer.Use();
 				Send(writer.Content);
 			}
@@ -74,8 +75,8 @@ namespace YGOCore
 		public static void OnPlayerEnter(GameSession player, GameRoom room){
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.PlayerEnter);
-				writer.Write(player.Name, 20);
-				writer.Write(room.Config.Name, 20);
+				writer.WriteUnicode(player.Name, 20);
+				writer.WriteUnicode(room.Config.Name, 20);
 				writer.Use();
 				Send(writer.Content);
 			}

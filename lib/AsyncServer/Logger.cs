@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace AsyncServer {
+namespace System {
 	public enum LogLevel:byte {
 		Debug=0,
 		Info=1,

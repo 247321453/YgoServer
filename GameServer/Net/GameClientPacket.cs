@@ -1,5 +1,6 @@
 ﻿using AsyncServer;
 using OcgWrapper.Enums;
+using System.IO;
 
 namespace YGOCore.Net
 {
@@ -15,7 +16,7 @@ namespace YGOCore.Net
         public CtosMessage ReadCtos()
         {
         	if(ctos == byte.MaxValue){
-        		ctos = m_reader.ReadByte();
+        		ctos = ReadByte();
         	}
         	if(CtosMessage.IsDefined(typeof(CtosMessage), ctos)){
         		return (CtosMessage)ctos;

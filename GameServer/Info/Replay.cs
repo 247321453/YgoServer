@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using SevenZip.Compression.LZMA;
 using System.Threading;
 
@@ -63,7 +64,9 @@ namespace YGOCore.Game
 				using(MemoryStream rawsream = new MemoryStream(raw)){
 					try{
 						lzma.Code(rawsream, compressed, raw.LongLength, -1, null);
-					}catch{}
+					}catch{
+						Logger.Warn("replay out of memory.raw.length="+raw.Length);
+					}
 					raw = compressed.ToArray();
 				}
 			}

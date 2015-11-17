@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using YGOCore.Game;
 using System.Collections.Generic;
 using YGOCore;
+using System.IO;
 
 namespace GameClient
 {

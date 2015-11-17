@@ -12,15 +12,15 @@ namespace YGOCore.Net
 		public GameMessage GameMsg = GameMessage.Waiting;
 		public GameServerPacket(StocMessage message):base(GamePacketByteLength)
 		{
-			m_writer.Write((byte)message);
+			Write((byte)message);
 			this.PacketMsg=message;
 		}
 
 		public GameServerPacket(GameMessage message):base(GamePacketByteLength)
 		{
-			m_writer.Write((byte)(StocMessage.GameMsg));
+			Write((byte)(StocMessage.GameMsg));
 			this.PacketMsg=StocMessage.GameMsg;
-			m_writer.Write((byte)message);
+			Write((byte)message);
 			this.GameMsg = message;
 		}
 	}

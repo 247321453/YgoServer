@@ -10,6 +10,7 @@ using System;
 using AsyncServer;
 using System.Collections.Generic;
 using YGOCore.Game;
+using System.IO;
 
 namespace YGOCore
 {

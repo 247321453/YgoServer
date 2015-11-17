@@ -5,6 +5,7 @@ using AsyncServer;
 using OcgWrapper.Enums;
 using YGOCore.Game;
 using System.Text;
+using System.IO;
 
 namespace YGOCore.Net
 {

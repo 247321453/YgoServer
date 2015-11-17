@@ -46,6 +46,30 @@ namespace AsyncServer
 			}
 			return false;
 		}
+		
+		public void AsyncConnect(string host,int port){
+			if(client == null){
+				client = new TcpClient();
+			}
+			if(!client.Client.Connected){
+				try{
+					client.Close();
+				}catch{}
+				client = new TcpClient();
+			}else{
+				return;
+			}
+			try{
+				client.BeginConnect(host, port, new AsyncCallback(delegate(IAsyncResult ar){
+				                                                  	try{
+				                                                  		client.EndConnect(ar);
+				                                                  	}catch{}
+				                                                  }), client);
+			}catch(Exception e){
+				Logger.Warn(e);
+			}
+		}
+		
 		public void BeginRecevice(){
 			if(!Connected)return;
 			byte[] m_buff = new byte[1024];

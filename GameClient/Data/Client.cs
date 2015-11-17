@@ -13,6 +13,7 @@ using System.Net.Sockets;
 using AsyncServer;
 using YGOCore;
 using YGOCore.Game;
+using System.IO;
 
 namespace GameClient
 {

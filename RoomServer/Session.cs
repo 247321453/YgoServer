@@ -9,6 +9,7 @@
 using System;
 using AsyncServer;
 using System.Collections.Generic;
+using System.IO;
 
 namespace YGOCore
 {

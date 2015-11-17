@@ -9,6 +9,7 @@
 using System;
 using YGOCore.Net;
 using AsyncServer;
+using System.IO;
 
 namespace YGOCore.Game
 {

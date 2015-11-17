@@ -61,7 +61,6 @@ namespace OcgWrapper
 				try{
 					result = Api.process(m_pDuel);
 				}catch(Exception){
-					
 				}
 				int len = result & 0xFFFF;
 

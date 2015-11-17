@@ -11,6 +11,7 @@ using AsyncServer;
 using System.Collections.Generic;
 using System.Diagnostics;
 using YGOCore.Game;
+using System.IO;
 
 namespace YGOCore
 {
