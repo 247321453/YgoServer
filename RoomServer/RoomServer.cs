@@ -26,6 +26,7 @@ namespace YGOCore
 		private AsyncTcpListener<DuelServer> m_apilistener;
 		private AsyncTcpListener<Session> m_listener;
 		public readonly List<DuelServer> DuelServers=new List<DuelServer>();
+		public readonly List<ServerProcess> Porcess=new List<ServerProcess>();
 		public readonly SortedList<string, Session> Clients=new SortedList<string, Session>();
 		public readonly RoomConfig Config=new RoomConfig();
 		public RoomServer()
@@ -49,6 +50,7 @@ namespace YGOCore
 				foreach(int port in Config.Ports){
 					ServerProcess server=new ServerProcess(port, Config.ServerExe, Config.Config);
 					server.Start();
+					Porcess.Add(server);
 				}
 			}else{
 				Logger.Error("no configs");
@@ -62,6 +64,16 @@ namespace YGOCore
 			}
 			return IsListening;
 		}
+				
+		public void Close(int port){
+			lock(Porcess){
+				foreach(ServerProcess p in Porcess){
+					if(p.Port==port){
+						p.Close();
+					}
+				}
+			}
+		}
 		public void Stop(){
 			//Server.Close();
 			if(!IsListening) return;
@@ -70,12 +82,21 @@ namespace YGOCore
 				foreach(DuelServer server in DuelServers){
 					server.Close();
 				}
-				lock(Clients){
-					foreach(Session client in Clients.Values){
-						client.Close();
-					}
+			}
+			lock(Clients){
+				foreach(Session client in Clients.Values){
+					client.Close();
 				}
 			}
+			lock(Porcess){
+				foreach(ServerProcess p in Porcess){
+					p.Close();
+				}
+			}
+			if(m_apilistener!=null)
+				m_apilistener.Stop();
+			if(m_listener!=null)
+				m_listener.Stop();
 		}
 		#endregion
 		
@@ -98,6 +119,7 @@ namespace YGOCore
 		private void ApiListener_OnDisconnect(Connection<DuelServer> Client)
 		{
 			if(Client!=null && Client.Tag!=null){
+				this.OnServerClose(Client.Tag);
 				lock(DuelServers){
 					if(DuelServers.Contains(Client.Tag)){
 						DuelServers.Remove(Client.Tag);
@@ -118,6 +140,7 @@ namespace YGOCore
 			lock(DuelServers){
 				DuelServers.Add(server);
 			}
+			Logger.Debug("duel server connected.");
 		}
 		#endregion
 		
@@ -158,7 +181,6 @@ namespace YGOCore
 			//分配对战端
 		}
 		#endregion
-		
 		public int GetChatPort(){
 			return Config.Port;
 		}

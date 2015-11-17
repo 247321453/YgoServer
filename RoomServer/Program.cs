@@ -28,13 +28,12 @@ namespace YGOCore
 			Logger.SetLogLevel(LogLevel.Debug);
 			#endif
 			Server=new RoomServer();
-			
 			if(Server.Start()){
 				Command(Server);
+				Console.WriteLine("server is close");
 			}else{
 				Console.WriteLine("start fail.");
 			}
-			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
 		}
 		private static bool Console_Close(int type){

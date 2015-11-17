@@ -49,7 +49,7 @@ namespace AsyncServer {
 				ThreadPool.QueueUserWorkItem(new WaitCallback(
 					(object o)=>{
 						lock(_lock)
-							File.AppendAllText(ErrFile, str);
+							File.AppendAllText(ErrFile, str+"\n");
 					}), str);
 				
 			}

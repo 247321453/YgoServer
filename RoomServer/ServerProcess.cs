@@ -11,7 +11,7 @@ namespace YGOCore
 		private string m_fileName;
 		private int m_port;
 		private string m_config;
-		
+		public int Port{get{return m_port;}}
 		public ServerProcess(int port,string fileName="GameServer.exe", string config="config.txt")
 		{
 			this.m_port = port;
@@ -28,8 +28,10 @@ namespace YGOCore
 			//设定程式执行参数
 			process.StartInfo.Arguments = " "+m_config +(m_port>0?" "+m_port:"");
 			process.EnableRaisingEvents=true;
-			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
+			#if DEBUG
+			process.StartInfo.WindowStyle=ProcessWindowStyle.Normal;
+			#endif
 			process.Exited+=new EventHandler(Exited);
 			try{
 				process.Start();

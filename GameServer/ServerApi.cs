@@ -46,7 +46,7 @@ namespace YGOCore
 		public static void OnRoomStart(GameRoom room){
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomStart);
-				writer.Write(room.Name, 20);
+				writer.Write(room.Config.Name, 20);
 				writer.Use();
 				Send(writer.Content);
 			}
@@ -55,7 +55,7 @@ namespace YGOCore
 		public static void OnRoomClose(GameRoom room){
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomClose);
-				writer.Write(room.Name, 20);
+				writer.Write(room.Config.Name, 20);
 				writer.Use();
 				Send(writer.Content);
 			}

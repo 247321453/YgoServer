@@ -54,7 +54,7 @@ namespace YGOCore.Net
 				Messages.Init(msgfile);
 				if(Config.UseApi){
 					Logger.Info("Connecting api server.");
-					if(ServerApi.Init(Config.ApiPort)){
+					if(!ServerApi.Init(Config.ApiPort)){
 						Logger.Warn("connect api server fail.");
 					}else{
 						Logger.Info("Connect api server ok");
@@ -70,7 +70,7 @@ namespace YGOCore.Net
 			}
 			catch (SocketException)
 			{
-				Logger.Error("The " + Config.ServerPort + " port is currently in use.");
+				Logger.Warn("The " + Config.ServerPort + " port is currently in use.");
 				return false;
 			}
 			catch (Exception e)

@@ -26,16 +26,31 @@ namespace YGOCore
 		public readonly byte[] AsyncLock=new byte[0];
 		public int Port{get; private set;}
 		public bool NeedAuth{get;private set;}
+		/// <summary>
+		/// 人数
+		/// </summary>
 		public int Count{
 			get{lock(AsyncLock)return m_count;}
 			set{lock(AsyncLock)m_count=value;}
 		}
 		private int m_count;
 		public readonly Dictionary<string, GameConfig> Rooms = new Dictionary<string, GameConfig>();
+		public int RoomCount{
+			get{lock(Rooms)return Rooms.Count;}
+		}
 		public DuelServer(RoomServer server,Connection<DuelServer> client)
 		{
 			this.Server =server;
 			this.Client  = client;
+		}
+		public override string ToString()
+		{
+			return "port="+Port+",needauth="+NeedAuth+",players:"+Count+",rooms:"+RoomCount;
+		}
+ 
+		public void Init(int port,bool needauth){
+			Port = port;
+			NeedAuth = needauth;
 		}
 		public void Close(){
 			if(m_close)return;
@@ -43,6 +58,7 @@ namespace YGOCore
 			if(Client!=null){
 				Client.Close();
 			}
+			Server.Close(Port);
 		}
 		public void OnRecevice(){
 			//api
