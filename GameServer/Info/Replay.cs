@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using SevenZip.Compression.LZMA;
+using SevenZip.Sdk.Compression.Lzma;
 using System.Threading;
 
 namespace YGOCore.Game
