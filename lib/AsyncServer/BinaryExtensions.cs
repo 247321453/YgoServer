@@ -51,6 +51,8 @@ namespace System.IO
 			int i = text.IndexOf('\0');
 			if(i > 0){
 				text = text.Substring(0, i);
+			}else{
+				text = "";
 			}
 			return text;
 		}

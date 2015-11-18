@@ -165,10 +165,7 @@
     <None Include="..\lib\sqlite3.dll">
       <Link>sqlite3.dll</Link>
     </None>
-    <None Include="Decks\AI_Horus.ydk">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Decks\AI_OldSchool.ydk">
+    <None Include="Decks\OldSchool.ydk">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Decks\Horus.ydk">

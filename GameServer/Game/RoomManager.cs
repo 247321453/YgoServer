@@ -63,7 +63,7 @@ namespace YGOCore.Game
 				return false;
 			}
 			if(name!=null&&name.StartsWith("[AI]")){
-			//	Logger.Debug("[AI]login:"+pwd+"=="+Program.Config.AIPass+"?");
+				Logger.Debug("[AI]login:"+pwd+"=="+Program.Config.AIPass+"?");
 				return Program.Config.AIPass == pwd;
 			}
 			//服务器接口
@@ -196,8 +196,8 @@ namespace YGOCore.Game
 					return null;
 				}
 			}
-			Logger.Info("create room");
 			GameRoom room = new GameRoom(config);
+			Logger.Info("create room:"+room.Name);
 			Add(room);
 			return room;
 		}
@@ -242,9 +242,10 @@ namespace YGOCore.Game
 				rooms = GetNoPwdRoom(Games, tag);
 			}
 			if(rooms.Count == 0){
-				return GetGuidString();
+				string name = GetGuidString();
+				return name;
 			}
-			int index=Program.Random.Next(rooms.Count);
+			int index = Program.Random.Next(rooms.Count);
 			GameRoom room = rooms[index];
 			return room.Config==null?null:room.Config.Name;
 		}
@@ -258,7 +259,7 @@ namespace YGOCore.Game
 					if(!string.IsNullOrEmpty(tag) && !room.Name.StartsWith(tag)){
 						continue;
 					}
-					if(room.IsRandom && room.IsOpen && room.GetAvailablePlayerPos() >=0){
+					if((room.IsRandom || !room.Config.Name.Contains("$"))&& room.IsOpen && room.GetAvailablePlayerPos() >=0){
 						roomList.Add(room);
 					}
 				}else{

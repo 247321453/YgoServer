@@ -40,6 +40,7 @@ namespace YGOCore.Game
 			if(string.IsNullOrEmpty(gameinfo)||gameinfo=="random"||gameinfo=="#"){
 				//random
 				config.Name = RoomManager.RandomRoomName();
+				Logger.Debug("random:"+config.Name);
 				return config;
 			}
 			config.Parse(gameinfo);
