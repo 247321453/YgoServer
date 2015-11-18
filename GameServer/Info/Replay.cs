@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using SevenZip.Compression.LZMA;
 using System.Threading;
 
 namespace YGOCore.Game
@@ -13,11 +12,11 @@ namespace YGOCore.Game
 		public const int MaxReplaySize = 0x20000;
 
 		public bool Disabled { get; private set; }
-		public ReplayHeader Header;
+		private ReplayHeader Header;
 		public BinaryWriter Writer { get; private set; }
-
 		private MemoryStream m_stream;
 		private byte[] m_data;
+		private bool m_close;
 		/// <summary>
 		/// 保存路径
 		/// </summary>
@@ -39,8 +38,7 @@ namespace YGOCore.Game
 		{
 			if (m_stream.Position >= MaxReplaySize)
 			{
-				Writer.Close();
-				m_stream.Close();
+				Close();
 				Disabled = true;
 			}
 		}
@@ -52,10 +50,10 @@ namespace YGOCore.Game
 			Disabled = true;
 			byte[] raw = m_stream.ToArray();
 			Header.DataSize = (uint)raw.Length;
-			Header.Flag |= FlagCompressed;
 			Header.Props = new byte[8];
-
-			Encoder lzma = new Encoder();
+		/*	录像不压缩
+ 			Header.Flag |= FlagCompressed;
+ 			Encoder lzma = new Encoder();
 			using (MemoryStream props = new MemoryStream(Header.Props)){
 				lzma.WriteCoderProperties(props);
 			}
@@ -70,6 +68,7 @@ namespace YGOCore.Game
 					raw = compressed.ToArray();
 				}
 			}
+			*/
 			using(MemoryStream ms = new MemoryStream()){
 				using(BinaryWriter writer = new BinaryWriter(ms)){
 					writer.Write(Header.Id);
@@ -79,15 +78,18 @@ namespace YGOCore.Game
 					writer.Write(Header.DataSize);
 					writer.Write(Header.Hash);
 					writer.Write(Header.Props);
-
 					writer.Write(raw);
 				}
 				m_data = ms.ToArray();
 			}
-			
 			ThreadPool.QueueUserWorkItem(new WaitCallback(saveYrp));
 		}
-		
+		public void Close(){
+			if(m_close)return;
+			m_close = true;
+			Writer.Close();
+			m_stream.Close();
+		}
 		private void saveYrp(object obj){
 			if(!File.Exists(fileName)){
 				Tool.CreateDirectory(Tool.GetDir(fileName));

@@ -63,7 +63,7 @@ namespace YGOCore.Game
 				return false;
 			}
 			if(name!=null&&name.StartsWith("[AI]")){
-				Logger.Debug("[AI]login:"+pwd+"=="+Program.Config.AIPass+"?");
+			//	Logger.Debug("[AI]login:"+pwd+"=="+Program.Config.AIPass+"?");
 				return Program.Config.AIPass == pwd;
 			}
 			//服务器接口

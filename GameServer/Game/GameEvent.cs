@@ -46,9 +46,15 @@ namespace YGOCore.Net
 					continue;
 				}
 				CtosMessage msg = packet.ReadCtos();
-				if(msg != CtosMessage.PlayerInfo){
+				if(msg == CtosMessage.CreateGame || msg == CtosMessage.JoinGame || msg == CtosMessage.PlayerInfo){
+					
+				}else{
 					if(!player.IsAuthentified){
 						Logger.Warn("auth error:"+player.Name);
+						continue;
+					}
+					if(player.Type == (int)PlayerType.Undefined){
+						Logger.Warn("player type error:"+player.Name);
 						continue;
 					}
 				}
@@ -224,7 +230,7 @@ namespace YGOCore.Net
 		#region 决斗事件
 		public static void OnTimeConfirm(GameSession client, GameClientPacket packet){
 			if(client!=null){
-				Logger.Debug("OnTimeConfirm "+client.Name);
+				//Logger.Debug("OnTimeConfirm "+client.Name);
 			}
 		}
 		public static void SendTypeChange(this GameSession client)
@@ -257,7 +263,7 @@ namespace YGOCore.Net
 				client.Game.TpResult(client, tp);
 		}
 		public static void OnUpdateDeck(GameSession client, GameClientPacket packet){
-			if (client.Game==null||client.Type == (int)PlayerType.Observer)
+			if (client.Game==null||client.Type == (int)PlayerType.Observer||client.Type == (int)PlayerType.Undefined)
 				return;
 			Deck deck = new Deck();
 			int main = packet.ReadInt32();
