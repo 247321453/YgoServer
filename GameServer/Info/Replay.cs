@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using SevenZip.Compression.LZMA;
 
 namespace YGOCore.Game
 {
 	public class Replay
 	{
+		private const bool Compressed = true;
 		public const uint FlagCompressed = 0x1;
 		public const uint FlagTag = 0x2;
 
@@ -51,24 +53,25 @@ namespace YGOCore.Game
 			byte[] raw = m_stream.ToArray();
 			Header.DataSize = (uint)raw.Length;
 			Header.Props = new byte[8];
-		/*	录像不压缩
- 			Header.Flag |= FlagCompressed;
- 			Encoder lzma = new Encoder();
-			using (MemoryStream props = new MemoryStream(Header.Props)){
-				lzma.WriteCoderProperties(props);
-			}
+			if(Compressed){
+				//录像不压缩
+				Header.Flag |= FlagCompressed;
+				Encoder lzma = new Encoder();
+				using (MemoryStream props = new MemoryStream(Header.Props)){
+					lzma.WriteCoderProperties(props);
+				}
 
-			using(MemoryStream compressed = new MemoryStream()){
-				using(MemoryStream rawsream = new MemoryStream(raw)){
-					try{
-						lzma.Code(rawsream, compressed, raw.LongLength, -1, null);
-					}catch{
-						Logger.Warn("replay out of memory.raw.length="+raw.Length);
+				using(MemoryStream compressed = new MemoryStream()){
+					using(MemoryStream rawsream = new MemoryStream(raw)){
+						try{
+							lzma.Code(rawsream, compressed, raw.LongLength, -1, null);
+						}catch{
+							Logger.Warn("replay out of memory.raw.length="+raw.Length);
+						}
+						raw = compressed.ToArray();
 					}
-					raw = compressed.ToArray();
 				}
 			}
-			*/
 			using(MemoryStream ms = new MemoryStream()){
 				using(BinaryWriter writer = new BinaryWriter(ms)){
 					writer.Write(Header.Id);
