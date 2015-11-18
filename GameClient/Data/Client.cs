@@ -126,7 +126,6 @@ namespace GameClient
 		public void GetPlayerList(){
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.PlayerList);
-				writer.Use();
 				Send(writer.Content);
 			}
 		}
@@ -135,7 +134,6 @@ namespace GameClient
 				writer.Write((byte)RoomMessage.RoomList);
 				writer.Write(nolock);
 				writer.Write(nostart);
-				writer.Use();
 				Send(writer.Content);
 			}
 		}
@@ -176,7 +174,6 @@ namespace GameClient
 				writer.Write((byte)RoomMessage.Info);
 				writer.WriteUnicode(Name, 20);
 				writer.WriteUnicode(pwd, 32);
-				writer.Use();
 				Send(writer.Content);
 			}
 		}
@@ -197,7 +194,6 @@ namespace GameClient
 				}
 				writer.WriteUnicode(toname, 20);
 				writer.WriteUnicode(msg, msg.Length+1);
-				writer.Use();
 				Send(writer.Content);
 			}
 			return false;
@@ -231,7 +227,6 @@ namespace GameClient
 				if(Program.Config.JoinPause){
 					using(PacketWriter writer=new PacketWriter(2)){
 						writer.Write((byte)RoomMessage.Pause);
-						writer.Use();
 						Send(writer.Content);
 					}
 				}

@@ -35,7 +35,6 @@ namespace YGOCore
 					writer.Write((byte)0);
 					writer.Write((byte)0);
 				}
-				writer.Use();
 				session.Client.SendPackage(writer.Content);
 			}
 		}
@@ -57,7 +56,6 @@ namespace YGOCore
 					writer.Write((byte)0);
 				}
 				//session.ServerInfo = srv;
-				writer.Use();
 				roomServer.SendAll(writer.Content);
 			}
 		}
@@ -82,7 +80,6 @@ namespace YGOCore
 								wrtier.WriteUnicode(config.RoomString, 20);
 							}
 						}
-						wrtier.Use();
 						session.Client.SendPackage(wrtier.Content, false);
 					}
 				}
@@ -98,7 +95,6 @@ namespace YGOCore
 				writer.WriteUnicode(name, 20);
 				writer.WriteUnicode(toname, 20);
 				writer.WriteUnicode(msg, msg.Length+1);
-				writer.Use();
 				if(!string.IsNullOrEmpty(toname)){
 					lock(roomServer.Clients){
 						if(roomServer.Clients.ContainsKey(name)){
@@ -128,7 +124,6 @@ namespace YGOCore
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.Error);
 				writer.WriteUnicode(err, err.Length+1);
-				writer.Use();
 				session.Client.SendPackage(writer.Content);
 			}
 		}
@@ -155,7 +150,6 @@ namespace YGOCore
 				writer.WriteUnicode(name, 20);
 				writer.WriteUnicode(banlist, 20);
 				writer.WriteUnicode(gameinfo, gameinfo.Length+1);
-				writer.Use();
 				roomServer.SendAll(writer.Content);
 			}
 		}
@@ -166,7 +160,6 @@ namespace YGOCore
 				writer.Write((byte)RoomMessage.RoomStart);
 				writer.Write(server.Port);
 				writer.WriteUnicode(name, 20);
-				writer.Use();
 				roomServer.SendAll(writer.Content);
 			}
 		}
@@ -178,7 +171,6 @@ namespace YGOCore
 				writer.Write((byte)RoomMessage.RoomClose);
 				writer.Write(server.Port);
 				writer.WriteUnicode(name, 20);
-				writer.Use();
 				roomServer.SendAll(writer.Content);
 			}
 		}
@@ -195,7 +187,6 @@ namespace YGOCore
 						writer.WriteUnicode(session.Name, 20);
 						writer.WriteUnicode(session.RoomName, 20);
 					}
-					writer.Use();
 					client.Client.SendPackage(writer.Content);
 				}
 			}
@@ -220,7 +211,6 @@ namespace YGOCore
 				writer.Write(server.Port);
 				writer.WriteUnicode(name, 20);
 				writer.WriteUnicode(room, 20);
-				writer.Use();
 				roomServer.SendAll(writer.Content);
 			}
 		}
@@ -239,7 +229,6 @@ namespace YGOCore
 				writer.Write(server.Port);
 				writer.WriteUnicode(name, 20);
 				writer.WriteUnicode(room, 20);
-				writer.Use();
 				roomServer.SendAll(writer.Content);
 			}
 		}
