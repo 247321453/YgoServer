@@ -58,7 +58,13 @@ namespace YGOCore.Net
 						continue;
 					}
 				}
-				EventHandler.Do((ushort)msg, player, packet);
+				if(player.Game!=null){
+					lock(player.Game.AsyncRoot){
+						EventHandler.Do((ushort)msg, player, packet);
+					}
+				}else{
+					EventHandler.Do((ushort)msg, player, packet);
+				}
 				packet.Close();
 			}
 		}
@@ -284,9 +290,9 @@ namespace YGOCore.Net
 				if (!client.Deck.Check(deck))
 				{
 					using(GameServerPacket error = new GameServerPacket(StocMessage.ErrorMsg)){
-					error.Write((byte)3);
-					error.Write(0);
-					client.Send(error);
+						error.Write((byte)3);
+						error.Write(0);
+						client.Send(error);
 					}
 					return;
 				}

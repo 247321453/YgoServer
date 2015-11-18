@@ -59,6 +59,7 @@ namespace YGOCore.Game
 		public bool isReading{
 			get{return State==GameState.Lobby;}
 		}
+		public readonly byte[] AsyncRoot = new byte[0];
 		
 		private System.Timers.Timer DuleTimer;
 		private GameTimer GameTimer;
@@ -140,11 +141,11 @@ namespace YGOCore.Game
 			return false;
 		}
 		public void AddPlayer(GameSession player){
-			if(IsJoin(player)){
-//				/玩家已经在游戏
-				player.LobbyError(Messages.MSG_PLAYER_INGAME);
-				return;
-			}
+//			if(IsJoin(player)){
+////				/玩家已经在游戏
+//				player.LobbyError(Messages.MSG_PLAYER_INGAME);
+//				return;
+//			}
 			if (State != GameState.Lobby)
 			{
 				if (State == GameState.End)
@@ -167,7 +168,10 @@ namespace YGOCore.Game
 
 			if (HostPlayer == null)
 				HostPlayer = player;
-			int pos = GetAvailablePlayerPos();
+			
+			int pos = -1;
+			lock(AsyncRoot)
+				pos = GetAvailablePlayerPos();
 			if (pos != -1)
 			{
 				Players[pos] = player;
@@ -240,9 +244,11 @@ namespace YGOCore.Game
 				//Logger.WriteLine("HostPlayer is leave", false);
 				//主机玩家离开
 				if(player.Type != (int)PlayerType.Observer){
-					Players[player.Type] = null;
-					IsReady[player.Type] = false;
-					HostPlayer = null;
+					lock(AsyncRoot){
+						Players[player.Type] = null;
+						IsReady[player.Type] = false;
+						HostPlayer = null;
+					}
 				}
 				Close(true);
 				return;
@@ -263,8 +269,10 @@ namespace YGOCore.Game
 			else if (State == GameState.Lobby)
 			{
 				if(player.Type>0 && player.Type != (int)PlayerType.Observer){
-					Players[player.Type] = null;
-					IsReady[player.Type] = false;
+					lock(AsyncRoot){
+						Players[player.Type] = null;
+						IsReady[player.Type] = false;
+					}
 					using(GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange)){
 						change.Write((byte)((player.Type << 4) + (int) PlayerChange.Leave));
 						SendToAll(change);
@@ -429,7 +437,8 @@ namespace YGOCore.Game
 					byte[] replayData = Replay.GetFile();
 					GameServerPacket packet = new GameServerPacket(StocMessage.Replay);
 					packet.Write(replayData);
-					SendToAll(packet);
+					SendToPlayers(packet);
+					//SendToAll(packet);
 				}
 
 				State = GameState.End;
