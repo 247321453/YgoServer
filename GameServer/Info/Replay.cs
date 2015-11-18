@@ -7,7 +7,7 @@ namespace YGOCore.Game
 {
 	public class Replay
 	{
-		private const bool Compressed = true;
+		private static bool Compressed = false;
 		public const uint FlagCompressed = 0x1;
 		public const uint FlagTag = 0x2;
 
@@ -38,6 +38,7 @@ namespace YGOCore.Game
 
 		public void Check()
 		{
+			if(m_close)return;
 			if (m_stream.Position >= MaxReplaySize)
 			{
 				Close();
@@ -86,6 +87,7 @@ namespace YGOCore.Game
 				m_data = ms.ToArray();
 			}
 			ThreadPool.QueueUserWorkItem(new WaitCallback(saveYrp));
+			Close();
 		}
 		public void Close(){
 			if(m_close)return;
