@@ -132,6 +132,7 @@ namespace YGOCore.Game
 		}
 		private static void ReadBanNames(string file)
 		{
+		//	Logger.Debug("name list="+file);
 			if(File.Exists(file)){
 				string[] lines = File.ReadAllLines(file);
 				foreach(string line in lines){

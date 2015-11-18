@@ -61,11 +61,6 @@ namespace YGOCore
 		/// ³¬Ê±
 		/// </summary>
 		public int Timeout{get;private set;}
-		/// <summary>
-		/// ¿ØÖÆÌ¨api 
-		/// </summary>
-		public bool UseApi{get;private set;}
-
 		public ServerConfig()
 		{
 			ClientVersion = 0x1336;
@@ -82,7 +77,7 @@ namespace YGOCore
 			AsyncMode=false;
 			BanMode = 0;
 			Timeout = 15;
-			UseApi = true;
+			ApiPort = 0;
 			//	Timeout = 20;
 		}
 
@@ -120,8 +115,11 @@ namespace YGOCore
 			}
 			return loaded;
 		}
-		public void setServerPort(int port){
+		public void SetServerPort(int port){
 			ServerPort = port;
+		}
+		public void SetApiPort(int apiport){
+			ApiPort = apiport;
 		}
 		public bool setValue(string variable,string value){
 			if(string.IsNullOrEmpty(value)||string.IsNullOrEmpty(variable)){
@@ -171,9 +169,6 @@ namespace YGOCore
 					break;
 				case "timeout":
 					Timeout = Convert.ToInt32(value);
-					break;
-				case "consoleapi":
-					UseApi = Convert.ToBoolean(value);
 					break;
 				default:
 					return false;

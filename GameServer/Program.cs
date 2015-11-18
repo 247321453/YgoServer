@@ -25,15 +25,20 @@ namespace YGOCore
 			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
 			System.Net.ServicePointManager.DefaultConnectionLimit = 512;
 			ThreadPool.SetMaxThreads(128, 256);
-			Console.ForegroundColor = ConsoleColor.White;
 			//
 			Config = new ServerConfig();
 			bool loaded = args.Length > 0 ? Config.Load(args[0]): Config.Load();
-			if(args.Length>1){
-				int p =0;
-				int.TryParse(args[1], out p);
-				if(p > 0){
-					Config.setServerPort(p);
+			int tmp =0 ;
+			if(args.Length > 1){
+				int.TryParse(args[1], out tmp);
+				if(tmp > 0){
+					Config.SetServerPort(tmp);
+				}
+			}
+			if(args.Length > 2){
+				int.TryParse(args[2], out tmp);
+				if(tmp > 0){
+					Config.SetApiPort(tmp);
 				}
 			}
 			Logger.SetErrorFile(Tool.Combine(Config.Path, "error_"+Environment.TickCount+".log"));

@@ -10,11 +10,13 @@ namespace YGOCore
 		public bool isRunning{get;private set;}
 		private string m_fileName;
 		private int m_port;
+		private int m_aptport;
 		private string m_config;
 		public int Port{get{return m_port;}}
-		public ServerProcess(int port,string fileName="GameServer.exe", string config="config.txt")
+		public ServerProcess(int port,int apiPort,string fileName="GameServer.exe", string config="config.txt")
 		{
 			this.m_port = port;
+			this.m_aptport=apiPort;
 			this.m_fileName = fileName;
 			this.m_config = config;
 		}
@@ -26,7 +28,7 @@ namespace YGOCore
 			}
 			process.StartInfo.FileName = m_fileName;
 			//设定程式执行参数
-			process.StartInfo.Arguments = " "+m_config +(m_port>0?" "+m_port:"");
+			process.StartInfo.Arguments = " "+m_config + " "+m_port+" "+m_aptport;
 			process.EnableRaisingEvents=true;
 			process.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
 			process.Exited+=new EventHandler(Exited);

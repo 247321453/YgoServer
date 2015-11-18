@@ -48,6 +48,7 @@ namespace YGOCore
 		public const string ERR_NO_CLIENT ="用户:{0}未在线";
 		
 		public static void Init(string file){
+		//	Logger.Debug("msg file="+file);
 			if(File.Exists(file)){
 				Msgs.Clear();
 				string[] msgs = File.ReadAllLines(file);

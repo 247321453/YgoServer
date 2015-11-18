@@ -48,7 +48,7 @@ namespace YGOCore
 			}
 			if(Config.Ports!=null){
 				foreach(int port in Config.Ports){
-					ServerProcess server=new ServerProcess(port, Config.ServerExe, Config.Config);
+					ServerProcess server=new ServerProcess(port, Config.ApiPort, Config.ServerExe, Config.Config);
 					server.Start();
 					Porcess.Add(server);
 				}
@@ -181,6 +181,7 @@ namespace YGOCore
 			//分配对战端
 		}
 		#endregion
+	
 		public int GetChatPort(){
 			return Config.Port;
 		}

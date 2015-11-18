@@ -25,6 +25,7 @@ namespace YGOCore.Net
 		private AsyncTcpListener<GameSession> m_listener;
 		public ServerConfig Config{get;private set;}
 		public bool IsListening{get; private set;}
+		public bool UseApi{get; private set;}
 		#endregion
 		
 		public GameServer(ServerConfig config)
@@ -52,7 +53,7 @@ namespace YGOCore.Net
 				WinInfo.Init(windb);
 				RoomManager.init(namelist);
 				Messages.Init(msgfile);
-				if(Config.UseApi){
+				if(Config.ApiPort > 0){
 					Logger.Info("Connecting api server.");
 					if(!ServerApi.Init(Config.ApiPort)){
 						Logger.Warn("connect api server fail.");
