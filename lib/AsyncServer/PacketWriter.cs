@@ -10,34 +10,33 @@ namespace System.IO
 	{
 		protected MemoryStream m_stream;
 		protected int m_PacketByteLength = 4;
-		public byte[] Bytes{
-			get { return m_stream.ToArray(); }
-		}
+		/// <summary>
+		/// 包含包长度
+		/// </summary>
 		public byte[] Content{
 			get{
-				if(!appendLength)
-					Use();
-				return content;
+				return GetContent();
 			}
 		}
 		public int PacketByteLength{
 			get{return m_PacketByteLength;}
 		}
-		private bool appendLength = false;
-		private byte[] content;
 		
 		public PacketWriter(int packetByteLength):base(new MemoryStream())
 		{
 			m_PacketByteLength = (packetByteLength == 2 )?2:4;
 			m_stream = (MemoryStream)OutStream;
 		}
+		
+		public void SetPosition(int pos){
+			Seek(pos, SeekOrigin.Begin);
+		}
 		/// <summary>
 		/// 添加包长度
 		/// </summary>
-		public void Use(){
-			if(appendLength) return;
-			appendLength = true;
-			byte[] raw = Bytes;
+		private byte[] GetContent(){
+			byte[] content = null;
+			byte[] raw = m_stream.ToArray();
 			using(MemoryStream stream = new MemoryStream(raw.Length + m_PacketByteLength)){
 				using(BinaryWriter writer = new BinaryWriter(stream)){
 					writer.Write((ushort)raw.Length);
@@ -45,7 +44,7 @@ namespace System.IO
 				}
 				content = stream.ToArray();
 			}
-			Close();
+			return content;
 		}
 	}
 }

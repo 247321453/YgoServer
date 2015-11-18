@@ -237,8 +237,7 @@ namespace YGOCore.Game
 		private void OnRetry()
 		{
 			int player = Game.WaitForResponse();
-			Game.CurPlayers[player].Send(new GameServerPacket(GameMessage.Retry));
-
+			Game.CurPlayers[player].Send(GameServerPacket.EmtryMessage(GameMessage.Retry));
 			Game.Replay.End();
 			//File.WriteAllBytes("error_" + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".yrp", Game.Replay.GetFile());
 		}
@@ -250,30 +249,30 @@ namespace YGOCore.Game
 			msg.Reader.ReadInt32();
 
 			byte[] buffer = msg.CreateBuffer();
-			GameServerPacket packet = new GameServerPacket(msg.Message);
-			packet.Write(buffer);
-
-			switch (type)
-			{
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-				case 5:
-					Game.CurPlayers[player].Send(packet);
-					break;
-				case 6:
-				case 7:
-				case 8:
-				case 9:
-					Game.SendToAllBut(packet, player);
-					break;
-				case 10:
-					if (Game.IsTag)
+			using(GameServerPacket packet = new GameServerPacket(msg.Message)){
+				packet.Write(buffer);
+				switch (type)
+				{
+					case 1:
+					case 2:
+					case 3:
+					case 4:
+					case 5:
 						Game.CurPlayers[player].Send(packet);
-					else
-						Game.SendToAll(packet);
-					break;
+						break;
+					case 6:
+					case 7:
+					case 8:
+					case 9:
+						Game.SendToAllBut(packet, player);
+						break;
+					case 10:
+						if (Game.IsTag)
+							Game.CurPlayers[player].Send(packet);
+						else
+							Game.SendToAll(packet);
+						break;
+				}
 			}
 		}
 
@@ -346,31 +345,30 @@ namespace YGOCore.Game
 
 		private void OnSelectCard(CoreMessage msg)
 		{
-			GameServerPacket packet = new GameServerPacket(msg.Message);
+			using(GameServerPacket packet = new GameServerPacket(msg.Message)){
+				int player = msg.Reader.ReadByte();
+				packet.Write((byte)player);
+				packet.Write(msg.Reader.ReadBytes(3));
 
-			int player = msg.Reader.ReadByte();
-			packet.Write((byte)player);
-			packet.Write(msg.Reader.ReadBytes(3));
+				int count = msg.Reader.ReadByte();
+				packet.Write((byte)count);
 
-			int count = msg.Reader.ReadByte();
-			packet.Write((byte)count);
-
-			for (int i = 0; i < count; i++)
-			{
-				int code = msg.Reader.ReadInt32();
-				int pl = msg.Reader.ReadByte();
-				int loc = msg.Reader.ReadByte();
-				int seq = msg.Reader.ReadByte();
-				int pos = msg.Reader.ReadByte();
-				packet.Write(pl == player ? code : 0);
-				packet.Write((byte)pl);
-				packet.Write((byte)loc);
-				packet.Write((byte)seq);
-				packet.Write((byte)pos);
+				for (int i = 0; i < count; i++)
+				{
+					int code = msg.Reader.ReadInt32();
+					int pl = msg.Reader.ReadByte();
+					int loc = msg.Reader.ReadByte();
+					int seq = msg.Reader.ReadByte();
+					int pos = msg.Reader.ReadByte();
+					packet.Write(pl == player ? code : 0);
+					packet.Write((byte)pl);
+					packet.Write((byte)loc);
+					packet.Write((byte)seq);
+					packet.Write((byte)pos);
+				}
+				Game.WaitForResponse(player);
+				Game.CurPlayers[player].Send(packet);
 			}
-
-			Game.WaitForResponse(player);
-			Game.CurPlayers[player].Send(packet);
 		}
 
 		private int OnSelectChain(CoreMessage msg)
@@ -443,28 +441,29 @@ namespace YGOCore.Game
 			msg.Reader.ReadBytes(count * 7);
 
 			byte[] buffer = msg.CreateBuffer();
-			GameServerPacket packet = new GameServerPacket(msg.Message);
-			packet.Write(buffer);
-			if ((CardLocation)buffer[7] == CardLocation.Hand)
-				Game.SendToAll(packet);
-			else
-				Game.CurPlayers[player].Send(packet);
+			using(GameServerPacket packet = new GameServerPacket(msg.Message)){
+				packet.Write(buffer);
+				if ((CardLocation)buffer[7] == CardLocation.Hand)
+					Game.SendToAll(packet);
+				else
+					Game.CurPlayers[player].Send(packet);
+			}
 		}
 
 		private void OnShuffleHand(CoreMessage msg)
 		{
-			GameServerPacket packet = new GameServerPacket(msg.Message);
 			int player = msg.Reader.ReadByte();
 			int count = msg.Reader.ReadByte();
-			packet.Write((byte)player);
-			packet.Write((byte)count);
+			using(GameServerPacket packet = new GameServerPacket(msg.Message)){
+				packet.Write((byte)player);
+				packet.Write((byte)count);
 
-			msg.Reader.ReadBytes(count * 4);
-			for (int i = 0; i < count; i++)
-				packet.Write(0);
-
-			SendToPlayer(msg, player);
-			Game.SendToAllBut(packet, player);
+				msg.Reader.ReadBytes(count * 4);
+				for (int i = 0; i < count; i++)
+					packet.Write(0);
+				SendToPlayer(msg, player);
+				Game.SendToAllBut(packet, player);
+			}
 			Game.RefreshHand(player, 0x181fff, false);
 		}
 
@@ -530,15 +529,16 @@ namespace YGOCore.Game
 			int cp = raw[11];
 
 			SendToPlayer(msg, cc);
-			GameServerPacket packet = new GameServerPacket(msg.Message);
-			if (!Convert.ToBoolean((cl & ((int)CardLocation.Grave + (int)CardLocation.Overlay))) && Convert.ToBoolean((cl & ((int)CardLocation.Deck + (int)CardLocation.Hand)))
-			    || Convert.ToBoolean((cp & (int)CardPosition.FaceDown)))
-			{
-				raw[0] = 0;
+			using(GameServerPacket packet = new GameServerPacket(msg.Message)){
+				packet.Write(raw);
+				if (!Convert.ToBoolean((cl & ((int)CardLocation.Grave + (int)CardLocation.Overlay))) && Convert.ToBoolean((cl & ((int)CardLocation.Deck + (int)CardLocation.Hand)))
+				    || Convert.ToBoolean((cp & (int)CardPosition.FaceDown)))
+				{
+					packet.SetPosition(2);
+					packet.Write((int)0);
+				}
+				Game.SendToAllBut(packet, cc);
 			}
-			packet.Write(raw);
-			Game.SendToAllBut(packet, cc);
-
 			if (cl != 0 && (cl & 0x80) == 0 && (cl != pl || pc != cc))
 				Game.RefreshSingle(cc, cl, cs);
 		}
@@ -561,10 +561,11 @@ namespace YGOCore.Game
 		{
 			msg.Reader.ReadBytes(4);
 			byte[] raw = msg.Reader.ReadBytes(4);
-			GameServerPacket packet = new GameServerPacket(GameMessage.Set);
-			packet.Write(0);
-			packet.Write(raw);
-			Game.SendToAll(packet);
+			using(GameServerPacket packet = new GameServerPacket(GameMessage.Set)){
+				packet.Write(0);
+				packet.Write(raw);
+				Game.SendToAll(packet);
+			}
 		}
 
 		private void OnFlipSummoning(CoreMessage msg)
@@ -598,23 +599,24 @@ namespace YGOCore.Game
 
 		private void OnDraw(CoreMessage msg)
 		{
-			GameServerPacket packet = new GameServerPacket(msg.Message);
-			int player = msg.Reader.ReadByte();
-			int count = msg.Reader.ReadByte();
-			packet.Write((byte)player);
-			packet.Write((byte)count);
+			using(GameServerPacket packet = new GameServerPacket(msg.Message)){
+				int player = msg.Reader.ReadByte();
+				int count = msg.Reader.ReadByte();
+				packet.Write((byte)player);
+				packet.Write((byte)count);
 
-			for (int i = 0; i < count; i++)
-			{
-				uint code = msg.Reader.ReadUInt32();
-				if ((code & 0x80000000) != 0)
-					packet.Write(code);
-				else
-					packet.Write(0);
+				for (int i = 0; i < count; i++)
+				{
+					uint code = msg.Reader.ReadUInt32();
+					if ((code & 0x80000000) != 0)
+						packet.Write(code);
+					else
+						packet.Write(0);
+				}
+
+				SendToPlayer(msg, player);
+				Game.SendToAllBut(packet, player);
 			}
-
-			SendToPlayer(msg, player);
-			Game.SendToAllBut(packet, player);
 		}
 
 		private void OnLpUpdate(CoreMessage msg)
@@ -700,42 +702,42 @@ namespace YGOCore.Game
 
 		private void OnTagSwap(CoreMessage msg)
 		{
-			GameServerPacket packet = new GameServerPacket(GameMessage.TagSwap);
 			int player = msg.Reader.ReadByte();
 			int mcount = msg.Reader.ReadByte();
 			int ecount = msg.Reader.ReadByte();
 			int epcount = msg.Reader.ReadByte();
 			int hcount = msg.Reader.ReadByte();
-			packet.Write((byte)player);
-			packet.Write((byte)mcount);
-			packet.Write((byte)ecount);
-			packet.Write((byte)epcount);
-			packet.Write((byte)hcount);
-			
-			uint id = msg.Reader.ReadUInt32();
-			packet.Write(id);
+			using(GameServerPacket packet = new GameServerPacket(GameMessage.TagSwap)){
+				packet.Write((byte)player);
+				packet.Write((byte)mcount);
+				packet.Write((byte)ecount);
+				packet.Write((byte)epcount);
+				packet.Write((byte)hcount);
+				
+				uint id = msg.Reader.ReadUInt32();
+				packet.Write(id);
 
-			for (int i = 0; i < hcount; i++)
-			{
-				uint code = msg.Reader.ReadUInt32();
-				if ((code & 0x80000000) != 0)
-					packet.Write(code);
-				else
-					packet.Write(0);
+				for (int i = 0; i < hcount; i++)
+				{
+					uint code = msg.Reader.ReadUInt32();
+					if ((code & 0x80000000) != 0)
+						packet.Write(code);
+					else
+						packet.Write(0);
+				}
+
+				for (int i = 0; i < ecount; i++)
+				{
+					uint code = msg.Reader.ReadUInt32();
+					if ((code & 0x80000000) != 0)
+						packet.Write(code);
+					else
+						packet.Write(0);
+				}
+
+				SendToPlayer(msg, player);
+				Game.SendToAllBut(packet, player);
 			}
-
-			for (int i = 0; i < ecount; i++)
-			{
-				uint code = msg.Reader.ReadUInt32();
-				if ((code & 0x80000000) != 0)
-					packet.Write(code);
-				else
-					packet.Write(0);
-			}
-
-			SendToPlayer(msg, player);
-			Game.SendToAllBut(packet, player);
-
 			Game.RefreshExtra(player);
 			Game.RefreshMonsters(0, 0x81fff, false);
 			Game.RefreshMonsters(1, 0x81fff, false);
@@ -748,16 +750,19 @@ namespace YGOCore.Game
 		private void SendToAll(CoreMessage msg)
 		{
 			byte[] buffer = msg.CreateBuffer();
-			GameServerPacket packet = new GameServerPacket(msg.Message);
-			packet.Write(buffer);
-			Game.SendToAll(packet);
+			using(GameServerPacket packet = new GameServerPacket(msg.Message)){
+				packet.Write(buffer);
+				Game.SendToAll(packet);
+			}
 		}
 
 		private void SendToAll(CoreMessage msg, int length)
 		{
 			if (length == 0)
 			{
-				Game.SendToAll(new GameServerPacket(msg.Message));
+				using(GameServerPacket p = new GameServerPacket(msg.Message)){
+					Game.SendToAll(p);
+				}
 				return;
 			}
 			msg.Reader.ReadBytes(length);
@@ -769,9 +774,10 @@ namespace YGOCore.Game
 			if (player != 0 && player != 1)
 				return;
 			byte[] buffer = msg.CreateBuffer();
-			GameServerPacket packet = new GameServerPacket(msg.Message);
-			packet.Write(buffer);
-			Game.CurPlayers[player].Send(packet);
+			using(GameServerPacket packet = new GameServerPacket(msg.Message)){
+				packet.Write(buffer);
+				Game.CurPlayers[player].Send(packet);
+			}
 		}
 	}
 }

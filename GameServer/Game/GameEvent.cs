@@ -62,35 +62,38 @@ namespace YGOCore.Net
 		#region 消息
 		public static void LobbyError(this GameSession client, string message,bool isNow=true)
 		{
-			GameServerPacket join = new GameServerPacket(StocMessage.JoinGame);
-			join.Write(0U);
-			join.Write((byte)0);
-			join.Write((byte)0);
-			join.Write(0);
-			join.Write(0);
-			join.Write(0);
-			// C++ padding: 5 bytes + 3 bytes = 8 bytes
-			for (int i = 0; i < 3; i++)
+			using(GameServerPacket join = new GameServerPacket(StocMessage.JoinGame)){
+				join.Write(0U);
 				join.Write((byte)0);
-			join.Write(0);
-			join.Write((byte)0);
-			join.Write((byte)0);
-			join.Write((short)0);
-			client.Send(join, false);
-
-			GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
-			enter.WriteUnicode("[err]" + message, 20);
-			enter.Write((byte)0);
-			client.Send(enter, isNow);
+				join.Write((byte)0);
+				join.Write(0);
+				join.Write(0);
+				join.Write(0);
+				// C++ padding: 5 bytes + 3 bytes = 8 bytes
+				for (int i = 0; i < 3; i++)
+					join.Write((byte)0);
+				join.Write(0);
+				join.Write((byte)0);
+				join.Write((byte)0);
+				join.Write((short)0);
+				client.Send(join, false);
+			}
+			
+			using(GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter)){
+				enter.WriteUnicode("[err]" + message, 20);
+				enter.Write((byte)0);
+				client.Send(enter, isNow);
+			}
 		}
 
 		public static void ServerMessage(this GameSession client, string msg, PlayerType type=PlayerType.Yellow,bool isNow=true)
 		{
 			string finalmsg = "[Server] " + msg;
-			GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
-			packet.Write((short)type);
-			packet.WriteUnicode(finalmsg, finalmsg.Length + 1);
-			client.Send(packet, isNow);
+			using(GameServerPacket packet = new GameServerPacket(StocMessage.Chat)){
+				packet.Write((short)type);
+				packet.WriteUnicode(finalmsg, finalmsg.Length + 1);
+				client.Send(packet, isNow);
+			}
 		}
 		#endregion
 		
@@ -227,9 +230,10 @@ namespace YGOCore.Net
 		public static void SendTypeChange(this GameSession client)
 		{
 			if(client == null||client.Game==null)return;
-			GameServerPacket packet = new GameServerPacket(StocMessage.TypeChange);
-			packet.Write((byte)(client.Type + (client.Equals(client.Game.HostPlayer) ? (int)PlayerType.Host : 0)));
-			client.Send(packet);
+			using(GameServerPacket packet = new GameServerPacket(StocMessage.TypeChange)){
+				packet.Write((byte)(client.Type + (client.Equals(client.Game.HostPlayer) ? (int)PlayerType.Host : 0)));
+				client.Send(packet);
+			}
 		}
 		public static void OnChat(GameSession client, GameClientPacket packet){
 			if (!client.IsAuthentified){
@@ -240,10 +244,11 @@ namespace YGOCore.Net
 				return;
 			}
 			if(!client.OnChatCommand(msg)){
-				GameServerPacket chat = new GameServerPacket(StocMessage.Chat);
-				chat.Write((short)client.Type);
-				chat.WriteUnicode(msg, msg.Length + 1);
-				client.Game.SendToAllBut(chat, client);
+				using(GameServerPacket chat = new GameServerPacket(StocMessage.Chat)){
+					chat.Write((short)client.Type);
+					chat.WriteUnicode(msg, msg.Length + 1);
+					client.Game.SendToAllBut(chat, client);
+				}
 			}
 		}
 		public static void OnTpResult(GameSession client, GameClientPacket packet){
@@ -272,16 +277,17 @@ namespace YGOCore.Net
 					return;
 				if (!client.Deck.Check(deck))
 				{
-					GameServerPacket error = new GameServerPacket(StocMessage.ErrorMsg);
+					using(GameServerPacket error = new GameServerPacket(StocMessage.ErrorMsg)){
 					error.Write((byte)3);
 					error.Write(0);
 					client.Send(error);
+					}
 					return;
 				}
 				client.Deck = deck;
 				client.Game.IsReady[client.Type] = true;
 				client.Game.ServerMessage(string.Format(Messages.MSG_READY, client.Name));
-				client.Send(new GameServerPacket(StocMessage.DuelStart));
+				client.Send(GameServerPacket.EmtryMessage(StocMessage.DuelStart));
 				client.Game.MatchSide();
 			}
 		}

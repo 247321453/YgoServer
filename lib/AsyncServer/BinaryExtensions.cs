@@ -5,6 +5,20 @@ namespace System.IO
 {
 	public static class BinaryExtensions
 	{
+		public static string ToHexString(this byte[] bytes)
+		{
+			string hexString = string.Empty;
+			if ( bytes != null )
+			{
+				System.Text.StringBuilder strB = new System.Text.StringBuilder ();
+				for ( int i = 0; i < bytes.Length; i++ )
+				{
+					strB.Append ( "0x"+bytes[i].ToString ( "X2" ) +" ");
+				}
+				hexString = strB.ToString ();
+			}
+			return hexString;
+		}
 		public static void WriteUnicode(this BinaryWriter writer, string text, int len=0)
 		{
 			if(text==null)text="";

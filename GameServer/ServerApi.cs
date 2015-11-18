@@ -26,7 +26,6 @@ namespace YGOCore
 				writer.Write((byte)RoomMessage.Info);
 				writer.Write(Config.ServerPort);
 				writer.Write(Config.isNeedAuth);
-				writer.Use();
 				Send(writer.Content);
 			}
 		}
@@ -39,7 +38,6 @@ namespace YGOCore
 				writer.WriteUnicode(room.Name, 20);
 				writer.WriteUnicode(room.Config.Name, 20);
 				writer.WriteUnicode(room.Config.BanList);
-				writer.Use();
 				Send(writer.Content);
 			}
 		}
@@ -48,7 +46,6 @@ namespace YGOCore
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomStart);
 				writer.WriteUnicode(room.Config.Name, 20);
-				writer.Use();
 				Send(writer.Content);
 			}
 		}
@@ -57,7 +54,6 @@ namespace YGOCore
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomClose);
 				writer.WriteUnicode(room.Config.Name, 20);
-				writer.Use();
 				Send(writer.Content);
 			}
 		}
@@ -67,7 +63,6 @@ namespace YGOCore
 				writer.Write((byte)RoomMessage.PlayerLeave);
 				writer.WriteUnicode(player.Name, 20);
 				writer.WriteUnicode(room.Config.Name, 20);
-				writer.Use();
 				Send(writer.Content);
 			}
 		}
@@ -77,7 +72,6 @@ namespace YGOCore
 				writer.Write((byte)RoomMessage.PlayerEnter);
 				writer.WriteUnicode(player.Name, 20);
 				writer.WriteUnicode(room.Config.Name, 20);
-				writer.Use();
 				Send(writer.Content);
 			}
 			string tip = Messages.RandomMessage();

@@ -119,17 +119,12 @@ namespace YGOCore.Net
 			//处理游戏事件
 			GameEvent.Handler(this, packets);
 		}
-
-		public void Send(GameServerPacket packet,bool isNow = true){
+		public void Send(byte[] data,bool isNow = true){
 			if(m_close) return;
-			packet.Use();
-			//	Logger.Debug("send "+System.Text.Encoding.Default.GetString(packet.Content));
-			//发送大量数据可能会卡
-//			Logger.Debug("packet:"+packet.PacketMsg);
-//			if(packet.GameMsg != GameMessage.Waiting){
-//				Logger.Debug("game:"+packet.GameMsg);
-//			}
-			m_client.SendPackage(packet.Content, isNow);
+			m_client.SendPackage(data, isNow);
+		}
+		public void Send(GameServerPacket packet,bool isNow = true){
+			Send(packet.Content, isNow);
 		}
 		
 		public void PeekSend(){
