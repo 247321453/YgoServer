@@ -142,7 +142,7 @@ namespace YGOCore.Game
 		}
 		public void AddPlayer(GameSession player){
 //			if(IsJoin(player)){
-////				/玩家已经在游戏
+			////				/玩家已经在游戏
 //				player.LobbyError(Messages.MSG_PLAYER_INGAME);
 //				return;
 //			}
@@ -174,8 +174,10 @@ namespace YGOCore.Game
 				pos = GetAvailablePlayerPos();
 			if (pos != -1)
 			{
-				Players[pos] = player;
-				IsReady[pos] = false;
+				lock(AsyncRoot){
+					Players[pos] = player;
+					IsReady[pos] = false;
+				}
 				player.Type = pos;
 				using(GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter)){
 					enter.WriteUnicode(player.Name, 20);
