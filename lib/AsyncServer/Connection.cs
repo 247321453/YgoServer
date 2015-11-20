@@ -132,12 +132,12 @@ namespace AsyncServer {
 						}else{
 							client.Client.Send(data);
 						}
-					}catch(SocketException){
-					}catch(Exception){
-						
-					}
-					//WriteData(this, data, isAsync);
-					return;
+                    }
+                    catch (Exception) {
+                        client.Close();
+                    }
+                    //WriteData(this, data, isAsync);
+                    return;
 				}
 			}else{
 				//Logger.Debug("nothing send");
@@ -153,9 +153,8 @@ namespace AsyncServer {
 			try{
 				TcpClient client = (TcpClient)ar.AsyncState;
 				client.Client.EndSend(ar);
-			}catch(SocketException){
 			}catch(Exception){
-				
+                client.Close();
 			}
 //			if(isAsync){
 //				lock(lock_send){
