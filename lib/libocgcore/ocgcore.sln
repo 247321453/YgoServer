@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ocgcore", "ocgcore.vcxproj", "{BBDEAD48-7136-264A-B9F8-FE61A5B2C9EA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{95C6578C-8B68-7242-A41D-86C673015996} = {95C6578C-8B68-7242-A41D-86C673015996}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua", "lua.vcxproj", "{95C6578C-8B68-7242-A41D-86C673015996}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BBDEAD48-7136-264A-B9F8-FE61A5B2C9EA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BBDEAD48-7136-264A-B9F8-FE61A5B2C9EA}.Debug|Win32.Build.0 = Debug|Win32
+		{BBDEAD48-7136-264A-B9F8-FE61A5B2C9EA}.Release|Win32.ActiveCfg = Release|Win32
+		{BBDEAD48-7136-264A-B9F8-FE61A5B2C9EA}.Release|Win32.Build.0 = Release|Win32
+		{95C6578C-8B68-7242-A41D-86C673015996}.Debug|Win32.ActiveCfg = Debug|Win32
+		{95C6578C-8B68-7242-A41D-86C673015996}.Debug|Win32.Build.0 = Debug|Win32
+		{95C6578C-8B68-7242-A41D-86C673015996}.Release|Win32.ActiveCfg = Release|Win32
+		{95C6578C-8B68-7242-A41D-86C673015996}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

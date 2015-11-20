@@ -1,0 +1,6 @@
+[submodule "lib/ocgcore"]
+	path = lib/ocgcore
+	url = https://github.com/Fluorohydride/ygopro-core
+[submodule "lib/lua"]
+	path = lib/lua
+	url = https://github.com/lua/lua
