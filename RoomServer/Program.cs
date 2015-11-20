@@ -8,7 +8,6 @@ namespace YGOCore
 {
 	class Program
 	{
-		private static RoomServer Server;
 		/// <summary>
 		/// 负责房间列表和在线列表。
 		/// <para>客户端登录，验证后，返回聊天服务端(目前本端负责)和（人数最少的）对战服务端的地址，全部的房间列表由本端提供</para>
@@ -20,15 +19,25 @@ namespace YGOCore
 		public static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-			Kernel32.SetConsoleCtrlHandler(new ControlCtrlDelegate(Console_Close), true);
-			Console.CancelKeyPress+= new ConsoleCancelEventHandler(Console_CancelKeyPress);
+			
 			Console.Title = "RoomServer";
 			Logger.SetLogLevel(LogLevel.Info);
-			#if DEBUG
+#if DEBUG
 			Logger.SetLogLevel(LogLevel.Debug);
-			#endif
-			Server=new RoomServer();
-			if(Server.Start()){
+#endif
+            RoomServer Server = new RoomServer();
+            //close event
+            Console.CancelKeyPress += delegate
+            {
+                Server.Stop();
+            };
+            Kernel32.SetConsoleCtrlHandler(new ControlCtrlDelegate((int type)=>{
+                Server.Stop();
+                return false;
+            }), true);
+
+
+            if (Server.Start()){
 				Command(Server);
 				Console.WriteLine("server is close");
 			}else{
@@ -36,15 +45,7 @@ namespace YGOCore
 			}
 			Console.ReadKey(true);
 		}
-		private static bool Console_Close(int type){
-			Server.Stop();
-			return false;
-		}
-		private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
-		{
-			Server.Stop();
-		}
-		
+
 		private static void Command(RoomServer server){
 			string cmd="";
 			while(server.IsListening){

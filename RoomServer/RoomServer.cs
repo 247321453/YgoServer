@@ -121,10 +121,8 @@ namespace YGOCore
 			if(Client!=null && Client.Tag!=null){
 				this.OnServerClose(Client.Tag);
 				lock(DuelServers){
-					if(DuelServers.Contains(Client.Tag)){
-						DuelServers.Remove(Client.Tag);
-					}
-				}
+                    DuelServers.Remove(Client.Tag);
+                }
 			}
 		}
 
@@ -157,7 +155,8 @@ namespace YGOCore
 		{
 			if(Client.Tag!=null){
 				lock(Clients){
-					Clients.Remove(Client.Tag.Name);
+                    if (Client.Tag.Name != null)
+					    Clients.Remove(Client.Tag.Name);
 				}
 				this.server_OnPlayerLeave(Client.Tag.ServerInfo, Client.Tag.Name, null);
 				Client.Tag.Close();

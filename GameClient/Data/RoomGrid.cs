@@ -184,8 +184,7 @@ namespace System.Windows.Forms
 			lock(Rooms){
 				foreach(GameConfig2 config in configs){
 					string name = Password.OnlyName(config.Name);
-					if(!Rooms.ContainsKey(name))
-						Rooms.Add(name, config);
+                    Rooms[name] = config;
 				}
 			}
 			BeginInvoke(new Action(
@@ -211,9 +210,7 @@ namespace System.Windows.Forms
 		public void OnClose(RoomInfo room){
 			string name = room.ToString();
 			lock(Rooms){
-				if(Rooms.ContainsKey(name)){
-					Rooms.Remove(name);
-				}
+				Rooms.Remove(name);
 			}
 			BeginInvoke(new Action(
 				()=>{
@@ -238,8 +235,9 @@ namespace System.Windows.Forms
 		public void OnStart(RoomInfo room){
 			string name = room.ToString();
 			lock(Rooms){
-				if(Rooms.ContainsKey(name)){
-					Rooms[name].IsStart = true;
+                GameConfig config = Rooms[name];
+                if(config != null){
+                    config.IsStart = true;
 				}
 			}
 			BeginInvoke(new Action(
@@ -265,12 +263,8 @@ namespace System.Windows.Forms
 		public void OnCreate(GameConfig2 config){
 			string name = Password.OnlyName(config.Name);
 			lock(Rooms){
-				if(Rooms.ContainsKey(name)){
-					Rooms[name] = config;
-				}else{
-					Rooms.Add(name, config);
-				}
-			}
+                Rooms[name] = config;
+            }
 			BeginInvoke(new Action(
 				()=>{
 					lock(_lock)

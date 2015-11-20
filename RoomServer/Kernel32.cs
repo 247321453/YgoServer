@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 namespace System
 {
 	public delegate bool ControlCtrlDelegate(int CtrlType);
+
 	/// <summary>
 	/// Description of K.
 	/// </summary>
@@ -18,5 +19,6 @@ namespace System
 	{
 		[DllImport("kernel32")]
 		public static extern bool SetConsoleCtrlHandler(ControlCtrlDelegate HandlerRoutine, bool Add);
-	}
+
+    }
 }

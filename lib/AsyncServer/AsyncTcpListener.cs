@@ -217,21 +217,22 @@ namespace AsyncServer{
 				connected = connection.Client.Connected;
 				available = connection.Client.Available;
 			}
-			//	Logger.Debug("receive:"+read);
-			if(read != 0 && connected) {
-				connection.ReceiveQueue.Enqueue(connection.Bytes, 0, read);
-				if(read == connection.Bytes.Length){
-					//还有内容
-				}else{
-					if(available == 0) {
-						Received(connection);
-					}
-				}
-				if(timeout > 0){
-					connection.Timer.Restart();
-				}
-				if(!Started) return;
-				BeginRead(connection);
+            //	Logger.Debug("receive:"+read);
+            if (read != 0 && connected) {
+                connection.ReceiveQueue.Enqueue(connection.Bytes, 0, read);
+                if (read == connection.Bytes.Length) {
+                    //还有内容
+                } else {
+                    if (available == 0) {
+                        Received(connection);
+                    }
+                }
+                if (timeout > 0) {
+                    connection.Timer.Restart();
+                }
+                if (Started) { 
+                    BeginRead(connection);
+                }
 			}else{
 				DisconnectHandler(connection);
 			}
@@ -261,7 +262,7 @@ namespace AsyncServer{
 		/// <param name="connection">Disconnected connection.</param>
 		private void DisconnectHandler(Connection<T> connection) {
 			lock(m_clients) {
-			    if(connection!=null && m_clients.Contains(connection))
+			    if(connection!=null)
 				    m_clients.Remove(connection);
 			}
 			Disconnected(connection);
@@ -314,7 +315,7 @@ namespace AsyncServer{
 			}
 		}
 		public void Stop(){
-			Started =false;
+			Started = false;
 			lock(m_clients){
 				foreach(Connection<T> client in m_clients){
 					client.Close();

@@ -43,7 +43,7 @@ namespace YGOCore.Game
                     return i;
             return 0;
         }
-               public static string GetName(int lflist){
+        public static string GetName(int lflist){
         	if(lflist>=0&&lflist<Banlists.Count){
         		return Banlists[lflist].Name;
         	}

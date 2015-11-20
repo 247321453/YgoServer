@@ -65,11 +65,12 @@ namespace YGOCore
 		public static void OnRoomList(this RoomServer roomServer,Session session,bool nolock=false,bool nostart = false){
 			#if DEBUG
 			Logger.Debug("roomlist");
-			#endif
-			lock(roomServer.DuelServers){
-				foreach(DuelServer srv in roomServer.DuelServers){
-					using(PacketWriter wrtier=new PacketWriter(20)){
-						wrtier.Write((byte)RoomMessage.RoomList);
+#endif
+            using (PacketWriter wrtier = new PacketWriter(20))
+            {
+                wrtier.Write((byte)RoomMessage.RoomList);
+                lock (roomServer.DuelServers){
+				    foreach(DuelServer srv in roomServer.DuelServers){					
 						wrtier.Write(srv.Port);
 						wrtier.Write(srv.NeedAuth);
 						lock(srv.Rooms){
@@ -78,12 +79,12 @@ namespace YGOCore
 								wrtier.WriteUnicode(config.Name, 20);
 								wrtier.WriteUnicode(config.BanList, 20);
 								wrtier.WriteUnicode(config.RoomString, 20);
-							}
-						}
-						session.Client.SendPackage(wrtier.Content, false);
-					}
-				}
-			}
+							}						
+					    }
+				    }
+                }
+                session.Client.SendPackage(wrtier.Content, false);
+            }
 			session.Client.PeekSend();
 		}
 		#endregion
@@ -97,16 +98,18 @@ namespace YGOCore
 				writer.WriteUnicode(msg, msg.Length+1);
 				if(!string.IsNullOrEmpty(toname)){
 					lock(roomServer.Clients){
-						if(roomServer.Clients.ContainsKey(name)){
-							roomServer.Clients[name].Client.SendPackage(writer.Content, true);
+                        Session sender = roomServer.Clients[name];
+                        if (sender != null){
+                            sender.Client.SendPackage(writer.Content, true);
 						}else{
 							#if DEBUG
 							Console.WriteLine("no find "+name);
 							#endif
 						}
 						if(name != toname){
-							if(roomServer.Clients.ContainsKey(toname)){
-								roomServer.Clients[toname].Client.SendPackage(writer.Content, true);
+                            Session recevicer = roomServer.Clients[toname];
+                            if (recevicer != null){
+                                recevicer.Client.SendPackage(writer.Content, true);
 							}else{
 								#if DEBUG
 								Console.WriteLine("no find "+toname);
@@ -201,10 +204,9 @@ namespace YGOCore
 			if(string.IsNullOrEmpty(name))return ;
 			
 			lock(roomServer.Clients){
-				if(roomServer.Clients.ContainsKey(name)){
-					Session player = roomServer.Clients[name];
+				Session player = roomServer.Clients[name];
+                if(player != null)
 					player.RoomName = null;
-				}
 			}
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.PlayerLeave);
@@ -219,11 +221,10 @@ namespace YGOCore
 		{
 			if(string.IsNullOrEmpty(name))return ;
 			lock(roomServer.Clients){
-				if(roomServer.Clients.ContainsKey(name)){
-					Session player = roomServer.Clients[name];
-					player.RoomName = room;
-				}
-			}
+                Session player = roomServer.Clients[name];
+                if (player != null)
+                    player.RoomName = room;
+            }
 			using(PacketWriter writer = new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.PlayerEnter);
 				writer.Write(server.Port);

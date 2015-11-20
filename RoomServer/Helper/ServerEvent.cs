@@ -64,11 +64,7 @@ namespace YGOCore
 			config.BanList=banlist;
 			Logger.Debug("OnRoomCreate:"+server.Port+","+name);
 			lock(server.Rooms){
-				if(!server.Rooms.ContainsKey(name)){
-					server.Rooms.Add(name, config);
-				}else{
-					Logger.Warn("same room:"+name+" form "+server.Port);
-				}
+                server.Rooms[name] = config;
 			}
 			if(server.Server!=null)
 				server.Server.server_OnRoomCreate(server, name, banlist, info);
@@ -77,8 +73,9 @@ namespace YGOCore
 			string name = packet.ReadUnicode(20);
 			Logger.Debug("OnRoomStart:"+server.Port+","+name);
 			lock(server.Rooms){
-				if(server.Rooms.ContainsKey(name)){
-					server.Rooms[name].IsStart = true;
+                GameConfig cfg = server.Rooms[name];
+                if (cfg != null){
+                    cfg.IsStart = true;
 				}else{
 					Logger.Warn("no start room:"+name+" form "+server.Port);
 				}
@@ -90,9 +87,7 @@ namespace YGOCore
 			string name = packet.ReadUnicode(20);
 			Logger.Debug("OnRoomClose:"+server.Port+","+name);
 			lock(server.Rooms){
-				if(server.Rooms.ContainsKey(name)){
-					server.Rooms.Remove(name);
-				}else{
+				if(name == null || !server.Rooms.Remove(name)){
 					Logger.Warn("no close room:"+name+" form "+server.Port);
 				}
 			}
