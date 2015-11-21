@@ -73,8 +73,8 @@ namespace YGOCore
 			string name = packet.ReadUnicode(20);
 			Logger.Debug("OnRoomStart:"+server.Port+","+name);
 			lock(server.Rooms){
-                GameConfig cfg = server.Rooms[name];
-                if (cfg != null){
+                GameConfig cfg = null;
+                if(server.Rooms.TryGetValue(name, out cfg)){
                     cfg.IsStart = true;
 				}else{
 					Logger.Warn("no start room:"+name+" form "+server.Port);

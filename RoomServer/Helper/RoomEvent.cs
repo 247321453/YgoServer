@@ -98,8 +98,8 @@ namespace YGOCore
 				writer.WriteUnicode(msg, msg.Length+1);
 				if(!string.IsNullOrEmpty(toname)){
 					lock(roomServer.Clients){
-                        Session sender = roomServer.Clients[name];
-                        if (sender != null){
+                        Session sender = null;
+                        if (roomServer.Clients.TryGetValue(name, out sender)){
                             sender.Client.SendPackage(writer.Content, true);
 						}else{
 							#if DEBUG
@@ -107,8 +107,8 @@ namespace YGOCore
 							#endif
 						}
 						if(name != toname){
-                            Session recevicer = roomServer.Clients[toname];
-                            if (recevicer != null){
+                            Session recevicer = null;
+                            if (roomServer.Clients.TryGetValue(toname, out recevicer)){
                                 recevicer.Client.SendPackage(writer.Content, true);
 							}else{
 								#if DEBUG
@@ -204,8 +204,8 @@ namespace YGOCore
 			if(string.IsNullOrEmpty(name))return ;
 			
 			lock(roomServer.Clients){
-				Session player = roomServer.Clients[name];
-                if(player != null)
+                Session player = null;
+                if (roomServer.Clients.TryGetValue(name, out player))
 					player.RoomName = null;
 			}
 			using(PacketWriter writer = new PacketWriter(2)){
@@ -221,8 +221,8 @@ namespace YGOCore
 		{
 			if(string.IsNullOrEmpty(name))return ;
 			lock(roomServer.Clients){
-                Session player = roomServer.Clients[name];
-                if (player != null)
+                Session player = null;
+                if(roomServer.Clients.TryGetValue(name, out player))
                     player.RoomName = room;
             }
 			using(PacketWriter writer = new PacketWriter(2)){
