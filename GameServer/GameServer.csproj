@@ -92,12 +92,7 @@
     <Compile Include="ServerApi.cs" />
     <Compile Include="ServerConfig.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Info" />
-    <Folder Include="Net" />
-    <Folder Include="Game" />
-    <Folder Include="Helper" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="..\lib\ocgcore.dll">
       <Link>ocgcore.dll</Link>

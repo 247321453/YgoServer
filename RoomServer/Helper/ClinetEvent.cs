@@ -31,11 +31,13 @@ namespace YGOCore
 			EventHandler.Register((ushort)RoomMessage.Chat,	OnChat);
 			EventHandler.Register((ushort)RoomMessage.Pause,OnPause);
 			EventHandler.Register((ushort)RoomMessage.PlayerList, OnPlayerList);
-			//EventHandler.Register((ushort)RoomMessage.SystemChat,	OnSystemChat);
-			//EventHandler.Register((ushort)RoomMessage.RoomCreate,	OnRoomCreate);
-			//EventHandler.Register((ushort)RoomMessage.RoomStart,	OnRoomStart);
-			//EventHandler.Register((ushort)RoomMessage.RoomClose,	OnRoomClose);
-		}
+            EventHandler.Register((ushort)RoomMessage.NETWORK_CLIENT_ID, OnRoomList2);
+            EventHandler.Register((ushort)RoomMessage.STOP_CLIENT, OnClose);
+            //EventHandler.Register((ushort)RoomMessage.SystemChat,	OnSystemChat);
+            //EventHandler.Register((ushort)RoomMessage.RoomCreate,	OnRoomCreate);
+            //EventHandler.Register((ushort)RoomMessage.RoomStart,	OnRoomStart);
+            //EventHandler.Register((ushort)RoomMessage.RoomClose,	OnRoomClose);
+        }
 		public static void Handler(Session session, List<PacketReader> packets){
 			foreach(PacketReader packet in packets){
 				//			Parse(player, packet);
@@ -55,7 +57,21 @@ namespace YGOCore
 		private static void OnPause(Session session, PacketReader packet){
 			session.IsPause = true;
 		}
-		private static void OnRoomList(Session session, PacketReader packet){
+
+        private static void OnClose(Session session, PacketReader packet)
+        {
+            session.IsPause = true;
+            session.Close();
+        }
+        private static void OnRoomList2(Session session, PacketReader packet)
+        {
+            session.IsPause = false;
+            if (session.Server != null)
+            {
+                session.Server.SendRoomList(session);
+            }
+        }
+        private static void OnRoomList(Session session, PacketReader packet){
 			bool nolock = packet.ReadBoolean();
 			bool nostart = packet.ReadBoolean();
 			session.IsPause  = false;

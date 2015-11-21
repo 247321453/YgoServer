@@ -69,6 +69,7 @@
     <Compile Include="Helper\Command.cs" />
     <Compile Include="Helper\RoomEvent.cs" />
     <Compile Include="Helper\ServerEvent.cs" />
+    <Compile Include="Helper\StructTransformer.cs" />
     <Compile Include="Kernel32.cs" />
     <Compile Include="RoomConfig.cs" />
     <Compile Include="ServerProcess.cs" />
@@ -84,10 +85,7 @@
       <Name>AsyncServer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common" />
-    <Folder Include="Helper" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="roomserver.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

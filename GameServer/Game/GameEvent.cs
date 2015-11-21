@@ -369,7 +369,7 @@ namespace YGOCore.Net
 			if(client.Game!=null)
 				client.Game.RemovePlayer(client);
 		}
-		#endregion
-		
-	}
+        #endregion
+
+    }
 }
