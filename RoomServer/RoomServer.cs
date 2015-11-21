@@ -154,8 +154,8 @@ namespace YGOCore
 		private void Listener_OnDisconnect(Connection<Session> Client)
 		{
 			if(Client.Tag!=null){
-				lock(Clients){
-                    if (Client.Tag.Name != null)
+                if (Client.Tag.Name != null) { 
+                    lock (Clients)
 					    Clients.Remove(Client.Tag.Name);
 				}
 				this.server_OnPlayerLeave(Client.Tag.ServerInfo, Client.Tag.Name, null);

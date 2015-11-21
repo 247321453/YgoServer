@@ -18,14 +18,19 @@ namespace YGOCore
 		/// <param name="args">port GameServer.exe config.txt config1.txt config2.txt ...</param>
 		public static void Main(string[] args)
 		{
-			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            RoomServer Server = new RoomServer();
+            AppDomain.CurrentDomain.UnhandledException += (object sender, UnhandledExceptionEventArgs e) =>
+            {
+                Server.Stop();
+                File.WriteAllText("crash_room_" + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt", e.ExceptionObject.ToString());
+                Process.GetCurrentProcess().Kill();
+            };
 			
 			Console.Title = "RoomServer";
 			Logger.SetLogLevel(LogLevel.Info);
 #if DEBUG
 			Logger.SetLogLevel(LogLevel.Debug);
 #endif
-            RoomServer Server = new RoomServer();
             //close event
             Console.CancelKeyPress += delegate
             {
@@ -52,12 +57,6 @@ namespace YGOCore
 				cmd = Console.ReadLine();
 				server.OnCommand(cmd);
 			}
-		}
-
-		private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
-		{
-			File.WriteAllText("crash_room_" + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt", e.ExceptionObject.ToString());
-			Process.GetCurrentProcess().Kill();
 		}
 	}
 }
