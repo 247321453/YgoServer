@@ -21,7 +21,7 @@ namespace GameClient
 	/// </summary>
 	public class GameUtil
 	{
-		public static string GamePath = "";
+		public static string GamePath = AppDomain.CurrentDomain.BaseDirectory;
 		public static void AddAi(){
 			try{
 				var asm = Assembly.GetExecutingAssembly();
@@ -64,19 +64,23 @@ namespace GameClient
 			}
 			return "7911";
 		}
-		public static bool JoinRoom(string ip, string port, string name, string room, Action OnExited=null){
-			Dictionary<string, string> args=new Dictionary<string, string>();
-			if(!string.IsNullOrEmpty(name)){
-				args.Add("nickname", name);
-			}
-			args.Add("lastip", ip);
-			args.Add("lastport", port);
-			args.Add("roompass", room);
-			string file = Combine(GamePath, "system.conf");
-			if(Write(file, args)){
-				return RunGame(" -j",OnExited);
-			}
-			return false;
+        public static bool JoinRoom(string ip, string port, string name, string room, Action OnExited = null) {
+            Dictionary<string, string> args = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(name)) {
+                args.Add("nickname", name);
+            }
+            args.Add("lastip", ip);
+            args.Add("lastport", port);
+            args.Add("roompass", room);
+
+            string[] files = new string[] {Combine(GamePath, "system.conf"),
+                Combine(AppDomain.CurrentDomain.BaseDirectory, "system.conf") };
+            foreach (string file in files) { 
+                if (Write(file, args)) {
+                    return RunGame(" -j", OnExited);
+                }
+            }
+            return false;
 		}
 		public static bool RunGame(string arg, Action OnExited){
 			string file= Program.Config.GameExe;
@@ -86,16 +90,16 @@ namespace GameClient
 			file= Combine(AppDomain.CurrentDomain.BaseDirectory, "ygopro_vs.exe");
 			if(File.Exists(file)){
 				return Run(file, arg,OnExited);
-			}
+            }
 			file= Combine(AppDomain.CurrentDomain.BaseDirectory, "ygopot.exe");
 			if(File.Exists(file)){
 				return Run(file, arg,OnExited);
 			}
-			file = Combine(AppDomain.CurrentDomain.BaseDirectory, "ygopro.exe");
+            file = Combine(AppDomain.CurrentDomain.BaseDirectory, "ygopro.exe");
 			if(File.Exists(file)){
 				return Run(file, arg,OnExited);
 			}
-			return false;
+            return false;
 		}
 		private static bool Run(string file, string arg="", Action OnExited=null){
 			Process p =new Process();

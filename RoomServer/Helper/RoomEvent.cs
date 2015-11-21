@@ -196,7 +196,7 @@ namespace YGOCore
 		}
 		public static void server_OnPlayerLeave(this RoomServer roomServer, DuelServer server, string name, string room)
 		{
-			if(server!=null){
+			if(server!=null && string.IsNullOrEmpty(room)){
 				lock(server.AsyncLock){
 					server.Count--;
 				}
