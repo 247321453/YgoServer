@@ -7,13 +7,19 @@ namespace YGOCore.Game
 {
 	public class Replay
 	{
-		private static bool Compressed = false;
+		private static bool Compressed = true;
 		public const uint FlagCompressed = 0x1;
 		public const uint FlagTag = 0x2;
 
 		public const int MaxReplaySize = 0x20000;
 
-		public bool Disabled { get; private set; }
+        private readonly byte[] _lock = new byte[0];
+      
+		public bool Disabled {
+            get { lock(_lock) return disabled; }
+            private set { lock(_lock) disabled = value;  }
+        }
+        private bool disabled;
 		private ReplayHeader Header;
 		public BinaryWriter Writer { get; private set; }
 		private MemoryStream m_stream;
