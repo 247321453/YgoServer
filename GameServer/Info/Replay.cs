@@ -6,12 +6,19 @@ namespace YGOCore.Game
 {
 	public class Replay
 	{
+        public static bool NeedCompressed = true;
 		public const uint FlagCompressed = 0x1;
 		public const uint FlagTag = 0x2;
 
 		public const int MaxReplaySize = 0x20000;
 
-		public bool Disabled { get; private set; }
+        private readonly byte[] _lock = new byte[0];
+      
+		public bool Disabled {
+            get { lock(_lock) return disabled; }
+            private set { lock(_lock) disabled = value;  }
+        }
+        private bool disabled;
 		public ReplayHeader Header;
 		public BinaryWriter Writer { get; private set; }
 
@@ -37,9 +44,9 @@ namespace YGOCore.Game
 		{
 			if (m_stream.Position >= MaxReplaySize)
 			{
-				Writer.Close();
+                Disabled = true;
+                Writer.Close();
 				m_stream.Close();
-				Disabled = true;
 			}
 		}
 
@@ -50,20 +57,26 @@ namespace YGOCore.Game
 			Disabled = true;
 			byte[] raw = m_stream.ToArray();
 			Header.DataSize = (uint)raw.Length;
-			Header.Flag |= FlagCompressed;
 			Header.Props = new byte[8];
 
-			Encoder lzma = new Encoder();
-			using (MemoryStream props = new MemoryStream(Header.Props)){
-				lzma.WriteCoderProperties(props);
-			}
+            if (NeedCompressed)
+            {
+                Header.Flag |= FlagCompressed;
+                Encoder lzma = new Encoder();
+                using (MemoryStream props = new MemoryStream(Header.Props))
+                {
+                    lzma.WriteCoderProperties(props);
+                }
 
-			using(MemoryStream compressed = new MemoryStream()){
-				using(MemoryStream rawsream = new MemoryStream(raw)){
-					lzma.Code(rawsream, compressed, raw.LongLength, -1, null);
-					raw = compressed.ToArray();
-				}
-			}
+                using (MemoryStream compressed = new MemoryStream())
+                {
+                    using (MemoryStream rawsream = new MemoryStream(raw))
+                    {
+                        lzma.Code(rawsream, compressed, raw.LongLength, -1, null);
+                        raw = compressed.ToArray();
+                    }
+                }
+            }
 			using(MemoryStream ms = new MemoryStream()){
 				using(BinaryWriter writer = new BinaryWriter(ms)){
 					writer.Write(Header.Id);
