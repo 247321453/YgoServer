@@ -23,7 +23,7 @@ namespace YGOCore.Net
 			if(timeout<=0){
 				timeout = 15;
 			}
-			CheckTimer = new MyTimer(3000, timeout*1000);
+			CheckTimer = new MyTimer(3000, timeout);
 			CheckTimer.AutoReset = true;
 			CheckTimer.Elapsed += delegate { 
 				if( !string.IsNullOrEmpty(Name) ){
