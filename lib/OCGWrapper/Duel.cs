@@ -55,6 +55,7 @@ namespace OcgWrapper
 		public int Process()
 		{
 			int fail = 0;
+			if(m_pDuel == IntPtr.Zero) return -1;
 			while (true)
 			{
 				int result = Api.process(m_pDuel);
@@ -146,6 +147,7 @@ namespace OcgWrapper
 			}
 			lock(Duels)
 				Duels.Remove(m_pDuel);
+			m_pDuel = IntPtr.Zero;
 		}
 
 		internal void OnMessage(UInt32 messageType)

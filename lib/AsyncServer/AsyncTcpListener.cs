@@ -141,6 +141,9 @@ namespace AsyncServer{
 			}catch(SocketException ex) {
 				// If this happens, socket error code information is at: http://msdn.microsoft.com/en-us/library/windows/desktop/ms740668(v=vs.85).aspx
 				Logger.Warn("Could not accept socket (" + ex.ErrorCode.ToString() + "): " + ex.ToString());
+				if(client!=null){
+					DisconnectClient(client);
+				}
 			}catch(Exception ex) {
 				// Either the server is full or the client has reached the maximum connections per IP.
 				Logger.Error("Could not add client: " + ex.ToString());
