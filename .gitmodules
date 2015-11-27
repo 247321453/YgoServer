@@ -1,3 +1,6 @@
 [submodule "lib/ocgcore"]
 	path = lib/ocgcore
 	url = https://github.com/Fluorohydride/ygopro-core
+[submodule "lib/SevenZip"]
+	path = lib/SevenZip
+	url = https://github.com/247321453/SevenZip.git
