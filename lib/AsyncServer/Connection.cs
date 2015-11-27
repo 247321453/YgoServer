@@ -109,7 +109,7 @@ namespace AsyncServer {
 					try{
 						if(isAsync){
 							client.Client.BeginSend(datas, 0, datas.Length, SocketFlags.None,
-							                        new AsyncCallback(SendDataEnd), this);
+							                        new AsyncCallback(SendDataEnd), client);
 						}else{
 							client.Client.Send(datas);
 						}
