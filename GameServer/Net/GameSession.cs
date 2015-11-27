@@ -124,6 +124,7 @@ namespace YGOCore.Net
 			m_client.SendPackage(data, isNow);
 		}
 		public void Send(GameServerPacket packet,bool isNow = true){
+		//	Logger.Debug("send "+packet.PacketMsg);
 			Send(packet.Content, isNow);
 		}
 		

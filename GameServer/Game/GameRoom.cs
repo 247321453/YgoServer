@@ -146,6 +146,7 @@ namespace YGOCore.Game
 //				player.LobbyError(Messages.MSG_PLAYER_INGAME);
 //				return;
 //			}
+			Logger.Debug("add "+player.Name+" to " + Name);
 			if (State != GameState.Lobby)
 			{
 				if (State == GameState.End)
@@ -165,9 +166,10 @@ namespace YGOCore.Game
 				ServerApi.OnPlayerEnter(player, this);
 				return;
 			}
-
-			if (HostPlayer == null)
-				HostPlayer = player;
+			lock(AsyncRoot){
+				if (HostPlayer == null)
+					HostPlayer = player;
+			}
 			
 			int pos = -1;
 			lock(AsyncRoot)
@@ -211,11 +213,13 @@ namespace YGOCore.Game
 						enter.Write((byte)i);
 						player.Send(enter, false);
 					}
-					if (IsReady[i])
-					{
-						using(GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange)){
-							change.Write((byte)((i << 4) + (int)PlayerChange.Ready));
-							player.Send(change, false);
+					lock(AsyncRoot){
+						if (IsReady[i])
+						{
+							using(GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange)){
+								change.Write((byte)((i << 4) + (int)PlayerChange.Ready));
+								player.Send(change, false);
+							}
 						}
 					}
 				}
@@ -1429,7 +1433,7 @@ namespace YGOCore.Game
 				packet.Write((short)m_duel.QueryFieldCount(0, CardLocation.Extra));
 				packet.Write((short)(deck2 + hand2));
 				packet.Write((short)m_duel.QueryFieldCount(1, CardLocation.Extra));
-				player.Send(packet, false);
+				player.Send(packet);
 			}
 			using(GameServerPacket draw = new GameServerPacket(GameMessage.Draw)){
 				draw.Write((byte)0);
@@ -1443,7 +1447,7 @@ namespace YGOCore.Game
 				draw.Write((byte)hand2);
 				for (int i = 0; i < hand2; i++)
 					draw.Write(0);
-				player.Send(draw, false);
+				player.Send(draw);
 			}
 			//回合数
 			using(GameServerPacket turn0 = new GameServerPacket(GameMessage.NewTurn)){
@@ -1465,11 +1469,11 @@ namespace YGOCore.Game
 //				turn.Write((byte)0);
 //				player.Send(turn);
 //			}
+			player.PeekSend();
 			InitSpectatorLocation(player, CardLocation.MonsterZone);
 			InitSpectatorLocation(player, CardLocation.SpellZone);
 			InitSpectatorLocation(player, CardLocation.Grave);
 			InitSpectatorLocation(player, CardLocation.Removed);
-			player.PeekSend();
 		}
 
 		private void InitSpectatorLocation(GameSession player, CardLocation loc)
@@ -1574,10 +1578,9 @@ namespace YGOCore.Game
 					update.Write((byte)index);
 					update.Write((byte)loc);
 					update.Write(result);
-					player.Send(update, false);
+					player.Send(update);
 				}
 			}
-			player.PeekSend();
 		}
 		#endregion
 		
