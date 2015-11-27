@@ -4,3 +4,6 @@
 [submodule "lib/SevenZip"]
 	path = lib/SevenZip
 	url = https://github.com/247321453/SevenZip.git
+[submodule "lib/AsyncServer"]
+	path = lib/AsyncServer
+	url = https://github.com/247321453/AsyncServer.git
