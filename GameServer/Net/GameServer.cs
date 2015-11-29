@@ -61,7 +61,7 @@ namespace YGOCore.Net
 						Logger.Info("Connect api server ok");
 					}
 				}
-				m_listener = new AsyncTcpListener<GameSession>(IPAddress.Any, Config.ServerPort);
+				m_listener = new AsyncTcpListener<GameSession>(IPAddress.Any, Config.ServerPort, banmode:Config.isBanIP);
 				m_listener.OnConnect    += new AsyncTcpListener<GameSession>.ConnectEventHandler(Listener_OnConnect);
 				m_listener.OnReceive    += new AsyncTcpListener<GameSession>.ReceiveEventHandler(Listener_OnReceive);
 				m_listener.OnDisconnect += new AsyncTcpListener<GameSession>.DisconnectEventHandler(Listener_OnDisconnect);

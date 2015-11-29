@@ -39,6 +39,10 @@ namespace YGOCore
 		/// </summary>
 		public bool isNeedAuth{get;private set;}
 		/// <summary>
+		/// 禁止ip模式
+		/// </summary>
+		public bool isBanIP{get; private set;}
+		/// <summary>
 		/// 最大客户端数量
 		/// </summary>
 		public int MaxRoomCount{get;private set;}
@@ -157,6 +161,9 @@ namespace YGOCore
 					break;
 				case "needauth":
 					isNeedAuth = (value.ToLower()=="true"||value=="1");
+					break;
+				case "isbanip":
+					isBanIP = (value.ToLower()=="true"||value=="1");
 					break;
 				case "maxroom":
 					MaxRoomCount=Convert.ToInt32(value);
