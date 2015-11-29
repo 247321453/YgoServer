@@ -24,7 +24,7 @@ namespace YGOCore.Net
 			}
 			MyTimer CheckTimer = new MyTimer(1000, timeout);
 			CheckTimer.AutoReset = true;
-			CheckTimer.Elapsed += delegate { 
+			CheckTimer.Elapsed += delegate {
 				if( !string.IsNullOrEmpty(Name) ){
 					CheckTimer.Stop();
 					CheckTimer.Close();
@@ -96,35 +96,72 @@ namespace YGOCore.Net
 		#endregion
 
 		#region packet
-		public void OnReceive(object statu){
+		
+		public bool OnCheck(){
+			lock(m_client.SyncRoot){
+				if(m_client.ReceiveQueue.Count > GameServerPacket.GamePacketByteLength){
+					byte[] blen = new byte[GameServerPacket.GamePacketByteLength];
+					m_client.ReceiveQueue.Dequeue(blen);
+					int len = BitConverter.ToUInt16(blen, 0);
+					byte[] data;
+					int lastcount = m_client.ReceiveQueue.Count;
+					if(lastcount >= len){
+						data = new byte[len];
+						m_client.ReceiveQueue.Dequeue(data);
+						GameClientPacket packet = new GameClientPacket(data);
+						if(GameEvent.Handler(this, packet) != CtosMessage.PlayerInfo){
+							Logger.Debug("first msg isn't PlayerInfo");
+							Close();
+						}else{
+							return true;
+						}
+						//Logger.Debug("add packet");
+					}else{
+						data = new byte[lastcount];
+						m_client.ReceiveQueue.Dequeue(data);
+						m_client.ReceiveQueue.Enqueue(blen);
+						m_client.ReceiveQueue.Enqueue(data);
+					}
+				}
+			}
+			return false;
+		}
+		public void OnReceive(object obj){
 			if(m_close) return;
 			//线程处理
 			List<GameClientPacket> packets=new List<GameClientPacket>();
 			lock(m_client.SyncRoot){
-				while(m_client.ReceiveQueue.Count > 2){
-					byte[] blen = new byte[2];
+				while(m_client.ReceiveQueue.Count > GameServerPacket.GamePacketByteLength){
+					byte[] blen = new byte[GameServerPacket.GamePacketByteLength];
 					m_client.ReceiveQueue.Dequeue(blen);
 					int len = BitConverter.ToUInt16(blen, 0);
-					byte[] data = new byte[len];
-					if(m_client.ReceiveQueue.Count >= len){
+					byte[] data;
+					int lastcount = m_client.ReceiveQueue.Count;
+					if(lastcount >= len){
+						data = new byte[len];
 						m_client.ReceiveQueue.Dequeue(data);
 						GameClientPacket packet = new GameClientPacket(data);
 						packets.Add(packet);
 						//Logger.Debug("add packet");
 					}else{
+						data = new byte[lastcount];
+						m_client.ReceiveQueue.Dequeue(data);
+						m_client.ReceiveQueue.Enqueue(blen);
+						m_client.ReceiveQueue.Enqueue(data);
 						break;
 					}
 				}
 			}
 			//处理游戏事件
-			GameEvent.Handler(this, packets);
+			GameEvent.Handler(this, packets.ToArray());
+			packets = null;
 		}
 		public void Send(byte[] data,bool isNow = true){
 			if(m_close) return;
 			m_client.SendPackage(data, isNow);
 		}
 		public void Send(GameServerPacket packet,bool isNow = true){
-		//	Logger.Debug("send "+packet.PacketMsg);
+			//	Logger.Debug("send "+packet.PacketMsg);
 			Send(packet.Content, isNow);
 		}
 		

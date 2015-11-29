@@ -39,23 +39,31 @@ namespace YGOCore.Net
 			EventHandler.Register((ushort)CtosMessage.Surrender,	OnSurrender);
 			EventHandler.Register((ushort)CtosMessage.TimeConfirm,  OnTimeConfirm);
 		}
-		public static void Handler(GameSession player, List<GameClientPacket> packets){
+		public static CtosMessage Handler(GameSession player, params GameClientPacket[] packets){
+			CtosMessage firstmsg = CtosMessage.Unknown;
+			if(packets == null || packets.Length == 0) 
+				return firstmsg;
 			foreach(GameClientPacket packet in packets){
 				//			Parse(player, packet);
 				if(packet.Length==0){
 					continue;
 				}
 				CtosMessage msg = packet.ReadCtos();
+				if(firstmsg == CtosMessage.Unknown){
+					firstmsg = msg;
+				}
 				if(msg == CtosMessage.CreateGame || msg == CtosMessage.JoinGame || msg == CtosMessage.PlayerInfo){
 					
 				}else{
 					if(!player.IsAuthentified){
 						Logger.Warn("auth error:"+player.Name);
-						continue;
+						player.Close();
+						break;
 					}
 					if(player.Type == (int)PlayerType.Undefined){
 						Logger.Warn("player type error:"+player.Name);
-						continue;
+						player.Close();
+						break;
 					}
 				}
 				if(player.Game!=null){
@@ -67,6 +75,7 @@ namespace YGOCore.Net
 				}
 				packet.Close();
 			}
+			return firstmsg;
 		}
 
 		#endregion

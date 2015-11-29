@@ -65,6 +65,7 @@ namespace YGOCore.Net
 				m_listener.OnConnect    += new AsyncTcpListener<GameSession>.ConnectEventHandler(Listener_OnConnect);
 				m_listener.OnReceive    += new AsyncTcpListener<GameSession>.ReceiveEventHandler(Listener_OnReceive);
 				m_listener.OnDisconnect += new AsyncTcpListener<GameSession>.DisconnectEventHandler(Listener_OnDisconnect);
+				m_listener.OnCheckClient +=new AsyncTcpListener<GameSession>.CheckEventHandler(Listener_OnCheckClient);
 				m_listener.Start();
 				ServerApi.OnServerInfo(this);
 				IsListening = true;
@@ -95,6 +96,15 @@ namespace YGOCore.Net
 		
 		#region listener
 
+		ConnectStatu Listener_OnCheckClient(Connection<GameSession> Client)
+		{
+			if(Client.Tag != null){
+				if(Client.Tag.OnCheck()){
+					return ConnectStatu.Success;
+				}
+			}
+			return ConnectStatu.Fail;
+		}
 		void Listener_OnDisconnect(Connection<GameSession> Client)
 		{
 			if(Client!=null){
