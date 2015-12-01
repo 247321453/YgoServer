@@ -49,7 +49,10 @@ namespace WindBot.Game.Network
         {
             return _reader.ReadInt32();
         }
-
+        public uint ReadUInt32()
+        {
+            return _reader.ReadUInt32();
+        }
         public string ReadUnicode(int len)
         {
             return _reader.ReadUnicode(len);

@@ -56,10 +56,12 @@ namespace WindBot.Game.AI
 
 			string deck = ai.Game.Deck_;
 
-			if (deck != null && _decks.ContainsKey(deck))
-				infos = _decks[deck];
-			else
-				infos = _list[_rand.Next(_list.Count)];
+            if (deck != null && _decks.ContainsKey(deck))
+                infos = _decks[deck];
+            else {
+                //随机卡组
+                infos = _list[_rand.Next(_list.Count)];
+            }
 
 			Executor executor = (Executor)Activator.CreateInstance(infos.Type, ai, duel);
 			executor.Deck = infos.Deck;

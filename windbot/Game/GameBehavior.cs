@@ -137,6 +137,13 @@ namespace WindBot.Game
 		}
 		private void OnJoinGame(GameServerPacket packet)
 		{
+            uint banlist = packet.ReadUInt32();
+            int rule = packet.ReadByte();
+            int mode = packet.ReadByte();
+            //TODO tag
+            _room.IsTag = mode == 2;
+            Logger.WriteLine("istag = " + _room.IsTag);
+
 			GameClientPacket deck = new GameClientPacket(CtosMessage.UpdateDeck);
 			deck.Write(Deck.Cards.Count + Deck.ExtraCards.Count);
 			deck.Write(Deck.SideCards.Count);
@@ -153,7 +160,15 @@ namespace WindBot.Game
 		{
 			int type = packet.ReadByte();
 			int pos = type & 0xF;
-			if (pos != 0 && pos != 1)
+            //TODO tag
+            if (_room.IsTag)
+            {
+                if (pos < 0 || pos > 4)
+                {
+                    Connection.Close();
+                    return;
+                }
+            }else if (pos != 0 && pos != 1)
 			{
 				Connection.Close();
 				return;
@@ -181,7 +196,8 @@ namespace WindBot.Game
 			int change = packet.ReadByte();
 			int pos = (change >> 4) & 0xF;
 			int state = change & 0xF;
-			if (pos > 3)
+            //TODO tag
+            if (pos > 3)
 				return;
 			if (state < 8)
 			{
@@ -299,10 +315,13 @@ namespace WindBot.Game
 		
 		private bool IsInGame(){
 			if(Game.Username==null)return false;
-			if(Game.Username.StartsWith(_room.Names[0]+"$")||Game.Username.StartsWith(_room.Names[1]+"$")
-			   ||Game.Username==_room.Names[0]||Game.Username==_room.Names[1]){
-				return true;
-			}
+            int c = _room.IsTag ? 4 : 2;
+            for (int i = 0; i < c && c < _room.Names.Length; i++){
+                if(Game.Username.StartsWith(_room.Names[i] + "$") || Game.Username == _room.Names[i])
+                {
+                    return true;
+                }
+            }
 			return false;
 		}
 
@@ -807,7 +826,7 @@ namespace WindBot.Game
 			byte[] resp = new byte[3];
 
 			bool pendulumZone = false;
-
+            
 			int filter;
 			if ((field & 0x1f) != 0)
 			{

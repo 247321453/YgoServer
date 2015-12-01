@@ -6,6 +6,7 @@
         public string[] Names { get; set; }
         public bool[] IsReady { get; set; }
 
+        public bool IsTag { get; set; }
         public Room()
         {
             Names = new string[8];

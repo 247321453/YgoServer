@@ -93,7 +93,10 @@ namespace YGOCore
 			if(sender is Process){
 				Process p = sender as Process;
 				p.Close();
-				AIs.Remove(p);
+                lock (AIs)
+                {
+                    AIs.Remove(p);
+                }
 				Logger.Debug("close ai");
 			}else{
 				Logger.Debug("close ai:"+sender.GetType().ToString());
