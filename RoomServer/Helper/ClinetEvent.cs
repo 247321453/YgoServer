@@ -96,15 +96,16 @@ namespace YGOCore
 					session.Server.server_OnPlayerJoin(session.ServerInfo, session.Name, null);
 					lock(session.Server.Clients){
 						if(session.Server.Clients.ContainsKey(session.Name)){
-							session.SendError("已经登录");
-						}else{
+							session.SendError("[err]已经登录");
+                        }
+                        else{
 							session.Server.Clients.Add(session.Name, session);
 						}
 					}
 				}
 			}else{
-				session.SendError("认证失败");
-			}
+				session.SendError("[err]认证失败");
+            }
 		}
 		private static void OnChat(Session session, PacketReader packet){
 			string name = packet.ReadUnicode(20);

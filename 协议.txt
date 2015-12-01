@@ -1,0 +1,109 @@
+========================客户端
+1.登录
+(byte)2
+string name; 玩家名（20）
+string pwd; 密码(md5)（32）
+
+2.请求房间列表
+(byte)1
+byte nolock    没有密码
+byte nostart   没有开始
+
+3.创建房间
+int lflist_hash     禁卡表hash，（出错则是默认）
+byte rule           规则，0是ocg，1是tcg，2是ot
+byte mode           模式，0单局，1比赛，2双打
+byte EnablePriority 旧规则
+byte NoCheckDeck    不检查牌
+byte NoShuffleDeck 不洗牌
+byte a           预留
+byte b			 预留
+byte c			 预留
+int StartLp      初始lp
+byte StartHand   初始手牌
+byte DrawCount   抽卡数
+short GameTimer  超时（秒）
+string game      游戏名（20）
+string name      房间名（30）【例如：abc$123】
+
+
+4.游戏外聊天
+(byte)3
+string name;    发送者（20）
+string toname;  接收者（20）   为null则是大厅聊天，为玩家名则是私聊
+string msg;     消息内容（256）
+
+5.在线玩家列表
+(byte)11
+
+========================服务
+
+服务器信息
+(byte)1
+int room_count 房间数量
+int duelport   决斗端口（创建房间）
+byte needauth  是否需要认证(1|0)
+string name    房间名（20）[例如：abc]
+string banlist 禁卡表名（20）
+string namepwd 房间字符串[（20）例如：abc$123]
+byte start     是否开始(1|0)
+
+失败
+(byte)0
+string msg；[err]xxxx
+
+成功
+(byte)2
+int chatport   聊天端口
+int duelport   决斗端口（创建房间）
+byte needauth  是否需要认证(1|0)
+
+对战端关闭
+(byte)10
+int port       关闭的决斗端口
+int duelport   新的决斗端口（创建房间）
+byte needauth  是否需要认证(1|0)
+
+聊天
+(byte)3
+string name;    发送者（20）   为“”则服务端消息
+string toname;  接收者（20）   为“”则是大厅聊天，为玩家名则是私聊
+string msg;     消息内容（256）
+
+房间创建
+(byte)5
+int duelport   决斗端口（创建房间）
+byte needauth  是否需要认证(1|0)
+string name    房间名（20）[例如：abc]
+string banlist 禁卡表名（20）
+string namepwd 房间字符串[（20）例如：abc$123]
+byte start     是否开始(1|0)
+
+房间开始
+(byte)6
+int duelport   决斗端口（创建房间）
+string name    房间名（20）[例如：abc]
+
+房间关闭
+(byte)7
+int duelport   决斗端口（创建房间）
+string name    房间名（20）[例如：abc]
+
+玩家离开
+(byte)9
+int duelport   决斗端口（创建房间）
+string name    玩家名（20）[例如：abc]
+string room    房间名（20）[例如：abc] 为“”，则是下线
+
+玩家进入
+(byte)8
+int duelport   决斗端口（创建房间）
+string name    玩家名（20）[例如：abc]
+string room    房间名（20）[例如：abc] 为“”，则是上线
+
+玩家列表
+(byte)11
+int count      玩家数量
+int duelport   决斗端口（创建房间）
+string name    玩家名（20）[例如：abc]
+string room    房间名（20）[例如：abc]

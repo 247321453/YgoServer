@@ -38,7 +38,7 @@ namespace YGOCore
                 }
                 else
                 {
-                    writer.Write((byte)0);
+                    writer.Write(0);
                     writer.Write((byte)0);
                 }
                 session.Client.SendPackage(writer.Content);
@@ -63,7 +63,7 @@ namespace YGOCore
                 }
                 else
                 {
-                    writer.Write((byte)0);
+                    writer.Write((int)0);
                     writer.Write((byte)0);
                 }
                 //session.ServerInfo = srv;
@@ -137,28 +137,33 @@ namespace YGOCore
 #endif
             using (PacketWriter wrtier = new PacketWriter(20))
             {
+                int count = 0;
                 wrtier.Write((byte)RoomMessage.RoomList);
+                wrtier.Write(0);
                 lock (roomServer.DuelServers)
                 {
                     foreach (DuelServer srv in roomServer.DuelServers)
                     {
-                        wrtier.Write(srv.Port);
-                        wrtier.Write(srv.NeedAuth);
                         lock (srv.Rooms)
                         {
-                            wrtier.Write(srv.Rooms.Count);
                             foreach (GameConfig config in srv.Rooms.Values)
                             {
+                                count++;
+                                wrtier.Write(srv.Port);
+                                wrtier.Write(srv.NeedAuth);
                                 wrtier.WriteUnicode(config.Name, 20);
                                 wrtier.WriteUnicode(config.BanList, 20);
                                 wrtier.WriteUnicode(config.RoomString, 20);
+                                wrtier.Write(config.IsStart);
                             }
                         }
                     }
                 }
-                session.Client.SendPackage(wrtier.Content, false);
+                //重写长度
+                wrtier.SetPosition(0);
+                wrtier.Write(count);
+                session.Client.SendPackage(wrtier.Content);
             }
-            session.Client.PeekSend();
         }
         #endregion
 
@@ -246,6 +251,8 @@ namespace YGOCore
                 writer.WriteUnicode(name, 20);
                 writer.WriteUnicode(banlist, 20);
                 writer.WriteUnicode(gameinfo, gameinfo.Length + 1);
+                //start duel
+                writer.Write(false);
                 roomServer.SendAll(writer.Content);
             }
         }

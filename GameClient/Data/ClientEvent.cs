@@ -109,20 +109,22 @@ namespace GameClient
 			client.ServerRoomClose(new RoomInfo(port, room));
 		}
 		private static void OnRoomList(Client client, PacketReader reader){
-			int port = reader.ReadInt32();
-			bool needauth = reader.ReadBoolean();
 			int count = reader.ReadInt32();
 			List<GameConfig2> configs=new List<GameConfig2>();
 			for(int i=0;i<count;i++){
-				string name = reader.ReadUnicode(20);
+                int port = reader.ReadInt32();
+                bool needauth = reader.ReadBoolean();
+                string name = reader.ReadUnicode(20);
 				string banlist = reader.ReadUnicode(20);
 				string info = reader.ReadUnicode(20);
-				GameConfig2 config =new GameConfig2();
+                bool start = reader.ReadBoolean();
+                GameConfig2 config =new GameConfig2();
 				config.Parse(info);
 				config.Name = name;
 				config.BanList = banlist;
 				config.DeulPort = port;
 				config.NeedAuth = needauth;
+                config.IsStart = start;
 				configs.Add(config);
 			}
 			client.ServerRoomList(configs);
