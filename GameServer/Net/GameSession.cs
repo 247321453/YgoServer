@@ -174,7 +174,8 @@ namespace YGOCore.Net
 			if(m_close) return;
 			m_close = true;
 			if(Game!=null){
-				Game.RemovePlayer(this);
+                lock(Game.AsyncRoot)
+				    Game.RemovePlayer(this);
 			}
 			m_client.Close();
 		}

@@ -216,7 +216,10 @@ namespace YGOCore.Net
 				}
 			}
 			client.Game = room;
-			room.AddPlayer(client);
+            lock (room.AsyncRoot)
+            {
+                room.AddPlayer(client);
+            }
 		}
 		#endregion
 		
@@ -234,7 +237,10 @@ namespace YGOCore.Net
 				return;
 			}
 			client.Game = room;
-			room.AddPlayer(client);
+            lock (room.AsyncRoot)
+            {
+                room.AddPlayer(client);
+            }
 			//IsAuthentified = CheckAuth();
 			if(!client.IsAuthentified){
 				client.LobbyError(Messages.ERR_AUTH_FAIL);
