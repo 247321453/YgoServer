@@ -57,12 +57,12 @@ namespace YGOCore.Net
 				}else{
 					if(!player.IsAuthentified){
 						Logger.Warn("auth error:"+player.Name);
-						player.Close();
+						player.CloseAsync();
 						break;
 					}
 					if(player.Type == (int)PlayerType.Undefined){
 						Logger.Warn("player type error:"+player.Name);
-						player.Close();
+						player.CloseAsync();
 						break;
 					}
 				}

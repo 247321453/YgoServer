@@ -109,7 +109,7 @@ namespace YGOCore.Net
 		{
 			if(Client!=null){
 				if(Client.Tag!=null){
-					Client.Tag.Close();
+					Client.Tag.CloseAsync();
 				}
 				m_listener.DisconnectClient(Client);
 			}
