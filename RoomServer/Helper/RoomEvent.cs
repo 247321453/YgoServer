@@ -200,6 +200,10 @@ namespace YGOCore
                             }
                             else
                             {
+                                if (sender != null)
+                                {
+                                    sender.SendError("[err]"+toname+" 不在线。");
+                                }
 #if DEBUG
 								Console.WriteLine("no find "+toname);
 #endif
