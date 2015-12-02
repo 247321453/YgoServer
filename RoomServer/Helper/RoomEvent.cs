@@ -160,7 +160,7 @@ namespace YGOCore
                     }
                 }
                 //重写长度
-                wrtier.SetPosition(0);
+                wrtier.SetPosition(1);
                 wrtier.Write(count);
                 session.Client.SendPackage(wrtier.Content);
             }
@@ -320,7 +320,7 @@ namespace YGOCore
             using (PacketWriter writer = new PacketWriter(2))
             {
                 writer.Write((byte)RoomMessage.PlayerLeave);
-                writer.Write(server.Port);
+                writer.Write(server==null?0:server.Port);
                 writer.WriteUnicode(name, 20);
                 writer.WriteUnicode(room, 20);
                 roomServer.SendAll(writer.Content);

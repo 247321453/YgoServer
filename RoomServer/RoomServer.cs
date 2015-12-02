@@ -158,7 +158,10 @@ namespace YGOCore
                     lock (Clients)
 					    Clients.Remove(Client.Tag.Name);
 				}
-				this.server_OnPlayerLeave(Client.Tag.ServerInfo, Client.Tag.Name, null);
+                if (Client.Tag.ServerInfo != null)
+                {
+                    this.server_OnPlayerLeave(Client.Tag.ServerInfo, Client.Tag.Name, null);
+                }
 				Client.Tag.Close();
 				Client.Tag = null;
 			}

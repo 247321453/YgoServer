@@ -92,17 +92,20 @@ namespace YGOCore
 				session.IsPause = false;
 				//返回聊天端口，对战端口
 				if(session.Server!=null){
-					session.Server.OnSendServerInfo(session);
-					session.Server.server_OnPlayerJoin(session.ServerInfo, session.Name, null);
 					lock(session.Server.Clients){
-						if(session.Server.Clients.ContainsKey(session.Name)){
-							session.SendError("[err]已经登录");
+                        if (session.Server.Clients.ContainsKey(session.Name)){
+                            session.Name = null;
+                            session.IsPause = true;
+                            session.SendError("[err]已经登录");
+                            return;
                         }
                         else{
 							session.Server.Clients.Add(session.Name, session);
-						}
+                            session.Server.OnSendServerInfo(session);
+                            session.Server.server_OnPlayerJoin(session.ServerInfo, session.Name, null);
+                        }
 					}
-				}
+                }
 			}else{
 				session.SendError("[err]认证失败");
             }
