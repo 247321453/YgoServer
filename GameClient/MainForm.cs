@@ -22,6 +22,7 @@ namespace GameClient
     {
         #region ...
         DateTime? sendtime;
+        DateTime? pri_sendtime;
         Client Client;
         string SelectName;
         CreateRoomForm m_create;
@@ -152,18 +153,39 @@ namespace GameClient
                     catch { }
                 }
             }
-            if (sendtime != null && string.IsNullOrEmpty(toname))
+            DateTime now_time = DateTime.Now;
+            if (chb_nonane.Checked)
             {
-                DateTime now = DateTime.Now;
-                if (((now.Ticks - sendtime.Value.Ticks) / 10000 / 1000) < 10)
+                if(pri_sendtime != null)
                 {
-                    MessageBox.Show("发送间隔10秒，私聊不受影响");
-                    return;
+                    if (((now_time.Ticks - pri_sendtime.Value.Ticks) / 10000 / 1000) < 60)
+                    {
+                        MessageBox.Show("匿名消息的发送间隔是60秒，私聊不受影响");
+                        return;
+                    }
+                    pri_sendtime = now_time;
                 }
-                sendtime = now;
+                else
+                {
+                    pri_sendtime = now_time;
+                }
             }
-            else {
-                sendtime = DateTime.Now;
+            if (string.IsNullOrEmpty(toname))
+            {
+               
+                if (sendtime != null)
+                {
+                    if (((now_time.Ticks - sendtime.Value.Ticks) / 10000 / 1000) < 10)
+                    {
+                        MessageBox.Show("消息发送间隔是10秒，私聊不受影响");
+                        return;
+                    }
+                    sendtime = now_time;
+                }
+                else
+                {
+                    sendtime = now_time;
+                }
             }
             if (string.IsNullOrEmpty(toname))
             {
@@ -204,6 +226,7 @@ namespace GameClient
             JoinRoom("T#");
         }
         #endregion
+       
         #region player
 
         void Client_OnPlayerList(List<PlayerInfo> players)
