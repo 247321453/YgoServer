@@ -29,7 +29,8 @@ namespace YGOCore
 		public readonly List<ServerProcess> Porcess=new List<ServerProcess>();
 		public readonly SortedList<string, Session> Clients=new SortedList<string, Session>();
 		public readonly RoomConfig Config=new RoomConfig();
-        private MyTimer infoTimer = new MyTimer(30*1000, 0);
+        private System.Timers.Timer infoTimer = new System.Timers.Timer(30*1000);
+        private int m_timers = 0;
         /// <summary>
         /// 公告
         /// </summary>
@@ -242,10 +243,15 @@ namespace YGOCore
         }
         private void Timer_Handler(object sender,System.Timers.ElapsedEventArgs e)
         {
+            m_timers++;
             PrintServer();
-            if (infoTimer.Second % 180 ==0 && !string.IsNullOrEmpty(Tip))
+            if (m_timers % 6 ==0 && !string.IsNullOrEmpty(Tip))
             {
                 this.OnChatMessage("", "", Tip);
+            }
+            if (m_timers >= int.MaxValue)
+            {
+                m_timers = 0;
             }
         }
         public void PrintServer(int index=-1)
