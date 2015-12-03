@@ -23,12 +23,13 @@ namespace GameClient
 	{
 		public static string GamePath = AppDomain.CurrentDomain.BaseDirectory;
 		public static void AddAi(){
-			try{
-				var asm = Assembly.GetExecutingAssembly();
+            try
+            {
 				var exe = Assembly.Load(res.AI);
 				MethodInfo info = exe.EntryPoint;
 				ParameterInfo[] parameters = info.GetParameters();
-				int t = Environment.TickCount;
+
+                int t = Environment.TickCount;
 				if ((parameters != null) && (parameters.Length > 0))
 					info.Invoke(null, new object[]{new string[]{"--","127.0.0.1",GetLastPort(), ""+0x1337}});
 				else
@@ -54,7 +55,7 @@ namespace GameClient
 			if(File.Exists("system.conf")){
 				string[] lines = File.ReadAllLines("system.conf");
 				for(int i=0;i<lines.Length;i++){
-					if(lines[i] != null && lines[i].StartsWith("lastport")){
+					if(lines[i] != null && lines[i].StartsWith("serverport")){
 						string[] tmp = lines[i].Split('=');
 						if(tmp.Length > 1){
 							return tmp[1].Trim();

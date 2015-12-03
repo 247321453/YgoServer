@@ -23,8 +23,6 @@ namespace WindBot
 			if(args.Length < 3)
 			{
 				Console.WriteLine("String pass, String serverIP, int serverPort,int version,String room,String deck");
-				//  args=new String[] {"AI", ""};
-				Console.ReadKey();
 				return;
 			}
 			try
@@ -42,7 +40,6 @@ namespace WindBot
 			catch (Exception ex)
 			{
 				Logger.WriteLine("Error: " + ex);
-				Console.ReadKey();
 			}
 		}
 
