@@ -16,6 +16,11 @@ namespace YGOCore.Game
 	public class GameConfig2 : GameConfig
 	{
 		public int DeulPort;
-		public bool NeedAuth;
+		public bool NeedAuth = true;
+
+        public string Tag
+        {
+            get { return DeulPort + ":" + Name; }
+        }
 	}
 }

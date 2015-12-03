@@ -22,8 +22,9 @@ namespace GameClient
 		public LoginForm()
 		{
 			Client = new Client();
-			m_main = new MainForm(Client);
-			Client.OnLoginSuccess += delegate {
+			m_main = new MainForm(this, Client);
+
+            Client.OnLoginSuccess += delegate {
 				BeginInvoke(new Action(()=>{
 				                       	this.Hide();
 				                       	m_main.Show();

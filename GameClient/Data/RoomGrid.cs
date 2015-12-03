@@ -33,8 +33,8 @@ namespace System.Windows.Forms
 		
 		#region init
 		private void Init(){
-			RoomName = Password.OnlyName(config.Name);
-			this.Tag = config.DeulPort+":"+RoomName;
+            RoomName = config.Tag;
+            this.Tag = config.Tag;
 			this.Size=new Size(186, 186);
 			if(config!=null){
 				this.SuspendLayout();
@@ -92,20 +92,10 @@ namespace System.Windows.Forms
 					join.Text="加入房间";
 				}
 				join.Click += delegate {
-					if(config.HasPassword()){
-						string pass = Password.GetPwd(config.Name);
-						using(InputDialog input=new InputDialog("请输入密码", true)){
-							if(input.ShowDialog()==DialogResult.OK){
-								if(pass == input.InputText){
-									if(parent!=null)parent.JoinRoom(config.Name, config.DeulPort, config.NeedAuth);
-								}else{
-									MessageBox.Show("密码不正确");
-								}
-							}
-						}
-					}else{
-						if(parent!=null)parent.JoinRoom(config.Name, config.DeulPort, config.NeedAuth);
-					}
+                    if (parent != null)
+                    {
+                        parent.JoinRoom(config);
+                    }
 				};
 				join.BackColor= SystemColors.Control;
 				StartGame(config.IsStart);
@@ -126,23 +116,41 @@ namespace System.Windows.Forms
 			}
 		}
 	}
-	#endregion
-	
+    #endregion
+
+    public delegate void OnJoinRoomHandler(GameConfig2 config);
 	#region panel
 	public class RoomGrid : DFlowLayoutPanel
 	{
-		private Client client;
+        public event OnJoinRoomHandler OnJoinRoom;
+
+        private Client client;
 		private readonly SortedList<string, GameConfig2> Rooms=new SortedList<string, GameConfig2>();
 		private readonly byte[] _lock =new byte[0];
 		public void SetClient(Client client){
 			this.client=client;
 		}
 		
-		public void JoinRoom(string room,int port, bool needauth){
-			if(client!=null){
-				client.JoinRoom(room, port, needauth);
-			}
+		public void JoinRoom(GameConfig2 config){
+			if(OnJoinRoom != null){
+                OnJoinRoom(config);
+            }
 		}
+
+        public GameConfig2 FindRoom(int mode)
+        {
+            lock (Rooms)
+            {
+                foreach(GameConfig2 config in Rooms.Values)
+                {
+                    if (!config.IsStart && !config.HasPassword() && config.Mode == mode)
+                    {
+                        return config;
+                    }
+                }
+            }
+            return null;
+        }
 		public void ClearRooms(){
 			lock(Rooms){
 				Rooms.Clear();
@@ -183,8 +191,7 @@ namespace System.Windows.Forms
 		public void OnRoomList(List<GameConfig2> configs){
 			lock(Rooms){
 				foreach(GameConfig2 config in configs){
-					string name = Password.OnlyName(config.Name);
-                    Rooms[name] = config;
+                    Rooms[config.Tag] = config;
 				}
 			}
 			BeginInvoke(new Action(
@@ -219,11 +226,12 @@ namespace System.Windows.Forms
 				})
 			           );
 		}
-		private void RemoveRoom(string name){
+		private void RemoveRoom(string tag){
 			for(int i= Controls.Count-1;i>=0;i--){
 				Control c = Controls[i];
 				if(c is RoomBlock && c.Tag!=null){
-					if(c.Tag.ToString() == name){
+					if(c.Tag.ToString() == tag)
+                    {
 						this.Controls.Remove(c);
 					}
 				}
@@ -247,11 +255,13 @@ namespace System.Windows.Forms
 				})
 			           );
 		}
-		private void StartRoom(string name){
+		private void StartRoom(string tag)
+        {
 			for(int i= Controls.Count-1;i>=0;i--){
 				Control c = Controls[i];
 				if(c is RoomBlock && c.Tag!=null){
-					if(c.Tag.ToString() == name){
+					if(c.Tag.ToString() == tag)
+                    {
 						((RoomBlock)c).StartGame(true);
 					}
 				}
@@ -261,9 +271,8 @@ namespace System.Windows.Forms
 		
 		#region create
 		public void OnCreate(GameConfig2 config){
-			string name = Password.OnlyName(config.Name);
 			lock(Rooms){
-                Rooms[name] = config;
+                Rooms[config.Tag] = config;
             }
 			BeginInvoke(new Action(
 				()=>{

@@ -123,12 +123,8 @@ namespace YGOCore.Net
                         data = new byte[len];
                         m_client.ReceiveQueue.Dequeue(data);
                         GameClientPacket packet = new GameClientPacket(data);
-                        if (GameEvent.Handler(this, packet) != CtosMessage.PlayerInfo)
+                        if (GameEvent.Handler(this, packet) == CtosMessage.PlayerInfo)
                         {
-                            Logger.Debug("first msg isn't PlayerInfo");
-                            CloseAsync();
-                        }
-                        else {
                             return true;
                         }
                         //Logger.Debug("add packet");
@@ -141,6 +137,8 @@ namespace YGOCore.Net
                     }
                 }
             }
+            Logger.Debug("first msg isn't PlayerInfo");
+            CloseAsync();
             return false;
         }
         public void OnReceive(object obj)

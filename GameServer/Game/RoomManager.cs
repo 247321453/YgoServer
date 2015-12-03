@@ -321,8 +321,14 @@ namespace YGOCore.Game
             sb.Replace("%", "");
             sb.Replace("^", "");
             sb.Replace("*", "");
+            sb.Replace(":", "");
             sb.Replace(" ", "");
-            return GuidString.Substring(0, 6);
+            GuidString = sb.ToString();
+            if (GuidString.Length > 6)
+            {
+                return GuidString.Substring(0, 6);
+            }
+            return GuidString;
         }
         #endregion
     }

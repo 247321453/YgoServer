@@ -28,10 +28,14 @@ namespace YGOCore.Game
 		public bool IsStart{get;set;}
 		public string RoomString{get; set;}
 		public bool HasPassword(){
-			return Name!=null && Name.IndexOf("$")>=0;
+			return (RoomString!=null && RoomString.Contains("$")) || (Name != null && Name.Contains("$"));
 		}
 		
 		public void Parse(string gameinfo){
+            if(RoomString == null)
+            {
+                RoomString = gameinfo;
+            }
 			int head=gameinfo.IndexOf("#");
 			if(head < 0){
 				//xxxx

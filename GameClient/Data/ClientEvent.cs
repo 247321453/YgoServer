@@ -38,7 +38,8 @@ namespace GameClient
 			EventHandler.Register((ushort)RoomMessage.PlayerLeave, OnPlayerLeave);
 			EventHandler.Register((ushort)RoomMessage.ServerClose, OnServerClose);
 			EventHandler.Register((ushort)RoomMessage.PlayerList,OnPlayerList);
-		}
+            EventHandler.Register((ushort)RoomMessage.ServerStop, OnServerStop);
+        }
 		public static void Handler(Client client, List<PacketReader> packets){
 			if(packets.Count==0) return;
 			
@@ -51,8 +52,18 @@ namespace GameClient
 		}
 		#endregion
 		
-		#region msg
-		private static void OnError(Client client, PacketReader reader){
+        private static void OnServerStop(Client client, PacketReader reader)
+        {
+            MessageBox.Show("服务器关闭");
+            try
+            {
+                client.Close();
+            }
+            catch { }
+            client.ServerStop();
+        }
+        #region msg
+        private static void OnError(Client client, PacketReader reader){
 			//错误
 			string err = reader.ReadUnicode(256);
 			MessageBox.Show(err);
@@ -95,8 +106,8 @@ namespace GameClient
 			config.NeedAuth = needauth;
 			config.DeulPort = port;
 			config.BanList = banlist;
-			
-			client.ServerRoomCreate(config);
+            config.RoomString = info;
+            client.ServerRoomCreate(config);
 		}
 		private static void OnRoomStart(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
@@ -125,6 +136,7 @@ namespace GameClient
 				config.DeulPort = port;
 				config.NeedAuth = needauth;
                 config.IsStart = start;
+                config.RoomString = info;
 				configs.Add(config);
 			}
 			client.ServerRoomList(configs);
@@ -136,10 +148,16 @@ namespace GameClient
 				int port = reader.ReadInt32();
 				string name = reader.ReadUnicode(20);
 				string room = reader.ReadUnicode(20);
-				PlayerInfo player=new PlayerInfo();
-				player.Name = name;
-				player.Room=new RoomInfo(room, port);
-				players.Add(player);
+                RoomInfo r = new RoomInfo(room, port);
+                PlayerInfo p = new PlayerInfo(name);
+                if (!string.IsNullOrEmpty(room))
+                {
+                    lock (p.Rooms)
+                    {
+                        p.Rooms.Add(r);
+                    }
+                }
+                players.Add(p);
 			}
 			client.ServerPlayerList(players);
 		}
@@ -147,19 +165,13 @@ namespace GameClient
 			int port = reader.ReadInt32();
 			string name = reader.ReadUnicode(20);
 			string room = reader.ReadUnicode(20);
-			PlayerInfo player=new PlayerInfo();
-			player.Name = name;
-			player.Room=new RoomInfo(room, port);
-			client.ServerPlayerEnter(player);
+			client.ServerPlayerEnter(name, new RoomInfo(room, port));
 		}
 		private static void OnPlayerLeave(Client client, PacketReader reader){
 			int port = reader.ReadInt32();
 			string name = reader.ReadUnicode(20);
 			string room = reader.ReadUnicode(20);
-			PlayerInfo player=new PlayerInfo();
-			player.Name = name;
-			player.Room=new RoomInfo(room, port);
-			client.ServerPlayerLeave(player);
+			client.ServerPlayerLeave(name, new RoomInfo(room, port));
 		}
 		private static void OnServerClose(Client client, PacketReader reader){
 			int port = reader.ReadInt32();

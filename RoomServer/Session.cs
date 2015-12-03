@@ -21,6 +21,9 @@ namespace YGOCore
 		#region member
 		public RoomServer Server{get; private set;}
 		public Connection<Session> Client{get; private set;}
+
+        public bool IsLogin;
+
 		private bool m_close = false;
 		/// <summary>
 		/// 暂停推送
@@ -74,6 +77,37 @@ namespace YGOCore
 				
 			}
 		}
+
+        public bool OnCheck()
+        {
+            if (Client.ReceiveQueue.Count > 2)
+            {
+                byte[] blen = new byte[2];
+                Client.ReceiveQueue.Dequeue(blen);
+                int len = BitConverter.ToUInt16(blen, 0);
+                byte[] data;
+                int lastcount = Client.ReceiveQueue.Count;
+                if (Client.ReceiveQueue.Count >= len)
+                {
+                    data = new byte[len];
+                    Client.ReceiveQueue.Dequeue(data);
+                    PacketReader packet = new PacketReader(data);
+                    if(ClinetEvent.Handler(this, packet) == RoomMessage.Info)
+                    {
+                        return true;
+                    }
+                    //Logger.Debug("add packet");
+                }
+                else {
+                    data = new byte[lastcount];
+                    Client.ReceiveQueue.Dequeue(data);
+                    Client.ReceiveQueue.Enqueue(blen);
+                    Client.ReceiveQueue.Enqueue(data);
+                }
+            }
+            Close();
+            return false;
+        }
 		public void OnRecevice(){
 			if(m_close) return;
 			//线程处理
@@ -83,19 +117,25 @@ namespace YGOCore
 					byte[] blen = new byte[2];
 					Client.ReceiveQueue.Dequeue(blen);
 					int len = BitConverter.ToUInt16(blen, 0);
-					byte[] data = new byte[len];
-					if(Client.ReceiveQueue.Count >= len){
-						Client.ReceiveQueue.Dequeue(data);
+					byte[] data;
+                    int lastcount = Client.ReceiveQueue.Count;
+                    if (Client.ReceiveQueue.Count >= len){
+                        data = new byte[len];
+                        Client.ReceiveQueue.Dequeue(data);
 						PacketReader packet = new PacketReader(data);
 						packets.Add(packet);
 						//Logger.Debug("add packet");
 					}else{
-						break;
+                        data = new byte[lastcount];
+                        Client.ReceiveQueue.Dequeue(data);
+                        Client.ReceiveQueue.Enqueue(blen);
+                        Client.ReceiveQueue.Enqueue(data);
+                        break;
 					}
 				}
 			}
 			//处理游戏事件
-			ClinetEvent.Handler(this, packets);
+			ClinetEvent.Handler(this, packets.ToArray());
 		}
 		#endregion
 

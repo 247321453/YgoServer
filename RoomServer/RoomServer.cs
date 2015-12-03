@@ -29,9 +29,16 @@ namespace YGOCore
 		public readonly List<ServerProcess> Porcess=new List<ServerProcess>();
 		public readonly SortedList<string, Session> Clients=new SortedList<string, Session>();
 		public readonly RoomConfig Config=new RoomConfig();
+        private MyTimer infoTimer = new MyTimer(30*1000, 0);
+        /// <summary>
+        /// 公告
+        /// </summary>
+        public string Tip = "";
 		public RoomServer()
 		{
-		}
+            infoTimer.Elapsed += new System.Timers.ElapsedEventHandler(Timer_Handler);
+
+        }
 		#endregion
 		
 		#region start/stop
@@ -62,6 +69,10 @@ namespace YGOCore
 				Logger.Error(e);
 				Stop();
 			}
+            if (IsListening)
+            {
+                infoTimer.Start();
+            }
 			return IsListening;
 		}
 				
@@ -78,7 +89,9 @@ namespace YGOCore
 			//Server.Close();
 			if(!IsListening) return;
 			IsListening = false;
-			lock(DuelServers){
+            infoTimer.Stop();
+            this.OnServerStop();
+            lock (DuelServers){
 				foreach(DuelServer server in DuelServers){
 					server.Close();
 				}
@@ -149,12 +162,25 @@ namespace YGOCore
 				m_listener.OnConnect +=new AsyncTcpListener<Session>.ConnectEventHandler(Listener_OnConnect);
 				m_listener.OnDisconnect +=new AsyncTcpListener<Session>.DisconnectEventHandler(Listener_OnDisconnect);
 				m_listener.OnReceive += new AsyncTcpListener<Session>.ReceiveEventHandler(Listener_OnReceive);
-			}
+                m_listener.OnCheckClient += new AsyncTcpListener<Session>.CheckEventHandler(Listener_OnCheck);
+
+            }
 		}
-		private void Listener_OnDisconnect(Connection<Session> Client)
+        private ConnectStatu Listener_OnCheck(Connection<Session> Client)
+        {
+            if (Client.Tag != null)
+            {
+                if (Client.Tag.OnCheck())
+                {
+                    return ConnectStatu.Success;
+                }
+            }
+            return ConnectStatu.Fail;
+        }
+        private void Listener_OnDisconnect(Connection<Session> Client)
 		{
 			if(Client.Tag!=null){
-                if (Client.Tag.Name != null) { 
+                if (Client.Tag.IsLogin && Client.Tag.Name != null) { 
                     lock (Clients)
 					    Clients.Remove(Client.Tag.Name);
 				}
@@ -210,5 +236,43 @@ namespace YGOCore
 			}
 			return null;
 		}
+        public void Message(string msg)
+        {
+            this.OnChatMessage("", "", msg);
+        }
+        private void Timer_Handler(object sender,System.Timers.ElapsedEventArgs e)
+        {
+            PrintServer();
+            if (infoTimer.Second % 180 ==0 && !string.IsNullOrEmpty(Tip))
+            {
+                this.OnChatMessage("", "", Tip);
+            }
+        }
+        public void PrintServer(int index=-1)
+        {
+            lock (DuelServers)
+            {
+                if (index >= 0)
+                {
+                    if (index < DuelServers.Count)
+                    {
+                        DuelServer srv = DuelServers[index];
+                        Console.WriteLine(">>" + index + ":" + srv.ToString());
+                    }
+                    else
+                    {
+                        Console.WriteLine(">>" + index + ":null");
+                    }
+                }
+                else {
+                    Console.WriteLine(">>" + DuelServers.Count);
+                    int i = 0;
+                    foreach (DuelServer srv in DuelServers)
+                    {
+                        Console.WriteLine(">>" + (i++) + ":" + srv.ToString());
+                    }
+                }
+            }
+        }
 	}
 }

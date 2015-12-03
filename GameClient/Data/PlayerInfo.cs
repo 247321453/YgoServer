@@ -7,6 +7,7 @@
  * 要改变这种模板请点击 工具|选项|代码编写|编辑标准头文件
  */
 using System;
+using System.Collections.Generic;
 
 namespace GameClient
 {
@@ -24,7 +25,23 @@ namespace GameClient
 		public override string ToString(){
 			return Port +":"+Name;
 		}
-	}
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            if(obj is RoomInfo)
+            {
+                RoomInfo r = (RoomInfo)obj;
+                if (r.ToString() == ToString())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 	/// <summary>
 	/// Description of PlayerInfo.
 	/// </summary>
@@ -38,6 +55,6 @@ namespace GameClient
 			Name = name;
 		}
 		public string Name;
-		public RoomInfo Room;
+		public readonly List<RoomInfo> Rooms = new List<RoomInfo>();
 	}
 }

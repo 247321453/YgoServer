@@ -23,11 +23,12 @@ namespace GameClient
     public delegate void OnRoomStartHandler(RoomInfo room);
     public delegate void OnRoomCloseHandler(RoomInfo room);
     public delegate void OnRoomListHandler(List<GameConfig2> configs);
-    public delegate void OnPlayerEnterEvent(PlayerInfo player);
-    public delegate void OnPlayerLeaveEvent(PlayerInfo player);
+    public delegate void OnPlayerEnterEvent(string player, RoomInfo room);
+    public delegate void OnPlayerLeaveEvent(string player, RoomInfo room);
     public delegate void OnGameExitedEvent();
     public delegate void OnServerCloseEvent(int port);
     public delegate void OnPlayerListEvent(List<PlayerInfo> players);
+    public delegate void OnServerStopEvent();
     /// <summary>
     /// Description of Client.
     /// </summary>
@@ -44,6 +45,7 @@ namespace GameClient
         public event OnPlayerEnterEvent OnPlayerEnter;
         public event OnPlayerLeaveEvent OnPlayerLeave;
         public event OnPlayerListEvent OnPlayerList;
+        public event OnServerStopEvent OnServerStop;
         private TcpClient client;
         public string Name = "???";
         public string Pwd = "";
@@ -333,6 +335,14 @@ namespace GameClient
                 OnRoomStart(room);
             }
         }
+
+        public void ServerStop()
+        {
+            if (OnServerStop != null)
+            {
+                OnServerStop();
+            }
+        }
         public void ServerRoomList(List<GameConfig2> configs)
         {
             if (OnRoomList != null)
@@ -347,18 +357,18 @@ namespace GameClient
                 OnPlayerList(players);
             }
         }
-        public void ServerPlayerEnter(PlayerInfo player)
+        public void ServerPlayerEnter(string player, RoomInfo room)
         {
             if (OnPlayerEnter != null)
             {
-                OnPlayerEnter(player);
+                OnPlayerEnter(player, room);
             }
         }
-        public void ServerPlayerLeave(PlayerInfo player)
+        public void ServerPlayerLeave(string player, RoomInfo room)
         {
             if (OnPlayerLeave != null)
             {
-                OnPlayerLeave(player);
+                OnPlayerLeave(player, room);
             }
         }
         public void ServerClose(int port)

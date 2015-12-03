@@ -21,27 +21,29 @@ namespace YGOCore
 			cmd = cmd.Trim();
 			string[] args = cmd.Split(new char[]{' '}, 2);
 			switch(args[0]){
+                case "say":
+                    if(args.Length > 1)
+                    {
+                        server.Tip = args[1];
+                        server.Message(args[1]);
+                        Console.WriteLine(">>say ok");
+                    }
+                    else
+                    {
+                        Console.WriteLine(">>say fail");
+                    }
+                    break;
 				case "server":
 					if(args.Length>1){
 						int i = 0;
 						int.TryParse(args[1], out i);
-						//服务信息，玩家数，房间数
-						lock(server.DuelServers){
-							if(i<server.DuelServers.Count){
-								DuelServer srv = server.DuelServers[i];
-								Console.WriteLine(">>"+(i+1)+":"+srv.ToString());
-							}
-						}
-					}else{
-						//数量
-						lock(server.DuelServers){
-							Console.WriteLine(">>"+server.DuelServers.Count);
-							int i=0;
-							foreach(DuelServer srv in server.DuelServers){
-								Console.WriteLine(">>"+(i++)+":"+srv.ToString());
-							}
-						}
-					}
+                        //服务信息，玩家数，房间数
+                        server.PrintServer(i);
+                    }
+                    else{
+                        //数量
+                        server.PrintServer();
+                    }
 					break;
 				case "close":
 					if(args.Length>1){

@@ -217,6 +217,23 @@ namespace YGOCore
                 }
             }
         }
+        public static void OnServerStop(this RoomServer roomServer)
+        {
+            using (PacketWriter writer = new PacketWriter(2))
+            {
+                writer.Write((byte)RoomMessage.ServerStop);
+                roomServer.SendAll(writer.Content);
+            }
+        }
+        public static void OnError(this RoomServer roomServer, string err)
+        {
+            using (PacketWriter writer = new PacketWriter(2))
+            {
+                writer.Write((byte)RoomMessage.Error);
+                writer.WriteUnicode(err, err.Length + 1);
+                roomServer.SendAll(writer.Content);
+            }
+        }
         public static void SendError(this Session session, string err)
         {
             if (session.Client == null) return;

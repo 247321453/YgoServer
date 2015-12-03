@@ -37,6 +37,8 @@ namespace YGOCore.Game
             {
                 gameinfo = gameinfo.Trim();
             }
+            gameinfo = gameinfo.Replace("*", "");
+            gameinfo = gameinfo.Replace(":", "");
             config.RoomString = gameinfo;
             if (string.IsNullOrEmpty(gameinfo) || gameinfo == "random" || gameinfo == "#")
             {
@@ -91,8 +93,10 @@ namespace YGOCore.Game
             config.GameTimer = packet.ReadInt16();
             packet.ReadUnicode(20);
             config.Name = packet.ReadUnicode(30);
+            
             if (string.IsNullOrEmpty(config.Name))
                 config.Name = RoomManager.NewRandomRoomName();
+            config.RoomString = config.Name;
             return config;
         }
 

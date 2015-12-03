@@ -59,9 +59,11 @@ namespace YGOCore
 			string info = packet.ReadUnicode(20);
 			string banlist=packet.ReadUnicode(50);
 			GameConfig config=new GameConfig();
-			config.Parse(info);
+            config.RoomString = info;
+            config.Parse(info);
 			config.Name=name;
 			config.BanList=banlist;
+            
 			Logger.Debug("OnRoomCreate:"+server.Port+","+name);
 			lock(server.Rooms){
                 server.Rooms[name] = config;

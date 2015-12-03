@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-
+using YGOCore.Game;
 using YGOCore;
 
 namespace GameClient
@@ -26,10 +26,12 @@ namespace GameClient
         Client Client;
         string SelectName;
         CreateRoomForm m_create;
+        Form m_parentForm;
         private readonly SortedList<string, PlayerInfo> Players = new SortedList<string, PlayerInfo>();
         private readonly byte[] _lvlock = new byte[0];
-        public MainForm(Client client)
+        public MainForm(Form parentForm,Client client)
         {
+            m_parentForm = parentForm;
             Client = client;
             InitializeComponent();
             this.Icon = res.favicon;
@@ -49,8 +51,23 @@ namespace GameClient
             Client.OnGameExited += new OnGameExitedEvent(m_login_Client_OnGameExited);
             Client.OnServerClose += new OnServerCloseEvent(Client_OnServerClose);
             Client.OnPlayerList += new OnPlayerListEvent(Client_OnPlayerList);
+            Client.OnServerStop += new OnServerStopEvent(Client_OnServerStop);
+            panel_rooms.OnJoinRoom += new OnJoinRoomHandler(PreJoinRoom);
+
             Client.GetRooms(false, true);
             Client.GetPlayerList();
+        }
+        void Client_OnServerStop()
+        {
+            
+            if(this.m_parentForm != null){
+                this.Hide();
+                this.m_parentForm.Show();
+            }
+            else
+            {
+                this.Close();
+            }
         }
         void Client_OnServerClose(int port)
         {
@@ -154,37 +171,40 @@ namespace GameClient
                 }
             }
             DateTime now_time = DateTime.Now;
-            if (chb_nonane.Checked)
-            {
-                if(pri_sendtime != null)
-                {
-                    if (((now_time.Ticks - pri_sendtime.Value.Ticks) / 10000 / 1000) < 60)
-                    {
-                        MessageBox.Show("匿名消息的发送间隔是60秒，私聊不受影响");
-                        return;
-                    }
-                    pri_sendtime = now_time;
-                }
-                else
-                {
-                    pri_sendtime = now_time;
-                }
-            }
+
             if (string.IsNullOrEmpty(toname))
             {
-               
-                if (sendtime != null)
+                if (chb_nonane.Checked)
                 {
-                    if (((now_time.Ticks - sendtime.Value.Ticks) / 10000 / 1000) < 10)
+                    if (pri_sendtime != null)
                     {
-                        MessageBox.Show("消息发送间隔是10秒，私聊不受影响");
-                        return;
+                        if (((now_time.Ticks - pri_sendtime.Value.Ticks) / 10000 / 1000) < 60)
+                        {
+                            MessageBox.Show("匿名消息的发送间隔是60秒，私聊不受影响");
+                            return;
+                        }
+                        pri_sendtime = now_time;
                     }
-                    sendtime = now_time;
+                    else
+                    {
+                        pri_sendtime = now_time;
+                    }
                 }
                 else
                 {
-                    sendtime = now_time;
+                    if (sendtime != null)
+                    {
+                        if (((now_time.Ticks - sendtime.Value.Ticks) / 10000 / 1000) < 10)
+                        {
+                            MessageBox.Show("消息发送间隔是10秒，私聊不受影响");
+                            return;
+                        }
+                        sendtime = now_time;
+                    }
+                    else
+                    {
+                        sendtime = now_time;
+                    }
                 }
             }
             if (string.IsNullOrEmpty(toname))
@@ -203,30 +223,51 @@ namespace GameClient
         #endregion
 
         #region quick mode
-        private void JoinRoom(string room, int port = 0)
+        private void JoinRoom(string room, int port, bool needauth)
         {
             if (port == 0)
             {
                 port = Program.Config.DuelPort;
             }
-            Client.JoinRoom(room, port, Program.Config.NeedAuth);
+            Client.JoinRoom(room, port, needauth);
         }
         void Btn_singleClick(object sender, EventArgs e)
         {
-            JoinRoom("S#");
+            GameConfig2 cfg = panel_rooms.FindRoom(0);
+            if (cfg != null)
+            {
+                JoinRoom(cfg.Name, cfg.DeulPort, cfg.NeedAuth);
+            }
+            else
+            {
+                JoinRoom("S#", Program.Config.DuelPort, Program.Config.NeedAuth);
+            }
+
         }
 
         void Btn_matchClick(object sender, EventArgs e)
         {
-            JoinRoom("M#");
+            GameConfig2 cfg = panel_rooms.FindRoom(1);
+            if (cfg != null)
+            {
+                JoinRoom(cfg.Name, cfg.DeulPort, cfg.NeedAuth);
+            }
+            else
+                JoinRoom("M#", Program.Config.DuelPort, Program.Config.NeedAuth);
         }
 
         void Tbn_tagClick(object sender, EventArgs e)
         {
-            JoinRoom("T#");
+            GameConfig2 cfg = panel_rooms.FindRoom(2);
+            if (cfg != null)
+            {
+                JoinRoom(cfg.Name, cfg.DeulPort, cfg.NeedAuth);
+            }
+            else
+                JoinRoom("T#", Program.Config.DuelPort, Program.Config.NeedAuth);
         }
         #endregion
-       
+
         #region player
 
         void Client_OnPlayerList(List<PlayerInfo> players)
@@ -236,9 +277,9 @@ namespace GameClient
                 Players.Clear();
                 foreach (PlayerInfo p in players)
                 {
-                    if (!Players.ContainsKey(p.Name))
+                    if (p.Name != null)
                     {
-                        Players.Add(p.Name, p);
+                        Players[p.Name] = p;
                     }
                 }
             }
@@ -249,34 +290,40 @@ namespace GameClient
                        );
         }
 
-        void m_login_Client_OnPlayerLeave(PlayerInfo player)
+        void m_login_Client_OnPlayerLeave(string player, RoomInfo room)
         {
             lock (Players)
             {
-                if (Players.ContainsKey(player.Name))
+                if (room == null)
                 {
-                    if (string.IsNullOrEmpty(player.Room.Name))
+                    UpdatePlayer(player, true);
+                }
+                else
+                {
+                    PlayerInfo p;
+                    if (Players.TryGetValue(player, out p))
                     {
-                        Players.Remove(player.Name);
-                        UpdatePlayer(player, true);
-                    }
-                    else {
-                        Players[player.Name].Room = null;
+                        lock (p.Rooms)
+                        {
+                            p.Rooms.Remove(room);
+                        }
                     }
                 }
             }
         }
 
-        void m_login_Client_OnPlayerEnter(PlayerInfo player)
+        void m_login_Client_OnPlayerEnter(string player, RoomInfo room)
         {
             lock (Players)
             {
-                if (Players.ContainsKey(player.Name))
+                PlayerInfo p;
+                if (Players.TryGetValue(player, out p))
                 {
-                    Players[player.Name].Room = player.Room;
+                    lock (p.Rooms)
+                     p.Rooms.Add(room);
                 }
                 else {
-                    Players.Add(player.Name, player);
+                    Players.Add(player, new PlayerInfo(player));
                     BeginInvoke(new Action(() =>
                     {
                         UpdatePlayer(player, false);
@@ -286,6 +333,7 @@ namespace GameClient
             }
         }
         #endregion
+
         void Btn_otherClick(object sender, EventArgs e)
         {
             m_create.ShowDialog();
@@ -294,8 +342,23 @@ namespace GameClient
         void Btn_joinClick(object sender, EventArgs e)
         {
             string room = tb_join.Text;
-            JoinRoom(room);
             tb_join.Text = "";
+            int i = room.LastIndexOf(":");
+            if (i > 0)
+            {
+                int port = 0;
+                int.TryParse(room.Substring(i + 1), out port);
+                if (port > 0)
+                {
+                    JoinRoom(room.Substring(0, i), port, true);
+                    return;
+                }
+            }
+            else
+            {
+                JoinRoom(room, Program.Config.DuelPort, Program.Config.NeedAuth);
+            }
+
         }
         private void RefreshPlayers()
         {
@@ -321,7 +384,7 @@ namespace GameClient
                 lv_user.EndUpdate();
             }
         }
-        private void UpdatePlayer(PlayerInfo player, bool delete)
+        private void UpdatePlayer(string player, bool delete)
         {
             lock (_lvlock)
             {
@@ -329,7 +392,7 @@ namespace GameClient
                 {
                     foreach (ListViewItem item in lv_user.Items)
                     {
-                        if (item.Text == player.Name)
+                        if (item.Text == player)
                         {
                             lv_user.Items.Remove(item);
                             break;
@@ -338,7 +401,7 @@ namespace GameClient
                 }
                 else {
                     ListViewItem item = new ListViewItem();
-                    item.Text = player.Name;
+                    item.Text = player;
                     lv_user.Items.Add(item);
                 }
             }
@@ -372,40 +435,56 @@ namespace GameClient
                 RoomInfo room = null;
                 lock (Players)
                 {
-                    if (Players.ContainsKey(name))
+                    PlayerInfo p;
+                    if (Players.TryGetValue(name, out p))
                     {
-                        room = Players[name].Room;
+                        if (p.Rooms.Count > 0)
+                        {
+                            room = p.Rooms.Last();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("没有找到玩家");
                     }
                 }
                 if (room != null)
                 {
-                    if (room.Name.Contains("$"))
-                    {
-                        string pass = Password.GetPwd(room.Name);
-                        using (InputDialog input = new InputDialog("请输入密码", true))
-                        {
-                            if (input.ShowDialog() == DialogResult.OK)
-                            {
-                                if (pass == input.InputText)
-                                {
-                                    JoinRoom(room.Name, room.Port);
-                                }
-                                else {
-                                    MessageBox.Show("密码不正确");
-                                }
-                            }
-                        }
-                    }
-                    else {
-                        JoinRoom(room.Name);
-                    }
+                    PreJoinRoom(room.Name, room.Name, room.Port, true);
                 }
                 else
                 {
                     MessageBox.Show(name + "没有在房间");
                 }
             }
-
+        }
+        private void PreJoinRoom(GameConfig2 config)
+        {
+            PreJoinRoom(config.Name, config.RoomString, config.DeulPort, config.NeedAuth);
+        }
+        private void PreJoinRoom(string name, string roominfo, int port, bool neeauth)
+        {
+            if (roominfo == null) return;
+            if (roominfo.Contains("$"))
+            {
+                string pass = Password.GetPwd(roominfo);
+                using (InputDialog input = new InputDialog("请输入密码", true))
+                {
+                    if (input.ShowDialog() == DialogResult.OK)
+                    {
+                        if (pass == input.InputText)
+                        {
+                            JoinRoom(roominfo, port, neeauth);
+                        }
+                        else {
+                            MessageBox.Show("密码不正确");
+                        }
+                    }
+                }
+            }
+            else {
+                JoinRoom(name, port, neeauth);
+            }
         }
     }
 }

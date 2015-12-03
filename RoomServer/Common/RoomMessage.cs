@@ -39,8 +39,10 @@ namespace YGOCore
 		PlayerLeave,
 		ServerClose,
 		PlayerList,
+        ServerStop,
         STOP_CLIENT = 0xdf,
         NETWORK_CLIENT_ID = 0xdd,
-        VersionCheck = 0xdc
+        VersionCheck = 0xdc,
+        Unknown=0xff
     }
 }
