@@ -13,5 +13,6 @@
 		<add key="server" value="127.0.0.1"/>
 		<add key="port" value="18910"/>
 		<add key="game" value="F:\\ygopro\\ygopro_vs.exe"/>
+    <add key="username" value=""/>
 	</appSettings>
 </configuration>

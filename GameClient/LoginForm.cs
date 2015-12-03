@@ -9,6 +9,7 @@
 using System;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace GameClient
 {
@@ -17,7 +18,9 @@ namespace GameClient
 	/// </summary>
 	public partial class LoginForm : Form
 	{
-		MainForm m_main;
+        const string USER_NAME = "username";
+
+        MainForm m_main;
 		public Client Client{get;private set;}
 		public LoginForm()
 		{
@@ -26,6 +29,7 @@ namespace GameClient
 
             Client.OnLoginSuccess += delegate {
 				BeginInvoke(new Action(()=>{
+                   
 				                       	this.Hide();
 				                       	m_main.Show();
 				                       })
@@ -45,15 +49,17 @@ namespace GameClient
 				MessageBox.Show("用户名不能为空");
 				return;
 			}
+
 			if(username.Contains("$")||username.Contains("[")||username.Contains("]")){
 				MessageBox.Show("用户名不合法");
 				return;
 			}
-			if(!Client.Connect(Program.Config)){
+            ConfigManager.Save(USER_NAME, username);
+            if (!Client.Connect(Program.Config)){
 				MessageBox.Show("无法连接服务器");
 				return;
 			}
-			Client.Login(username, pwd);
+            Client.Login(username, pwd);
 		}
 		#endregion
 		
@@ -63,6 +69,11 @@ namespace GameClient
 			thread.IsBackground = true;
 			thread.Start();
 		}
-		
-	}
+
+        private void LoginForm_Load(object sender, EventArgs e)
+        {
+            string name = ConfigManager.readString(USER_NAME);
+            tb_username.Text = name;
+        }
+    }
 }

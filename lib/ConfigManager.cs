@@ -103,7 +103,7 @@ namespace System.Xml
 				xNewElem.SetAttribute("value", appValue);
 				xNode.AppendChild(xNewElem);
 			}
-			xDoc.Save(System.Windows.Forms.Application.ExecutablePath + ".config");
+			xDoc.Save(file);
 		}
 		/// <summary>
 		/// 获取值
