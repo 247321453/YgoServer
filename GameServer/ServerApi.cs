@@ -33,7 +33,6 @@ namespace YGOCore
 			if(room==null||room.Config==null){
 				return;
 			}
-            if (Program.Config.NoRandomRoom && room.IsRandom) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomCreate);
 				writer.WriteUnicode(room.Name, 20);
@@ -44,7 +43,6 @@ namespace YGOCore
 		}
 		
 		public static void OnRoomStart(GameRoom room){
-            if (Program.Config.NoRandomRoom && room.IsRandom) return;
             using (PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomStart);
 				writer.WriteUnicode(room.Config.Name, 20);
@@ -53,7 +51,6 @@ namespace YGOCore
 		}
 		
 		public static void OnRoomClose(GameRoom room){
-            if (Program.Config.NoRandomRoom && room.IsRandom) return;
             using (PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.RoomClose);
 				writer.WriteUnicode(room.Config.Name, 20);

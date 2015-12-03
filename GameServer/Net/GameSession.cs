@@ -109,32 +109,13 @@ namespace YGOCore.Net
 
         public bool OnCheck()
         {
-            lock (m_client.SyncRoot)
+            byte[] data;
+            if(m_client.GetPacketData(GameServerPacket.GamePacketByteLength, out data))
             {
-                if (m_client.ReceiveQueue.Count > GameServerPacket.GamePacketByteLength)
+                GameClientPacket packet = new GameClientPacket(data);
+                if (GameEvent.Handler(this, packet) == CtosMessage.PlayerInfo)
                 {
-                    byte[] blen = new byte[GameServerPacket.GamePacketByteLength];
-                    m_client.ReceiveQueue.Dequeue(blen);
-                    int len = BitConverter.ToUInt16(blen, 0);
-                    byte[] data;
-                    int lastcount = m_client.ReceiveQueue.Count;
-                    if (lastcount >= len)
-                    {
-                        data = new byte[len];
-                        m_client.ReceiveQueue.Dequeue(data);
-                        GameClientPacket packet = new GameClientPacket(data);
-                        if (GameEvent.Handler(this, packet) == CtosMessage.PlayerInfo)
-                        {
-                            return true;
-                        }
-                        //Logger.Debug("add packet");
-                    }
-                    else {
-                        data = new byte[lastcount];
-                        m_client.ReceiveQueue.Dequeue(data);
-                        m_client.ReceiveQueue.Enqueue(blen);
-                        m_client.ReceiveQueue.Enqueue(data);
-                    }
+                    return true;
                 }
             }
             Logger.Debug("first msg isn't PlayerInfo");
@@ -145,36 +126,18 @@ namespace YGOCore.Net
         {
             if (m_close) return;
             //线程处理
-            List<GameClientPacket> packets = new List<GameClientPacket>();
-            lock (m_client.SyncRoot)
+            bool next = true;
+            while (next)
             {
-                while (m_client.ReceiveQueue.Count > GameServerPacket.GamePacketByteLength)
+                byte[] data;
+                next = m_client.GetPacketData(GameServerPacket.GamePacketByteLength, out data);
+                if (data!=null&& data.Length>0)
                 {
-                    byte[] blen = new byte[GameServerPacket.GamePacketByteLength];
-                    m_client.ReceiveQueue.Dequeue(blen);
-                    int len = BitConverter.ToUInt16(blen, 0);
-                    byte[] data;
-                    int lastcount = m_client.ReceiveQueue.Count;
-                    if (lastcount >= len)
-                    {
-                        data = new byte[len];
-                        m_client.ReceiveQueue.Dequeue(data);
-                        GameClientPacket packet = new GameClientPacket(data);
-                        packets.Add(packet);
-                        //Logger.Debug("add packet");
-                    }
-                    else {
-                        data = new byte[lastcount];
-                        m_client.ReceiveQueue.Dequeue(data);
-                        m_client.ReceiveQueue.Enqueue(blen);
-                        m_client.ReceiveQueue.Enqueue(data);
-                        break;
-                    }
+                    //处理游戏事件
+                    GameClientPacket packet = new GameClientPacket(data);
+                    GameEvent.Handler(this, packet);
                 }
             }
-            //处理游戏事件
-            GameEvent.Handler(this, packets.ToArray());
-            packets = null;
         }
         public void Send(byte[] data, bool isNow = true)
         {

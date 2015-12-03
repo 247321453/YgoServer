@@ -23,5 +23,3 @@ loglevel=2
 timeout=15
 #禁止ip模式
 isbanip=false
-#不显示随机房间
-norandomroom = true
