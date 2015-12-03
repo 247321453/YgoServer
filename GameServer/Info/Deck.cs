@@ -55,7 +55,13 @@ namespace YGOCore.Game
 				Alls.Add(cardId);
 			}
 		}
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ban"></param>
+        /// <param name="ocg"></param>
+        /// <param name="tcg"></param>
+        /// <returns>1数量，2空卡，卡片规则不符合</returns>
 		public int Check(Banlist ban, bool ocg, bool tcg)
 		{
 			if (Main.Count < 40 || Main.Count > 60 || Extra.Count > 15 || Side.Count > 15)
@@ -69,6 +75,10 @@ namespace YGOCore.Game
 				foreach (int id in stack)
 				{
 					Card card = Card.Get(id);
+                    if(card == null)
+                    {
+                        return 2;
+                    }
 					AddToCards(cards, card);
 					if (!ocg && card.Ot == 1 || !tcg && card.Ot == 2)
 						return id;
