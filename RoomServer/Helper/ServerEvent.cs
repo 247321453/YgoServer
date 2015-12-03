@@ -68,8 +68,10 @@ namespace YGOCore
 			lock(server.Rooms){
                 server.Rooms[name] = config;
 			}
-			if(server.Server!=null)
-				server.Server.server_OnRoomCreate(server, name, banlist, info);
+            if (server.Server != null)
+            {
+                server.Server.server_OnRoomCreate(server, name, banlist, info);
+            }
 		}
 		private static void OnRoomStart(DuelServer server, PacketReader packet){
 			string name = packet.ReadUnicode(20);

@@ -40,25 +40,25 @@ namespace GameClient
             this.btn_single = new System.Windows.Forms.Button();
             this.btn_match = new System.Windows.Forms.Button();
             this.tbn_tag = new System.Windows.Forms.Button();
-            this.panel_rooms = new System.Windows.Forms.RoomGrid();
             this.rb_allmsg = new System.Windows.Forms.RichTextBox();
             this.btn_send = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btn_other = new System.Windows.Forms.Button();
             this.btn_clean = new System.Windows.Forms.Button();
             this.chb_closemsg = new System.Windows.Forms.CheckBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.chb_nonane = new System.Windows.Forms.CheckBox();
             this.tb_join = new System.Windows.Forms.TextBox();
             this.btn_join = new System.Windows.Forms.Button();
-            this.lv_user = new System.Windows.Forms.DListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuitem_chat = new System.Windows.Forms.ToolStripMenuItem();
             this.menuitem_join = new System.Windows.Forms.ToolStripMenuItem();
             this.rb_msg = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.lv_user = new System.Windows.Forms.DListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.panel_rooms = new System.Windows.Forms.RoomGrid();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -67,7 +67,8 @@ namespace GameClient
             // 
             this.btn_single.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btn_single.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btn_single.Location = new System.Drawing.Point(6, 20);
+            this.btn_single.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btn_single.Location = new System.Drawing.Point(6, 22);
             this.btn_single.Name = "btn_single";
             this.btn_single.Size = new System.Drawing.Size(90, 52);
             this.btn_single.TabIndex = 0;
@@ -78,7 +79,8 @@ namespace GameClient
             // btn_match
             // 
             this.btn_match.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btn_match.Location = new System.Drawing.Point(104, 20);
+            this.btn_match.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btn_match.Location = new System.Drawing.Point(104, 22);
             this.btn_match.Name = "btn_match";
             this.btn_match.Size = new System.Drawing.Size(90, 52);
             this.btn_match.TabIndex = 0;
@@ -89,24 +91,14 @@ namespace GameClient
             // tbn_tag
             // 
             this.tbn_tag.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.tbn_tag.Location = new System.Drawing.Point(200, 20);
+            this.tbn_tag.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.tbn_tag.Location = new System.Drawing.Point(200, 21);
             this.tbn_tag.Name = "tbn_tag";
             this.tbn_tag.Size = new System.Drawing.Size(90, 52);
             this.tbn_tag.TabIndex = 0;
             this.tbn_tag.Text = "加入双打";
             this.tbn_tag.UseVisualStyleBackColor = true;
             this.tbn_tag.Click += new System.EventHandler(this.Tbn_tagClick);
-            // 
-            // panel_rooms
-            // 
-            this.panel_rooms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel_rooms.BackColor = System.Drawing.Color.Gainsboro;
-            this.panel_rooms.Location = new System.Drawing.Point(7, 34);
-            this.panel_rooms.Name = "panel_rooms";
-            this.panel_rooms.Size = new System.Drawing.Size(813, 513);
-            this.panel_rooms.TabIndex = 1;
             // 
             // rb_allmsg
             // 
@@ -142,6 +134,7 @@ namespace GameClient
             this.groupBox1.Controls.Add(this.btn_single);
             this.groupBox1.Controls.Add(this.btn_match);
             this.groupBox1.Controls.Add(this.tbn_tag);
+            this.groupBox1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox1.Location = new System.Drawing.Point(667, 553);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(297, 87);
@@ -153,11 +146,12 @@ namespace GameClient
             // 
             this.btn_other.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_other.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btn_other.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btn_other.Location = new System.Drawing.Point(970, 573);
             this.btn_other.Name = "btn_other";
             this.btn_other.Size = new System.Drawing.Size(90, 52);
             this.btn_other.TabIndex = 0;
-            this.btn_other.Text = "自定义建房";
+            this.btn_other.Text = "自定义房间";
             this.btn_other.UseVisualStyleBackColor = true;
             this.btn_other.Click += new System.EventHandler(this.Btn_otherClick);
             // 
@@ -166,9 +160,9 @@ namespace GameClient
             this.btn_clean.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_clean.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btn_clean.Location = new System.Drawing.Point(970, 655);
+            this.btn_clean.Location = new System.Drawing.Point(970, 643);
             this.btn_clean.Name = "btn_clean";
-            this.btn_clean.Size = new System.Drawing.Size(90, 29);
+            this.btn_clean.Size = new System.Drawing.Size(90, 41);
             this.btn_clean.TabIndex = 4;
             this.btn_clean.Text = "清空消息";
             this.btn_clean.UseVisualStyleBackColor = true;
@@ -186,24 +180,15 @@ namespace GameClient
             this.chb_closemsg.Text = "屏蔽所有消息";
             this.chb_closemsg.UseVisualStyleBackColor = true;
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(107, 15);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(317, 12);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "（仅显示自定义房间，随机房间请在点击右边的快速加入）";
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label2.Location = new System.Drawing.Point(12, 9);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(89, 19);
+            this.label2.Size = new System.Drawing.Size(149, 19);
             this.label2.TabIndex = 7;
-            this.label2.Text = "房间列表";
+            this.label2.Text = "自定义房间列表";
             // 
             // chb_nonane
             // 
@@ -235,26 +220,6 @@ namespace GameClient
             this.btn_join.Text = "加入指定房间";
             this.btn_join.UseVisualStyleBackColor = true;
             this.btn_join.Click += new System.EventHandler(this.Btn_joinClick);
-            // 
-            // lv_user
-            // 
-            this.lv_user.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1});
-            this.lv_user.ContextMenuStrip = this.contextMenuStrip1;
-            this.lv_user.FullRowSelect = true;
-            this.lv_user.GridLines = true;
-            this.lv_user.Location = new System.Drawing.Point(826, 2);
-            this.lv_user.Name = "lv_user";
-            this.lv_user.Size = new System.Drawing.Size(226, 545);
-            this.lv_user.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.lv_user.TabIndex = 10;
-            this.lv_user.UseCompatibleStateImageBehavior = false;
-            this.lv_user.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "名字";
-            this.columnHeader1.Width = 194;
             // 
             // contextMenuStrip1
             // 
@@ -295,18 +260,63 @@ namespace GameClient
             this.label3.TabIndex = 13;
             this.label3.Text = "房间";
             // 
+            // lv_user
+            // 
+            this.lv_user.BackColor = System.Drawing.SystemColors.Window;
+            this.lv_user.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1});
+            this.lv_user.ContextMenuStrip = this.contextMenuStrip1;
+            this.lv_user.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lv_user.FullRowSelect = true;
+            this.lv_user.GridLines = true;
+            this.lv_user.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lv_user.HideSelection = false;
+            this.lv_user.Location = new System.Drawing.Point(826, 9);
+            this.lv_user.MultiSelect = false;
+            this.lv_user.Name = "lv_user";
+            this.lv_user.Size = new System.Drawing.Size(226, 538);
+            this.lv_user.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lv_user.TabIndex = 10;
+            this.lv_user.UseCompatibleStateImageBehavior = false;
+            this.lv_user.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "名字";
+            this.columnHeader1.Width = 194;
+            // 
+            // panel_rooms
+            // 
+            this.panel_rooms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel_rooms.BackColor = System.Drawing.Color.Gainsboro;
+            this.panel_rooms.Location = new System.Drawing.Point(7, 34);
+            this.panel_rooms.Name = "panel_rooms";
+            this.panel_rooms.Size = new System.Drawing.Size(813, 513);
+            this.panel_rooms.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(167, 15);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(161, 12);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "（随机模式的房间不会显示）";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1064, 762);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.rb_msg);
             this.Controls.Add(this.lv_user);
             this.Controls.Add(this.btn_join);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.tb_join);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.chb_nonane);
             this.Controls.Add(this.chb_closemsg);
             this.Controls.Add(this.groupBox1);
@@ -336,7 +346,6 @@ namespace GameClient
 		private System.Windows.Forms.TextBox tb_join;
 		private System.Windows.Forms.CheckBox chb_nonane;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button btn_other;
 		private System.Windows.Forms.CheckBox chb_closemsg;
 		private System.Windows.Forms.Button btn_clean;
@@ -348,5 +357,6 @@ namespace GameClient
 		private System.Windows.Forms.Button tbn_tag;
 		private System.Windows.Forms.Button btn_match;
 		private System.Windows.Forms.Button btn_single;
-	}
+        private System.Windows.Forms.Label label1;
+    }
 }

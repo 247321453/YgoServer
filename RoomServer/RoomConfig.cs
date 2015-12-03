@@ -22,7 +22,6 @@ namespace YGOCore
 		public string ServerExe{get; private set;}
 		public string Config{get; private set;}
 		public int Timeout{get; private set;}
-		
 		public RoomConfig(){
 			Port = 18910;
 			Timeout = 15;
@@ -31,7 +30,7 @@ namespace YGOCore
 			Config = "config.txt";
 			ConfigManager.XmlFile = "roomserver.xml";
 			ApiPort = 10001;
-		}
+        }
 		public void Load(){
 			Port = ConfigManager.readInteger("port", Port);
 			ApiPort = ConfigManager.readInteger("apiport", ApiPort);
@@ -40,11 +39,12 @@ namespace YGOCore
 				ServerExe = tmp;
 			}
 			Timeout = ConfigManager.readInteger("timeout", Timeout);
-			Ports = ConfigManager.readIntegers("ports",0);
+			Ports = ConfigManager.readIntegers("ports", 0);
 			tmp =  ConfigManager.readString("config");
 			if(!string.IsNullOrEmpty(tmp)){
 				Config = tmp;
 			}
-		}
+
+        }
 	}
 }

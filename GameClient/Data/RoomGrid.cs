@@ -110,7 +110,8 @@ namespace System.Windows.Forms
 			if(lb_statu!=null){
 				if(start){
 					lb_statu.Text="【决斗中】";
-				}else{
+                }
+                else{
 					lb_statu.Text="【等待中】";
 				}
 			}

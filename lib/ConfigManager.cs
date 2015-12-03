@@ -13,9 +13,14 @@ namespace System.Xml
 		/// </summary>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		public static string readString(string key)
+		public static string readString(string key,string def="")
 		{
-			return GetAppConfig(key);
+			string val = GetAppConfig(key);
+            if (string.IsNullOrEmpty(val))
+            {
+                return def;
+            }
+            return val;
 		}
 		/// <summary>
 		/// 读取int值
@@ -69,9 +74,13 @@ namespace System.Xml
 		/// </summary>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		public static bool readBoolean(string key)
+		public static bool readBoolean(string key,bool def = false)
 		{
-			if (readString(key).ToLower() == "true")
+            string val = readString(key).ToLower();
+            if (string.IsNullOrEmpty(key)) {
+                return def;
+            }
+            if (val == "true")
 				return true;
 			else
 				return false;

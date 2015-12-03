@@ -65,6 +65,10 @@ namespace YGOCore
 		/// 超时
 		/// </summary>
 		public int Timeout{get;private set;}
+        /// <summary>
+        ///不显示随机房间 
+        /// </summary>
+        public bool NoRandomRoom { get; private set; }
 		public ServerConfig()
 		{
 			ClientVersion = 0x1336;
@@ -82,8 +86,9 @@ namespace YGOCore
 			BanMode = 0;
 			Timeout = 15;
 			ApiPort = 0;
-			//	Timeout = 20;
-		}
+            NoRandomRoom = false;
+            //	Timeout = 20;
+        }
 
 		public bool Load(string file = "config.txt")
 		{
@@ -177,6 +182,9 @@ namespace YGOCore
 				case "timeout":
 					Timeout = Convert.ToInt32(value);
 					break;
+                case "norandomroom":
+                    NoRandomRoom = (value.ToLower() == "true" || value == "1");
+                    break;
 				default:
 					return false;
 			}

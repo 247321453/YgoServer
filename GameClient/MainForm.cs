@@ -126,7 +126,7 @@ namespace GameClient
                 }
                 else if (!string.IsNullOrEmpty(tname))
                 {
-                    rb_allmsg.AppendText(pname + " 私聊:");
+                    rb_allmsg.AppendText("[私聊]" + pname + " 说:");
                 }
                 else {
                     rb_allmsg.AppendText(pname + " 说: ");
