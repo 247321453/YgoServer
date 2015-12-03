@@ -35,6 +35,7 @@ namespace YGOCore
             EventHandler.Register((ushort)RoomMessage.PlayerList, OnPlayerList);
             EventHandler.Register((ushort)RoomMessage.NETWORK_CLIENT_ID, OnRoomList2);
             EventHandler.Register((ushort)RoomMessage.STOP_CLIENT, OnClose);
+            EventHandler.Register((ushort)RoomMessage.PlayerInfo, OnInfo);
             //EventHandler.Register((ushort)RoomMessage.SystemChat,	OnSystemChat);
             //EventHandler.Register((ushort)RoomMessage.RoomCreate,	OnRoomCreate);
             //EventHandler.Register((ushort)RoomMessage.RoomStart,	OnRoomStart);
@@ -58,9 +59,13 @@ namespace YGOCore
                         Logger.Warn("unknown id:" + id);
                     }
                 }
-                if (session.IsLogin || (msg == RoomMessage.Info && session.Name == null))
+                if (session.IsLogin || (msg == RoomMessage.Info && session.Name == null) || msg== RoomMessage.PlayerInfo || msg == RoomMessage.NETWORK_CLIENT_ID)
                 {
                     EventHandler.Do(id, session, packet);
+                }
+                else
+                {
+                    Logger.Warn("don't deal id:" + msg);
                 }
                 packet.Close();
                 //}
@@ -86,6 +91,7 @@ namespace YGOCore
         }
         private static void OnRoomList2(Session session, PacketReader packet)
         {
+            Logger.Debug("OnRoomList2");
             session.IsPause = false;
             if (session.Server != null)
             {

@@ -75,6 +75,7 @@
     <Compile Include="Game\GameEvent.cs" />
     <Compile Include="Game\GameRoom.cs" />
     <Compile Include="Game\GameTimer.cs" />
+    <Compile Include="Game\YgopotStruct.cs" />
     <Compile Include="Info\Banlist.cs" />
     <Compile Include="Info\ClientCard.cs" />
     <Compile Include="Info\Deck.cs" />

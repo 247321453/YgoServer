@@ -40,6 +40,7 @@ namespace YGOCore
 		ServerClose,
 		PlayerList,
         ServerStop,
+        PlayerInfo = 0x10,
         STOP_CLIENT = 0xdf,
         NETWORK_CLIENT_ID = 0xdd,
         VersionCheck = 0xdc,

@@ -13,10 +13,8 @@ using System.IO;
 
 namespace YGOCore.Game
 {
-
     public static class GameConfigBuilder
     {
-
         public static GameConfig Build(string gameinfo)
         {
             //默认值

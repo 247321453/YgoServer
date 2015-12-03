@@ -38,7 +38,8 @@ namespace YGOCore.Net
 			EventHandler.Register((ushort)CtosMessage.Response,		OnResponse);
 			EventHandler.Register((ushort)CtosMessage.Surrender,	OnSurrender);
 			EventHandler.Register((ushort)CtosMessage.TimeConfirm,  OnTimeConfirm);
-		}
+            EventHandler.Register((ushort)RoomMessage.STOP_CLIENT, OnClose);
+        }
 		public static CtosMessage Handler(GameSession player, params GameClientPacket[] packets){
 			CtosMessage firstmsg = CtosMessage.Unknown;
 			if(packets == null || packets.Length == 0) 
@@ -228,7 +229,23 @@ namespace YGOCore.Net
 			if (string.IsNullOrEmpty(client.Name) || client.Type != (int)PlayerType.Undefined)
 				return;
 			GameRoom room = null;
-			GameConfig config = GameConfigBuilder.Build(packet);
+            byte[] data = packet.ReadBytes(StructTransformer.SizeOf(typeof(CtosCreateGame)));
+            CtosCreateGame roomconfig;
+            GameConfig config = null;
+            try
+            {
+                roomconfig = (CtosCreateGame)StructTransformer.BytesToStruct(data, typeof(CtosCreateGame));
+                config = roomconfig.Build();
+            }
+            catch(Exception e)
+            {
+                Logger.Warn(e);
+            }
+            if (config == null)
+            {
+                client.CloseAsync();
+                return;
+            }
 			room = RoomManager.CreateOrGetGame(config);
 
 			if (room == null)
@@ -352,7 +369,15 @@ namespace YGOCore.Net
 			if(client.Game!=null)
 				client.Game.KickPlayer(client, pos);
 		}
-		public static void OnSetReady(GameSession client, GameClientPacket packet){
+        public static void OnClose(GameSession client, GameClientPacket packet)
+        {
+            using (PacketWriter packet_write = new PacketWriter(GameServerPacket.GamePacketByteLength)) {
+                packet_write.Write((byte)RoomMessage.STOP_CLIENT);
+                client.Send(packet_write.Content);
+            }
+            client.CloseAsync();
+        }
+        public static void OnSetReady(GameSession client, GameClientPacket packet){
 			if (!client.IsAuthentified){
 				return;
 			}
@@ -381,8 +406,7 @@ namespace YGOCore.Net
 				client.Game.MoveToObserver(client);
 		}
 		public static void OnLeaveGame(GameSession client, GameClientPacket packet){
-			if(client.Game!=null)
-				client.Game.RemovePlayer(client);
+            client.CloseAsync();
 		}
         #endregion
 

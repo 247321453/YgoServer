@@ -84,7 +84,8 @@ namespace YGOCore
             if(Client.GetPacketData(2, out data))
             {
                 PacketReader packet = new PacketReader(data);
-                if (ClinetEvent.Handler(this, packet) == RoomMessage.Info)
+                RoomMessage msg = ClinetEvent.Handler(this, packet);
+                if (msg == RoomMessage.Info || msg == RoomMessage.PlayerInfo || msg == RoomMessage.NETWORK_CLIENT_ID)
                 {
                     return true;
                 }

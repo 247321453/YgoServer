@@ -180,6 +180,7 @@ namespace YGOCore
         }
         private void Listener_OnDisconnect(Connection<Session> Client)
 		{
+            Logger.Debug("Listener_OnDisconnect");
 			if(Client.Tag!=null){
                 if (Client.Tag.IsLogin && Client.Tag.Name != null) { 
                     lock (Clients)
@@ -206,7 +207,8 @@ namespace YGOCore
 				Client.Close();
 				return;
 			}
-			Session session= new Session(Client,this);
+            Logger.Debug("Listener_OnConnect");
+            Session session= new Session(Client,this);
 			//分配对战端
 		}
 		#endregion

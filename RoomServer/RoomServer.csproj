@@ -52,8 +52,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GameServer\Game\BanlistManager.cs">
+      <Link>Common\BanlistManager.cs</Link>
+    </Compile>
     <Compile Include="..\GameServer\Game\GameConfig.cs">
       <Link>Common\GameConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\GameServer\Game\YgopotStruct.cs">
+      <Link>Common\YgopotStruct.cs</Link>
+    </Compile>
+    <Compile Include="..\GameServer\Info\Banlist.cs">
+      <Link>Common\Banlist.cs</Link>
     </Compile>
     <Compile Include="..\lib\ConfigManager.cs">
       <Link>Common\ConfigManager.cs</Link>
@@ -69,7 +78,6 @@
     <Compile Include="Helper\Command.cs" />
     <Compile Include="Helper\RoomEvent.cs" />
     <Compile Include="Helper\ServerEvent.cs" />
-    <Compile Include="Helper\StructTransformer.cs" />
     <Compile Include="Kernel32.cs" />
     <Compile Include="RoomConfig.cs" />
     <Compile Include="ServerProcess.cs" />

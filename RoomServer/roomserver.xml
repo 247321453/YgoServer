@@ -12,12 +12,12 @@
 		-->
 		<!-- 3的 倍数-->
 		<add key="timeout" value="10"/>
-		<add key="port" value="18910"/>
+		<add key="port" value="8911"/>
 		<add key="apiport" value="10001"/>
 		<add key="gameserver" value="GameServer.exe"/>
     <add key="no_random_room" value="true"/>
 		<!-- 数组,隔开-->
 		<add key="config" value="config.txt"/>
-		<add key="ports" value="8910,8911,8912,8913,8914"/>
+		<add key="ports" value="8810,8811,8812,8813,8814"/>
 	</appSettings>
 </configuration>

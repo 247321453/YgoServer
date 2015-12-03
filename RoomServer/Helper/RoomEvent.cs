@@ -93,7 +93,7 @@ namespace YGOCore
         }
         public static void SendRoomList(this RoomServer roomServer, Session session)
         {
-
+           
             lock (roomServer.DuelServers)
             {
                 foreach (DuelServer srv in roomServer.DuelServers)
@@ -109,7 +109,7 @@ namespace YGOCore
                                 hp.port = (ushort)srv.Port;
                                 hp.host = game.ToHostInfo();
                                 hp.name = new char[20];
-                                char[] name = game.Name.ToCharArray();
+                                char[] name = game.HasPassword()?game.RoomString.ToCharArray():game.Name.ToCharArray();
                                 Array.Copy(name, hp.name, Math.Min(20, name.Length));
                                 if (game.IsStart)
                                 {
@@ -126,9 +126,10 @@ namespace YGOCore
                             }
                         }
                     }
+                    session.Client.PeekSend();
                 }
             }
-            session.Client.PeekSend();
+           
         }
         public static void OnRoomList(this RoomServer roomServer, Session session, bool nolock = false, bool nostart = false)
         {
