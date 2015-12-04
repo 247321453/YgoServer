@@ -64,7 +64,7 @@ namespace YGOCore
 			config.Name=name;
 			config.BanList=banlist;
             
-			Logger.Debug("OnRoomCreate:"+server.Port+","+name);
+			Logger.Debug("OnRoomCreate:"+server.Port+","+name+"|"+info);
 			lock(server.Rooms){
                 server.Rooms[name] = config;
 			}

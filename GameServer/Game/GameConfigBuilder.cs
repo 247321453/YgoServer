@@ -61,6 +61,7 @@ namespace YGOCore.Game
                     {
                         //条件#的随机房间名存在，则进去，可能重复观战
                         config.Name = _name;
+                        Logger.Debug("1," + config.Name);
                     }
                 }
                 else
@@ -69,6 +70,7 @@ namespace YGOCore.Game
                     config.Name = gameinfo;
                 }
             }
+            Logger.Debug("2,"+config.Name);
             return config;
         }
 

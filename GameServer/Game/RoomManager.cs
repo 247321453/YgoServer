@@ -275,7 +275,14 @@ namespace YGOCore.Game
                 if (rooms.Count == 0)
                 {
                     string name = GetGuidString();
-                    return name;
+                    if (tag == null)
+                    {
+                        return name;
+                    }
+                    else
+                    {
+                        return tag + name;
+                    }
                 }
                 int index = Program.Random.Next(rooms.Count);
                 GameRoom room = rooms[index];

@@ -49,12 +49,13 @@ namespace YGOCore.Game
 				return;
 			}
 			try{
-				//xxxx#xxxx
-				//xxxx#xxxx$xxx
-				int index=0;
+                //xxxx#xxxx
+                //xxxx#xxxx$xxx
+                int index=0;
 				string tmp=gameinfo.Substring(index++,1);
 				int tmpInt=0;
 				Mode = ("t"==tmp||"T"==tmp)?2:(("m"==tmp||"M"==tmp)?1:0);
+
 				if(IsTag){
 					StartLp=16000;
 				}
