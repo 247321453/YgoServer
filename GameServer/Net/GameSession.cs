@@ -146,7 +146,7 @@ namespace YGOCore.Net
         }
         public void Send(GameServerPacket packet, bool isNow = true)
         {
-            //	Logger.Debug("send "+packet.PacketMsg);
+         //   Logger.Debug("send "+packet.PacketMsg);
             Send(packet.Content, isNow);
         }
 

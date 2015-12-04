@@ -41,7 +41,7 @@ namespace YGOCore
                     writer.Write(0);
                     writer.Write((byte)0);
                 }
-                session.Client.SendPackage(writer.Content);
+                session.Send(writer.Content);
             }
         }
 
@@ -93,7 +93,7 @@ namespace YGOCore
         }
         public static void SendRoomList(this RoomServer roomServer, Session session)
         {
-           
+
             lock (roomServer.DuelServers)
             {
                 foreach (DuelServer srv in roomServer.DuelServers)
@@ -109,7 +109,7 @@ namespace YGOCore
                                 hp.port = (ushort)srv.Port;
                                 hp.host = game.ToHostInfo();
                                 hp.name = new char[20];
-                                char[] name = game.HasPassword()?game.RoomString.ToCharArray():game.Name.ToCharArray();
+                                char[] name = game.HasPassword() ? game.RoomString.ToCharArray() : game.Name.ToCharArray();
                                 Array.Copy(name, hp.name, Math.Min(20, name.Length));
                                 if (game.IsStart)
                                 {
@@ -122,14 +122,14 @@ namespace YGOCore
                                     hp.name[4] = '】';
                                 }
                                 packet.Write(StructTransformer.StructToBytes(hp));
-                                session.Client.SendPackage(packet.Content, false);
+                                session.Send(packet.Content, false);
                             }
                         }
                     }
-                    session.Client.PeekSend();
+                    session.PeekSend();
                 }
             }
-           
+
         }
         public static void OnRoomList(this RoomServer roomServer, Session session, bool nolock = false, bool nostart = false)
         {
@@ -163,7 +163,7 @@ namespace YGOCore
                 //重写长度
                 wrtier.SetPosition(1);
                 wrtier.Write(count);
-                session.Client.SendPackage(wrtier.Content);
+                session.Send(wrtier.Content);
             }
         }
         #endregion
@@ -171,6 +171,17 @@ namespace YGOCore
         #region msg
         public static void OnChatMessage(this RoomServer roomServer, string name, string toname, string msg)
         {
+            using (PacketWriter writer = new PacketWriter(2))
+            {
+                writer.Write((byte)RoomMessage.OnChat);
+                writer.Write((short)0x11);
+                writer.WriteUnicode(name + ":" + msg);
+                if (string.IsNullOrEmpty(toname))
+                {
+                    Logger.Debug("send to client");
+                    roomServer.SendAllClient(writer.Content, name:name);
+                }
+            }
             using (PacketWriter writer = new PacketWriter(2))
             {
                 writer.Write((byte)RoomMessage.Chat);
@@ -184,7 +195,7 @@ namespace YGOCore
                         Session sender = null;
                         if (roomServer.Clients.TryGetValue(name, out sender))
                         {
-                            sender.Client.SendPackage(writer.Content, true);
+                            sender.Send(writer.Content, true);
                         }
                         else
                         {
@@ -197,13 +208,13 @@ namespace YGOCore
                             Session recevicer = null;
                             if (roomServer.Clients.TryGetValue(toname, out recevicer))
                             {
-                                recevicer.Client.SendPackage(writer.Content, true);
+                                recevicer.Send(writer.Content, true);
                             }
                             else
                             {
                                 if (sender != null)
                                 {
-                                    sender.SendError("[err]"+toname+" 不在线。");
+                                    sender.SendError("[err]" + toname + " 不在线。");
                                 }
 #if DEBUG
 								Console.WriteLine("no find "+toname);
@@ -237,15 +248,30 @@ namespace YGOCore
         }
         public static void SendError(this Session session, string err)
         {
-            if (session.Client == null) return;
             using (PacketWriter writer = new PacketWriter(2))
             {
                 writer.Write((byte)RoomMessage.Error);
                 writer.WriteUnicode(err, err.Length + 1);
-                session.Client.SendPackage(writer.Content);
+                session.Send(writer.Content);
             }
         }
-
+        private static void SendAllClient(this RoomServer roomServer, byte[] data, bool isNow = true, bool Force = false, string name=null)
+        {
+            lock (roomServer.GameCliens)
+            {
+                foreach (Session client in roomServer.GameCliens.Values)
+                {
+                    if (client.CanGameChat)
+                    {
+                         if(string.IsNullOrEmpty(name) || (!string.IsNullOrEmpty(name) && client.Name != name))
+                        {
+                            client.Send(data, isNow);
+                        }
+                    }
+                        
+                }
+            }
+        }
         private static void SendAll(this RoomServer roomServer, byte[] data, bool isNow = true, bool Force = false)
         {
             lock (roomServer.Clients)
@@ -254,7 +280,7 @@ namespace YGOCore
                 {
                     if (Force || !client.IsPause)
                     {
-                        client.Client.SendPackage(data, isNow);
+                        client.Send(data, isNow);
                     }
                 }
             }
@@ -318,7 +344,7 @@ namespace YGOCore
                         writer.WriteUnicode(session.Name, 20);
                         writer.WriteUnicode(session.RoomName, 20);
                     }
-                    client.Client.SendPackage(writer.Content);
+                    client.Send(writer.Content);
                 }
             }
         }
@@ -342,7 +368,7 @@ namespace YGOCore
             using (PacketWriter writer = new PacketWriter(2))
             {
                 writer.Write((byte)RoomMessage.PlayerLeave);
-                writer.Write(server==null?0:server.Port);
+                writer.Write(server == null ? 0 : server.Port);
                 writer.WriteUnicode(name, 20);
                 writer.WriteUnicode(room, 20);
                 roomServer.SendAll(writer.Content);

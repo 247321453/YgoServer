@@ -41,9 +41,16 @@ namespace YGOCore
 		PlayerList,
         ServerStop,
         PlayerInfo = 0x10,
+        CreateGame = 0x11,
+        JoinGame = 0x12,
+        TypeChange = 0x13,
+        OnChat = 0x19,
+        OnGameChat = 0x16,
+        HsPlayerEnter = 0x20,
+        HsPlayerChange = 0x21,
         STOP_CLIENT = 0xdf,
         NETWORK_CLIENT_ID = 0xdd,
         VersionCheck = 0xdc,
-        Unknown=0xff
+        Unknown = 0xff
     }
 }

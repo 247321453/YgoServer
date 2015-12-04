@@ -126,10 +126,10 @@ namespace GameClient
                 }
                 else if (!string.IsNullOrEmpty(tname))
                 {
-                    rb_allmsg.AppendText("[私聊]" + pname + " 说:");
+                    rb_allmsg.AppendText("[私聊]" + pname + ":");
                 }
                 else {
-                    rb_allmsg.AppendText(pname + " 说: ");
+                    rb_allmsg.AppendText(pname + ": ");
                 }
                 // 	rb_allmsg.Font = new Font(oldf, olds);
                 // 	rb_allmsg.Font = oldf;

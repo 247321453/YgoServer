@@ -10,6 +10,7 @@ using System;
 using AsyncServer;
 using System.Collections.Generic;
 using System.IO;
+using YGOCore;
 
 namespace YGOCore
 {
@@ -35,7 +36,12 @@ namespace YGOCore
             EventHandler.Register((ushort)RoomMessage.PlayerList, OnPlayerList);
             EventHandler.Register((ushort)RoomMessage.NETWORK_CLIENT_ID, OnRoomList2);
             EventHandler.Register((ushort)RoomMessage.STOP_CLIENT, OnClose);
-            EventHandler.Register((ushort)RoomMessage.PlayerInfo, OnInfo);
+          //ygopot
+         //   EventHandler.Register((ushort)RoomMessage.PlayerInfo, OnInfo);
+            EventHandler.Register((ushort)RoomMessage.PlayerInfo, OnGameConnect);
+            EventHandler.Register((ushort)RoomMessage.CreateGame, On302);
+            EventHandler.Register((ushort)RoomMessage.OnGameChat, OnGameChat);
+            EventHandler.Register((ushort)RoomMessage.JoinGame, On302);
             //EventHandler.Register((ushort)RoomMessage.SystemChat,	OnSystemChat);
             //EventHandler.Register((ushort)RoomMessage.RoomCreate,	OnRoomCreate);
             //EventHandler.Register((ushort)RoomMessage.RoomStart,	OnRoomStart);
@@ -59,7 +65,7 @@ namespace YGOCore
                         Logger.Warn("unknown id:" + id);
                     }
                 }
-                if (session.IsLogin || (msg == RoomMessage.Info && session.Name == null) || msg== RoomMessage.PlayerInfo || msg == RoomMessage.NETWORK_CLIENT_ID)
+                if ((session.IsLogin || session.IsClient)|| (msg == RoomMessage.Info && session.Name == null) || msg == RoomMessage.PlayerInfo || msg == RoomMessage.NETWORK_CLIENT_ID)
                 {
                     EventHandler.Do(id, session, packet);
                 }
@@ -75,6 +81,90 @@ namespace YGOCore
         #endregion
 
         #region 处理客户端消息
+        public static void LobbyError(this Session session, string message)
+        {
+            using (PacketWriter join = new PacketWriter(2))
+            {
+                join.Write((byte)RoomMessage.JoinGame);
+                join.Write(0U);
+                join.Write((byte)0);
+                join.Write((byte)0);
+                join.Write(0);
+                join.Write(0);
+                join.Write(0);
+                // C++ padding: 5 bytes + 3 bytes = 8 bytes
+                for (int i = 0; i < 3; i++)
+                    join.Write((byte)0);
+                join.Write(0);
+                join.Write((byte)0);
+                join.Write((byte)0);
+                join.Write((short)0);
+                session.Send(join, false);
+            }
+
+            using (PacketWriter enter = new PacketWriter(2))
+            {
+                enter.Write((byte)RoomMessage.HsPlayerEnter);
+                enter.WriteUnicode("[err]" + message, 20);
+                enter.Write((byte)0);
+                session.Send(enter);
+            }
+        }
+        private static void OnGameChat(Session session, PacketReader packet)
+        {
+            session.CanGameChat = true;
+            string msg = packet.ReadUnicode();
+          //  Logger.Info(session.Name+":"+msg);
+            if (session.Server != null && !string.IsNullOrEmpty(msg))
+            {
+                session.Server.OnChatMessage(session.Name, "", msg);
+            }
+        }
+        private static void OnGameConnect(Session session, PacketReader packet)
+        {
+            session.IsClient = true;
+            session.Name = packet.ReadUnicode(20).Split('$')[0];
+            
+            if (session.ip != null)
+            {
+                lock (session.Server.GameCliens)
+                {
+                    if (!session.Server.GameCliens.ContainsKey(session.ip))
+                    {
+                        session.Server.GameCliens.Add(session.ip, session);
+                    }
+                }
+            }
+        }
+        private static void SendMessage(this Session session, string msg)
+        {
+            using (PacketWriter chat = new PacketWriter(2))
+            {
+                chat.Write((byte)RoomMessage.OnChat);
+                //PlayerType.Yellow
+                chat.Write((short)0x10);
+                chat.WriteUnicode(msg);
+                session.Send(chat);
+            }
+        }
+        private static void On302(Session session, PacketReader packet)
+        {
+            session.LobbyError("这是聊天室端口");
+            DuelServer srv = session.Server.GetMinServer();
+            session.SendMessage("这是聊天端口，随便说一句话即可和所有人聊天。");
+            if (srv != null && srv.Port > 0)
+            {
+                session.SendMessage("推荐对战端口:" + srv.Port);
+            }
+            List<int> ports = session.Server.GetAllPorts();
+            string msg = "所有对战端口:";
+            foreach (int p in ports)
+            {
+                msg += p + ",";
+            }
+            session.SendMessage(msg);
+            //  session.Close();
+        }
         private static bool Login(string name, string pwd)
         {
             return true;
