@@ -99,7 +99,7 @@ namespace YGOCore
         public void Send(PacketWriter writer, bool isNow = true)
         {
             byte[] data = writer.Content;
-            Logger.Info("id=0x" + data[2].ToString("x"));
+         //   Logger.Info("id=0x" + data[2].ToString("x"));
             Send(data, isNow);
         }
         public void Send(byte[] data, bool isNow = true)
