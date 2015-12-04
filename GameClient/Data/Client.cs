@@ -299,6 +299,10 @@ namespace GameClient
                     }
                 }
             }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("请放到游戏目录运行。");
+            }
         }
         private void GameExited()
         {
