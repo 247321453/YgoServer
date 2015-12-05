@@ -78,7 +78,7 @@
     <Compile Include="Helper\Command.cs" />
     <Compile Include="Helper\RoomEvent.cs" />
     <Compile Include="Helper\ServerEvent.cs" />
-    <Compile Include="Kernel32.cs" />
+    <Compile Include="Win32.cs" />
     <Compile Include="RoomConfig.cs" />
     <Compile Include="ServerProcess.cs" />
     <Compile Include="Session.cs" />

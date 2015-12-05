@@ -45,6 +45,46 @@ namespace YGOCore
                         server.PrintServer();
                     }
 					break;
+                case "hide":
+                    if (args.Length > 1)
+                    {
+                        int i = 0;
+                        int.TryParse(args[1], out i);
+                        //服务信息，玩家数，房间数
+                        lock (server.Porcess)
+                        {
+                            if (i < server.Porcess.Count)
+                            {
+                                ServerProcess p = server.Porcess[i];
+                                Console.WriteLine(">>hide " + i + " => " + p.Hide());
+                            }
+                        }
+                    }
+                    else {
+                        //数量
+                        Console.WriteLine(">>hide %1");
+                    }
+                    break;
+                case "show":
+                    if (args.Length > 1)
+                    {
+                        int i = 0;
+                        int.TryParse(args[1], out i);
+                        //服务信息，玩家数，房间数
+                        lock (server.Porcess)
+                        {
+                            if (i < server.Porcess.Count)
+                            {
+                                ServerProcess p = server.Porcess[i];
+                                Console.WriteLine(">>show " + i + " => " + p.Show());
+                            }
+                        }
+                    }
+                    else {
+                        //数量
+                        Console.WriteLine(">>show %1");
+                    }
+                    break;
 				case "close":
 					if(args.Length>1){
 						int i = 0;
@@ -53,7 +93,7 @@ namespace YGOCore
 						lock(server.Porcess){
 							if(i<server.Porcess.Count){
 								ServerProcess p = server.Porcess[i];
-								Console.WriteLine(">>close "+(i+1)+":"+p.Port);
+								Console.WriteLine(">>close "+i+":"+p.Port);
 								p.Close();
 								server.Porcess.Remove(p);
 							}
@@ -63,6 +103,13 @@ namespace YGOCore
 						server.Stop();
 					}
 					break;
+                case "help":
+                    Console.WriteLine(">>server %1  查看所有服务器信息，参数：0-max，显示某个服务器信息，不填则是全部");
+                    Console.WriteLine(">>say %1     服务器公告，每3分钟发送一次，参数：消息内容");
+                    Console.WriteLine(">>hide %1    查看所有服务器信息，参数：0-max，隐藏某个服务器");
+                    Console.WriteLine(">>show %1    查看所有服务器信息，参数：0-max，显示某个服务器");
+                    Console.WriteLine(">>close %1   查看所有服务器信息，参数：0-max，关闭某个服务器");
+                    break;
 				default:
 					if(tip)
 						Console.WriteLine(">>no invalid:"+cmd);

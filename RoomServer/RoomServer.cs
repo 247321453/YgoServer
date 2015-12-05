@@ -30,7 +30,7 @@ namespace YGOCore
         public readonly SortedList<string, Session> Clients = new SortedList<string, Session>();
         public readonly Dictionary<string, Session> GameCliens = new Dictionary<string, Session>();
         public readonly RoomConfig Config = new RoomConfig();
-        private System.Timers.Timer infoTimer = new System.Timers.Timer(30 * 1000);
+        private System.Timers.Timer infoTimer = new System.Timers.Timer(60 * 1000);
         private int m_timers = 0;
         /// <summary>
         /// 公告
@@ -300,11 +300,11 @@ namespace YGOCore
         private void Timer_Handler(object sender, System.Timers.ElapsedEventArgs e)
         {
             m_timers++;
-            if (m_timers % 2 == 0)
+            if (m_timers % 3 == 0)
             {
                 PrintServer();
             }
-            if (m_timers % 6 == 0 && !string.IsNullOrEmpty(Tip))
+            if (m_timers % 15 == 0 && !string.IsNullOrEmpty(Tip))
             {
                 this.OnChatMessage("", "", Tip);
             }

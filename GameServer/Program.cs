@@ -43,9 +43,10 @@ namespace YGOCore
 			}
 			Logger.SetErrorFile(Tool.Combine(Config.Path, "error_"+Environment.TickCount+".log"));
 			Logger.SetLogLevel(Config.LogLevel);
-			#if DEBUG
+#if DEBUG
 			Logger.SetLogLevel(LogLevel.Debug);
-			#endif
+#endif
+            Console.Title = "GameServer:"+Config.ServerPort;
 			GameServer Server = new GameServer(Config);
 			Server.WriteHead();
 			if(loaded)

@@ -70,7 +70,7 @@ namespace YGOCore
 				+Config.ServerPort
 				+" "+ Config.ClientVersion
 				+ " "+room
-				+" "+Tool.Combine(Config.Path, "cards.cdb");
+				+" \""+Tool.Combine(Config.Path, "cards.cdb")+"\"";
 			ai.EnableRaisingEvents=true;
 			#if !DEBUG
 			ai.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
@@ -147,10 +147,19 @@ namespace YGOCore
 				args = new string[]{args[0], ""};
 			}
 			switch(cmd){
+                case "help":
+                    Console.WriteLine(">>sendall %1  发送消息给所有玩家");
+                    Console.WriteLine(">>room        显示房间数量");
+                    Console.WriteLine(">>cls         清空控制台内容");
+                    Console.WriteLine(">>close       关闭服务器");
+                    Console.WriteLine(">>ai count    AI的数量");
+                    Console.WriteLine(">>ai add      添加一个AI");
+                    Console.WriteLine(">>ai kill     关闭所有AI");
+                    break;
 				case "sendall":
 					//发送给所有玩家
 					int count = RoomManager.OnWorldMessage(args[1]);
-					Console.WriteLine(">>room="+count);
+					Console.WriteLine(">>send="+count);
 					break;
 				case "room":
 					Console.WriteLine(">>count="+RoomManager.Count);
