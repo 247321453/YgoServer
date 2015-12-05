@@ -14,5 +14,6 @@
 		<add key="port" value="18910"/>
 		<add key="game" value="F:\\ygopro\\ygopro_vs.exe"/>
     <add key="username" value=""/>
+    <add key="pwd" value="" />
 	</appSettings>
 </configuration>

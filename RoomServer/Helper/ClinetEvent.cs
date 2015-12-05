@@ -36,8 +36,8 @@ namespace YGOCore
             EventHandler.Register((ushort)RoomMessage.PlayerList, OnPlayerList);
             EventHandler.Register((ushort)RoomMessage.NETWORK_CLIENT_ID, OnRoomList2);
             EventHandler.Register((ushort)RoomMessage.STOP_CLIENT, OnClose);
-          //ygopot
-         //   EventHandler.Register((ushort)RoomMessage.PlayerInfo, OnInfo);
+            //ygopot
+            //   EventHandler.Register((ushort)RoomMessage.PlayerInfo, OnInfo);
             EventHandler.Register((ushort)RoomMessage.PlayerInfo, OnGameConnect);
             EventHandler.Register((ushort)RoomMessage.CreateGame, On302);
             EventHandler.Register((ushort)RoomMessage.OnGameChat, OnGameChat);
@@ -65,7 +65,7 @@ namespace YGOCore
                         Logger.Warn("unknown id:" + id);
                     }
                 }
-                if ((session.IsLogin || session.IsClient)|| (msg == RoomMessage.Info && session.Name == null) || msg == RoomMessage.PlayerInfo || msg == RoomMessage.NETWORK_CLIENT_ID)
+                if ((session.IsLogin || session.IsClient) || (msg == RoomMessage.Info && session.Name == null) || msg == RoomMessage.PlayerInfo || msg == RoomMessage.NETWORK_CLIENT_ID)
                 {
                     EventHandler.Do(id, session, packet);
                 }
@@ -114,7 +114,7 @@ namespace YGOCore
         {
             session.CanGameChat = true;
             string msg = packet.ReadUnicode();
-          //  Logger.Info(session.Name+":"+msg);
+            //  Logger.Info(session.Name+":"+msg);
             if (session.Server != null && !string.IsNullOrEmpty(msg))
             {
                 session.Server.OnChatMessage(session.Name, "", msg);
@@ -124,7 +124,7 @@ namespace YGOCore
         {
             session.IsClient = true;
             session.Name = packet.ReadUnicode(20).Split('$')[0];
-            
+
             if (session.ip != null)
             {
                 lock (session.Server.GameCliens)
@@ -208,6 +208,7 @@ namespace YGOCore
             string name = packet.ReadUnicode(20);
             string pwd = packet.ReadUnicode(32);//md5
                                                 //登录
+            bool force = packet.ReadBoolean();
             if (Login(name, pwd))
             {
                 session.Name = name;
@@ -217,22 +218,30 @@ namespace YGOCore
                 {
                     lock (session.Server.Clients)
                     {
-                        if (session.Server.Clients.ContainsKey(session.Name))
+                        Session old;
+                        if (session.Server.Clients.TryGetValue(session.Name, out old))
                         {
-                            session.IsLogin = false;
-                            session.IsPause = true;
-                            session.SendError("[err]已经登录");
-                            return;
-                        }
-                        else {
-                            session.IsLogin = true;
-                            session.Server.Clients.Add(session.Name, session);
-                            session.Server.OnSendServerInfo(session);
-                            session.Server.server_OnPlayerJoin(session.ServerInfo, session.Name, null);
-                            if (!string.IsNullOrEmpty(session.Server.Tip))
+                            if (force)
                             {
-                                session.SendServerMsg(session.Server.Tip);
+                                old.SendError("[err]你的账号在其他地方登录");
+                                old.Name = "";
+                             //   old.Close();
                             }
+                            else
+                            {
+                                session.IsLogin = false;
+                                session.IsPause = true;
+                                session.SendError("[err]已经登录");
+                                return;
+                            }
+                        }
+                        session.IsLogin = true;
+                        session.Server.Clients[session.Name]=session;
+                        session.Server.OnSendServerInfo(session);
+                        session.Server.server_OnPlayerJoin(session.ServerInfo, session.Name, null);
+                        if (!string.IsNullOrEmpty(session.Server.Tip))
+                        {
+                            session.SendServerMsg(session.Server.Tip);
                         }
                     }
                 }

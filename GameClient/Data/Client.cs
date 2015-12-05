@@ -14,6 +14,7 @@ using AsyncServer;
 using YGOCore;
 using YGOCore.Game;
 using System.IO;
+using System.Windows.Forms;
 
 namespace GameClient
 {
@@ -49,6 +50,7 @@ namespace GameClient
         private TcpClient client;
         public string Name = "???";
         public string Pwd = "";
+        private MainForm m_parent;
         public bool IsLogin = false;
         private Random random = new Random(Environment.TickCount);
         readonly ArrayQueue<byte> ReceviceQueue = new ArrayQueue<byte>();
@@ -57,6 +59,10 @@ namespace GameClient
         {
         }
 
+        public void SetForm(MainForm parent)
+        {
+            this.m_parent = parent;
+        }
         #region socket
         public bool Connect(ClientConfig server)
         {
@@ -169,7 +175,7 @@ namespace GameClient
                 Send(writer.Content);
             }
         }
-        public void Close()
+        public void Close(bool force = false)
         {
             try
             {
@@ -180,6 +186,13 @@ namespace GameClient
 
             }
             client = null;
+            if (force)
+            {
+                if (m_parent != null)
+                {
+                    m_parent.Client_OnServerStop();
+                }
+            }
         }
 
         private void Send(byte[] data)
@@ -210,7 +223,7 @@ namespace GameClient
         /// <summary>
         /// 联网登录
         /// </summary>
-        public void Login(string name, string pwd)
+        public void Login(string name, string pwd,bool force = false)
         {
             Name = name;
             Pwd = pwd;
@@ -220,6 +233,7 @@ namespace GameClient
                 writer.Write((byte)RoomMessage.Info);
                 writer.WriteUnicode(Name, 20);
                 writer.WriteUnicode(pwd, 32);
+                writer.Write(force);
                 Send(writer.Content);
             }
         }

@@ -53,11 +53,10 @@ namespace GameClient
             Client.OnPlayerList += new OnPlayerListEvent(Client_OnPlayerList);
             Client.OnServerStop += new OnServerStopEvent(Client_OnServerStop);
             panel_rooms.OnJoinRoom += new OnJoinRoomHandler(PreJoinRoom);
-
             Client.GetRooms(false, true);
             Client.GetPlayerList();
         }
-        void Client_OnServerStop()
+        public void Client_OnServerStop()
         {
             
             if(this.m_parentForm != null){

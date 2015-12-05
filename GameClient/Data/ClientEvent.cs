@@ -57,7 +57,7 @@ namespace GameClient
             MessageBox.Show("服务器关闭");
             try
             {
-                client.Close();
+                client.Close(true);
             }
             catch { }
             client.ServerStop();
@@ -66,12 +66,13 @@ namespace GameClient
         private static void OnError(Client client, PacketReader reader){
 			//错误
 			string err = reader.ReadUnicode(256);
+         //   int code = reader.ReadByte();
 			MessageBox.Show(err);
-			if(!client.IsLogin){
+			//if(!client.IsLogin){
 				try{
-					client.Close();
+					client.Close(client.IsLogin);
 				}catch{}
-			}
+			//}
 		}
 		private static void OnServerInfo(Client client, PacketReader reader){
 			//服务器信息

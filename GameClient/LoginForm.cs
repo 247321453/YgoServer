@@ -10,6 +10,7 @@ using System;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
+using YGOCore;
 
 namespace GameClient
 {
@@ -19,19 +20,25 @@ namespace GameClient
 	public partial class LoginForm : Form
 	{
         const string USER_NAME = "username";
-
+        const string PWD = "pwd";
+        const string KEY = "10086123";
         MainForm m_main;
 		public Client Client{get;private set;}
 		public LoginForm()
 		{
 			Client = new Client();
 			m_main = new MainForm(this, Client);
-
+            Client.SetForm(m_main);
             Client.OnLoginSuccess += delegate {
 				BeginInvoke(new Action(()=>{
-                   
-				                       	this.Hide();
-				                       	m_main.Show();
+                    string pwd = tb_password.Text;
+                    if (!string.IsNullOrEmpty(pwd))
+                    {
+                        pwd = Tool.Encrypt(pwd, USER_NAME, KEY);
+                        ConfigManager.Save(PWD, pwd);
+                    }
+                    this.Hide();                    
+                    m_main.Show();
 				                       })
 				           );
 				
@@ -49,8 +56,13 @@ namespace GameClient
 				MessageBox.Show("用户名不能为空");
 				return;
 			}
-
-			if(username.Contains("$")||username.Contains("[")||username.Contains("]")){
+            if (string.IsNullOrEmpty(pwd))
+            {
+                MessageBox.Show("密码不能为空");
+                return;
+            }
+        //    pwd = Tool.GetMd5(pwd);
+            if (username.Contains("$")||username.Contains("[")||username.Contains("]")){
 				MessageBox.Show("用户名不合法");
 				return;
 			}
@@ -59,7 +71,7 @@ namespace GameClient
 				MessageBox.Show("无法连接服务器");
 				return;
 			}
-            Client.Login(username, pwd);
+            Client.Login(username, pwd, chb_force.Checked);
 		}
 		#endregion
 		
@@ -74,6 +86,12 @@ namespace GameClient
         {
             string name = ConfigManager.readString(USER_NAME);
             tb_username.Text = name;
+            string pwd = ConfigManager.readString(PWD);
+            if (!string.IsNullOrEmpty(pwd))
+            {
+                pwd = Tool.Decrypt(pwd, USER_NAME, KEY);
+                tb_password.Text = pwd;
+            }
         }
 
         private void Btn_Game_Click(object sender, EventArgs e)
@@ -98,11 +116,6 @@ namespace GameClient
                     ConfigManager.Save("game", dlg.FileName);
                 }
             }
-        }
-
-        public void Logout()
-        {
-
         }
     }
 }
