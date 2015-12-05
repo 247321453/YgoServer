@@ -62,7 +62,7 @@ namespace YGOCore
 			}
 			process.StartInfo.FileName = m_fileName;
 			//设定程式执行参数
-			process.StartInfo.Arguments = " "+m_config + " "+m_port+" "+m_aptport;
+			process.StartInfo.Arguments = " "+m_config + " "+m_port+" "+m_aptport+" true";
 			process.EnableRaisingEvents=true;
 			process.StartInfo.WindowStyle=ProcessWindowStyle.Hidden;
 			process.Exited+=new EventHandler(Exited);

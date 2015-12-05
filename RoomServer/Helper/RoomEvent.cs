@@ -30,9 +30,9 @@ namespace YGOCore
                 {
                     srv.Count++;
                 }
-                session.ServerInfo = srv;
                 if (srv != null)
                 {
+                    session.ServerInfo = srv;
                     writer.Write(srv.Port);
                     writer.Write(srv.NeedAuth);
                 }
@@ -41,6 +41,7 @@ namespace YGOCore
                     writer.Write(0);
                     writer.Write((byte)0);
                 }
+                writer.WriteUnicode(session.Token, 32);
                 session.Send(writer.Content);
             }
         }
@@ -58,16 +59,23 @@ namespace YGOCore
                 }
                 if (srv != null)
                 {
+                    //特殊处理
                     writer.Write(srv.Port);
                     writer.Write(srv.NeedAuth);
+                    //session.ServerInfo = srv;
+                    lock (roomServer.Clients)
+                    {
+                        foreach (Session client in roomServer.Clients.Values)
+                        {
+                            if (client.ServerInfo != null && client.ServerInfo.Port == server.Port)
+                            {
+                                client.ServerInfo = srv;
+                                client.Send(writer.Content);
+                            }
+                        }
+                    }
                 }
-                else
-                {
-                    writer.Write((int)0);
-                    writer.Write((byte)0);
-                }
-                //session.ServerInfo = srv;
-                roomServer.SendAll(writer.Content);
+                             
             }
         }
 

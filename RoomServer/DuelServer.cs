@@ -61,27 +61,33 @@ namespace YGOCore
 			}
 			Server.Close(Port);
 		}
-		public void OnRecevice(){
+
+        public void Send(PacketWriter writer)
+        {
+            Client.SendPackage(writer);
+        }
+        public void Send(byte[] data)
+        {
+            Client.SendPackage(data);
+        }
+        public void OnRecevice(){
 			//api
 			if(m_close) return;
 			//线程处理
 			List<PacketReader> packets=new List<PacketReader>();
-			lock(Client.SyncRoot){
-				while(Client.ReceiveQueue.Count > 2){
-					byte[] blen = new byte[2];
-					Client.ReceiveQueue.Dequeue(blen);
-					int len = BitConverter.ToUInt16(blen, 0);
-					byte[] data = new byte[len];
-					if(Client.ReceiveQueue.Count >= len){
-						Client.ReceiveQueue.Dequeue(data);
-						PacketReader packet = new PacketReader(data);
-						packets.Add(packet);
-						//Logger.Debug("add packet");
-					}else{
-						break;
-					}
-				}
-			}
+            //线程处理
+            bool next = true;
+            while (next)
+            {
+                byte[] data;
+                next = Client.GetPacketData(2, out data);
+                if (data != null && data.Length > 0)
+                {
+                    //处理游戏事件
+                    PacketReader packet = new PacketReader(data);
+                    packets.Add(packet);
+                }
+            }
 			//处理游戏事件
 			ServerEvent.Handler(this, packets);
 		}

@@ -42,7 +42,6 @@ namespace GameClient
             this.tb_username = new System.Windows.Forms.TextBox();
             this.tb_password = new System.Windows.Forms.TextBox();
             this.chb_record = new System.Windows.Forms.CheckBox();
-            this.chb_force = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btn_game = new System.Windows.Forms.Button();
             this.btn_single = new System.Windows.Forms.Button();
@@ -105,17 +104,6 @@ namespace GameClient
             this.chb_record.TabIndex = 2;
             this.chb_record.Text = "记住密码";
             this.chb_record.UseVisualStyleBackColor = true;
-            // 
-            // chb_force
-            // 
-            this.chb_force.AutoSize = true;
-            this.chb_force.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.chb_force.Location = new System.Drawing.Point(151, 100);
-            this.chb_force.Name = "chb_force";
-            this.chb_force.Size = new System.Drawing.Size(70, 16);
-            this.chb_force.TabIndex = 3;
-            this.chb_force.Text = "强制登录";
-            this.chb_force.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
@@ -180,7 +168,6 @@ namespace GameClient
             this.ClientSize = new System.Drawing.Size(328, 199);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.chb_force);
             this.Controls.Add(this.chb_record);
             this.Controls.Add(this.tb_password);
             this.Controls.Add(this.tb_username);
@@ -200,7 +187,6 @@ namespace GameClient
 		}
 		private System.Windows.Forms.Button btn_addai;
 		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.CheckBox chb_force;
 		private System.Windows.Forms.CheckBox chb_record;
 		private System.Windows.Forms.TextBox tb_password;
 		private System.Windows.Forms.TextBox tb_username;

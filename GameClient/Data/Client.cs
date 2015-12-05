@@ -226,7 +226,7 @@ namespace GameClient
         public void Login(string name, string pwd,bool force = false)
         {
             Name = name;
-            Pwd = pwd;
+            //Pwd = pwd;
             pwd = Tool.GetMd5(pwd);
             using (PacketWriter writer = new PacketWriter(2))
             {
@@ -296,10 +296,10 @@ namespace GameClient
             string namepwd = Name;
             if (needauth)
             {
-                Name += "$" + Pwd;
+                namepwd += "$" + Pwd;
             }
 #if DEBUG
-			System.Windows.Forms.MessageBox.Show(port+":"+room);
+			System.Windows.Forms.MessageBox.Show(Name+":"+room+":"+port);
 #endif
             if (GameUtil.JoinRoom(Program.Config.Host, "" + port, namepwd, room, GameExited))
             {

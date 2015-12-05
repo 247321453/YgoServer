@@ -79,10 +79,11 @@ namespace GameClient
 			Program.Config.ChatPort = reader.ReadInt32();
 			Program.Config.DuelPort = reader.ReadInt32();
 			Program.Config.NeedAuth = reader.ReadBoolean();
-			#if DEBUG
-			MessageBox.Show(Program.Config.ChatPort+":"+Program.Config.DuelPort);
-			#endif
-			client.OnLoginOk();
+            client.Pwd = reader.ReadUnicode(32);
+#if DEBUG
+			MessageBox.Show(Program.Config.ChatPort+":"+Program.Config.DuelPort+":"+Program.Config.NeedAuth + ":" + client.Pwd);
+#endif
+            client.OnLoginOk();
 		}
 		private static void OnClientChat(Client client, PacketReader reader){
 			//大厅聊天

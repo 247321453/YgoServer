@@ -76,8 +76,12 @@ namespace YGOCore.Game
                 //	Logger.Debug("[AI]login:"+pwd+"=="+Program.Config.AIPass+"?");
                 return Program.Config.AIPass == pwd;
             }
+            if (!Program.Config.isNeedAuth)
+            {
+                return true;
+            }
             //服务器接口
-            return true;
+            return ServerApi.CheckLogin(name, pwd);
         }
         public static void init(string file)
         {

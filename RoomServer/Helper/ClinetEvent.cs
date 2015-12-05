@@ -235,6 +235,8 @@ namespace YGOCore
                                 return;
                             }
                         }
+                        session.CreateToken(name, pwd);
+                        session.Server.SendToken(session.Name, session.Token);
                         session.IsLogin = true;
                         session.Server.Clients[session.Name]=session;
                         session.Server.OnSendServerInfo(session);

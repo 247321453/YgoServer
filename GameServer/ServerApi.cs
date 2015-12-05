@@ -12,6 +12,7 @@ using AsyncServer;
 using YGOCore;
 using System.IO;
 using YGOCore.Net;
+using System.Collections.Generic;
 
 namespace YGOCore
 {
@@ -80,14 +81,69 @@ namespace YGOCore
 		}
 		private static void Send(byte[] data){
 			if(Client!=null&& Client.Connected){
-				Client.AsyncSend(data);
+				Client.Send(data);
 			}
 		}
-		
+		private static void Recevice(AsyncClient client)
+        {
+            //线程处理
+            bool next = true;
+            while (next)
+            {
+                byte[] data;
+                next = client.GetPacketData(2, out data);
+                if (data != null && data.Length > 0)
+                {
+                    //处理游戏事件
+                    PacketReader packet = new PacketReader(data);
+                    Handler(packet);
+                }
+            }
+            //
+
+        }
+
+        private static void Handler(PacketReader reader)
+        {
+           ushort id =  reader.ReadByte();
+            if(id == (ushort)RoomMessage.Info)
+            {
+                string name = reader.ReadUnicode(20);
+                string pwd = reader.ReadUnicode(32);
+                lock (Infos)
+                {
+                    Infos[name] = pwd;
+                }
+            }
+            reader.Close();
+        }
 		static AsyncClient Client;
 		public static bool Init(int port){
-			Client = new AsyncClient();
-			return Client.Connect("127.0.0.1", port);
+			Client = new AsyncClient(null);
+			if(Client.Connect("127.0.0.1", port))
+            {
+                Client.OnRecevice += new OnReceviceHanlder(Recevice);
+                Client.BeginRecevice();
+                return true;
+            }
+            return false;
 		}
+
+        static readonly Dictionary<string, string> Infos = new Dictionary<string, string>();
+        public static bool CheckLogin(string name, string pwd)
+        {
+            string p;
+            lock (Infos)
+            {
+                if (Infos.TryGetValue(name, out p))
+                {
+                    if (p == pwd)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 	}
 }

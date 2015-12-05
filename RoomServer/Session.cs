@@ -10,6 +10,7 @@ using System;
 using AsyncServer;
 using System.Collections.Generic;
 using System.IO;
+using YGOCore;
 
 namespace YGOCore
 {
@@ -18,6 +19,8 @@ namespace YGOCore
     /// </summary>
     public class Session
     {
+        static readonly Random Random = new Random(Environment.TickCount);
+
         #region member
         public RoomServer Server { get; private set; }
         protected Connection<Session> Client { get; private set; }
@@ -46,6 +49,10 @@ namespace YGOCore
         /// </summary>
         public DuelServer ServerInfo;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Token { get; private set; }
         public string ip
         {
             get
@@ -96,6 +103,19 @@ namespace YGOCore
             }
         }
 
+
+        public void CreateToken(string name, string pwd)
+        {
+            string str = name + pwd + Environment.TickCount + Random.Next(100);
+            str = Tool.GetMd5(str);
+            if (str == null || str.Length < 32)
+            {
+                Token = Random.Next(9999).ToString("0000");
+            }
+            else {
+                Token = str.Substring(0, 2) + str.Substring(30, 2);
+            }
+        }
         public void Send(PacketWriter writer, bool isNow = true)
         {
             byte[] data = writer.Content;

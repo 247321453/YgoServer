@@ -27,6 +27,7 @@ namespace GameClient
         string SelectName;
         CreateRoomForm m_create;
         Form m_parentForm;
+        string oldTitle;
         private readonly SortedList<string, PlayerInfo> Players = new SortedList<string, PlayerInfo>();
         private readonly byte[] _lvlock = new byte[0];
         public MainForm(Form parentForm,Client client)
@@ -34,6 +35,7 @@ namespace GameClient
             m_parentForm = parentForm;
             Client = client;
             InitializeComponent();
+            this.oldTitle = this.Text;
             this.Icon = res.favicon;
             m_create = new CreateRoomForm(Client);
             panel_rooms.SetClient(Client);
@@ -55,6 +57,12 @@ namespace GameClient
             panel_rooms.OnJoinRoom += new OnJoinRoomHandler(PreJoinRoom);
             Client.GetRooms(false, true);
             Client.GetPlayerList();
+        }
+
+        public new void Show()
+        {
+            this.Text = this.oldTitle + " - "+Client.Name + ":" + Program.Config.DuelPort;
+            base.Show();
         }
         public void Client_OnServerStop()
         {
@@ -513,6 +521,7 @@ namespace GameClient
             {
                 lv_user.Items.Clear();
             }
+            Players.Clear();
             this.Hide();
             m_parentForm.Show();
         }

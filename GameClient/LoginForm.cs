@@ -71,7 +71,7 @@ namespace GameClient
 				MessageBox.Show("无法连接服务器");
 				return;
 			}
-            Client.Login(username, pwd, chb_force.Checked);
+            Client.Login(username, pwd, false);// chb_force.Checked);
 		}
 		#endregion
 		

@@ -41,6 +41,10 @@ namespace YGOCore
 					Config.SetApiPort(tmp);
 				}
 			}
+            if(args.Length > 3)
+            {
+                Config.SetNeedAuth(args[3].Trim().ToLower() == "true");
+            }
 			Logger.SetErrorFile(Tool.Combine(Config.Path, "error_"+Environment.TickCount+".log"));
 			Logger.SetLogLevel(Config.LogLevel);
 #if DEBUG

@@ -313,6 +313,22 @@ namespace YGOCore
                 m_timers = 0;
             }
         }
+        public void SendToken(string name, string tk)
+        {
+            using (PacketWriter token = new PacketWriter(2))
+            {
+                token.Write((byte)RoomMessage.Info);
+                token.WriteUnicode(name, 20);
+                token.WriteUnicode(tk, 32);
+                lock (DuelServers)
+                {
+                    foreach(DuelServer srv in DuelServers)
+                    {
+                        srv.Send(token);
+                    }
+                }
+            }
+        }
         public void PrintServer(int index = -1)
         {
             lock (DuelServers)

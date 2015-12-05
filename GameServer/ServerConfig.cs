@@ -125,6 +125,11 @@ namespace YGOCore
 		public void SetApiPort(int apiport){
 			ApiPort = apiport;
 		}
+
+        public void SetNeedAuth(bool auth)
+        {
+            isNeedAuth = auth;
+        }
 		public bool setValue(string variable,string value){
 			if(string.IsNullOrEmpty(value)||string.IsNullOrEmpty(variable)){
 				return false;

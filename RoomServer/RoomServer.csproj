@@ -73,6 +73,9 @@
     <Compile Include="..\lib\OCGWrapper\Network\StocMessage.cs">
       <Link>Common\StocMessage.cs</Link>
     </Compile>
+    <Compile Include="..\lib\Tool.cs">
+      <Link>Common\Tool.cs</Link>
+    </Compile>
     <Compile Include="DuelServer.cs" />
     <Compile Include="Helper\ClinetEvent.cs" />
     <Compile Include="Helper\Command.cs" />
