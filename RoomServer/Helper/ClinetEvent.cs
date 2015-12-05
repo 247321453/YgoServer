@@ -229,6 +229,10 @@ namespace YGOCore
                             session.Server.Clients.Add(session.Name, session);
                             session.Server.OnSendServerInfo(session);
                             session.Server.server_OnPlayerJoin(session.ServerInfo, session.Name, null);
+                            if (!string.IsNullOrEmpty(session.Server.Tip))
+                            {
+                                session.SendServerMsg(session.Server.Tip);
+                            }
                         }
                     }
                 }

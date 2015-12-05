@@ -169,6 +169,17 @@ namespace YGOCore
         #endregion
 
         #region msg
+        public static void SendServerMsg(this Session session, string msg)
+        {
+            using (PacketWriter writer = new PacketWriter(2))
+            {
+                writer.Write((byte)RoomMessage.Chat);
+                writer.WriteUnicode("", 20);
+                writer.WriteUnicode("", 20);
+                writer.WriteUnicode(msg, msg.Length + 1);
+                session.Send(writer);
+            }
+        }
         public static void OnChatMessage(this RoomServer roomServer, string name, string toname, string msg)
         {
             using (PacketWriter writer = new PacketWriter(2))
@@ -179,7 +190,7 @@ namespace YGOCore
                 if (string.IsNullOrEmpty(toname))
                 {
                     Logger.Debug("send to client");
-                    roomServer.SendAllClient(writer.Content, name:name);
+                    roomServer.SendAllClient(writer.Content, name: name);
                 }
             }
             using (PacketWriter writer = new PacketWriter(2))
@@ -255,7 +266,7 @@ namespace YGOCore
                 session.Send(writer.Content);
             }
         }
-        private static void SendAllClient(this RoomServer roomServer, byte[] data, bool isNow = true, bool Force = false, string name=null)
+        private static void SendAllClient(this RoomServer roomServer, byte[] data, bool isNow = true, bool Force = false, string name = null)
         {
             lock (roomServer.GameCliens)
             {
@@ -263,12 +274,12 @@ namespace YGOCore
                 {
                     if (client.CanGameChat)
                     {
-                         if(string.IsNullOrEmpty(name) || (!string.IsNullOrEmpty(name) && client.Name != name))
+                        if (string.IsNullOrEmpty(name) || (!string.IsNullOrEmpty(name) && client.Name != name))
                         {
                             client.Send(data, isNow);
                         }
                     }
-                        
+
                 }
             }
         }

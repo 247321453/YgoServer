@@ -341,8 +341,18 @@ namespace GameClient
 
         void Btn_joinClick(object sender, EventArgs e)
         {
-            string room = tb_join.Text;
-            tb_join.Text = "";
+            string room = null;
+            using (InputDialog input = new InputDialog("请输入房间代码", true))
+            {
+                if (input.ShowDialog() == DialogResult.OK)
+                {
+                    room = input.InputText;
+                }
+                else
+                {
+                    return;
+                }
+            }
             int i = room.LastIndexOf(":");
             if (i > 0)
             {
@@ -485,6 +495,27 @@ namespace GameClient
             else {
                 JoinRoom(name, port, neeauth);
             }
+        }
+
+        private void Btn_EditDeck_Click(object sender, EventArgs e)
+        {
+            GameUtil.RunGame("-d");
+        }
+
+        private void Btn_Replay_Click(object sender, EventArgs e)
+        {
+            GameUtil.RunGame("-r");
+        }
+
+        private void Btn_Logout_Click(object sender, EventArgs e)
+        {
+            Client.Close();
+            lock (lv_user)
+            {
+                lv_user.Items.Clear();
+            }
+            this.Hide();
+            m_parentForm.Show();
         }
     }
 }

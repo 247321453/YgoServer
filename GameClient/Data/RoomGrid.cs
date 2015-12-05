@@ -68,7 +68,7 @@ namespace System.Windows.Forms
 				this.Controls.Add(label2);
 				
 				Label label3 = new Label();
-				label3.Text = "允许卡片："+(config.Rule==0?"OCG":(config.Rule==1?"TCG":"OCG&TCG"));
+				label3.Text = "允许卡片："+(config.Rule==0?"OCG":(config.Rule==1?"TCG":"OCG,TCG"));
 				label3.TextAlign = ContentAlignment.MiddleLeft;
 				label3.Padding = new Padding(8, 2, 2, 2);
 				label3.Size = new Size(182, 26);

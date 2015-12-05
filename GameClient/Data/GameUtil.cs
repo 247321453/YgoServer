@@ -74,7 +74,8 @@ namespace GameClient
             args.Add("lastport", port);
             args.Add("roompass", room);
 
-            string[] files = new string[] {Combine(GamePath, "system.conf"),
+            string[] files = new string[] { Combine(Path.GetDirectoryName(Program.Config.GameExe), "system.conf"),
+                Combine(GamePath, "system.conf"),
                 Combine(AppDomain.CurrentDomain.BaseDirectory, "system.conf") };
             foreach (string file in files) { 
                 if (Write(file, args)) {
@@ -83,7 +84,7 @@ namespace GameClient
             }
             return false;
 		}
-		public static bool RunGame(string arg, Action OnExited){
+		public static bool RunGame(string arg, Action OnExited = null){
 			string file= Program.Config.GameExe;
 			if(File.Exists(file)){
 				return Run(file, arg,OnExited);

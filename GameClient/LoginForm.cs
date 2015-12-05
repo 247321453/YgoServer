@@ -75,5 +75,34 @@ namespace GameClient
             string name = ConfigManager.readString(USER_NAME);
             tb_username.Text = name;
         }
+
+        private void Btn_Game_Click(object sender, EventArgs e)
+        {
+            GameUtil.RunGame("");
+        }
+
+        private void Btn_Single_Click(object sender, EventArgs e)
+        {
+            GameUtil.RunGame("-s");
+        }
+
+        private void Btn_SetGamePath_Click(object sender, EventArgs e)
+        {
+            using(OpenFileDialog dlg=new OpenFileDialog())
+            {
+                dlg.Title = "选择游戏主程序";
+                dlg.InitialDirectory = ".";
+                dlg.Filter = "游戏王|ygo*.exe|执行程序(*.exe)|*.exe";
+                if(dlg.ShowDialog() == DialogResult.OK)
+                {
+                    ConfigManager.Save("game", dlg.FileName);
+                }
+            }
+        }
+
+        public void Logout()
+        {
+
+        }
     }
 }

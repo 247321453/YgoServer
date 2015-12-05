@@ -45,6 +45,9 @@ namespace GameClient
             this.chb_autologin = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btn_addai = new System.Windows.Forms.Button();
+            this.btn_single = new System.Windows.Forms.Button();
+            this.btn_game = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -53,7 +56,7 @@ namespace GameClient
             this.btn_login.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btn_login.Location = new System.Drawing.Point(229, 27);
             this.btn_login.Name = "btn_login";
-            this.btn_login.Size = new System.Drawing.Size(75, 54);
+            this.btn_login.Size = new System.Drawing.Size(87, 54);
             this.btn_login.TabIndex = 4;
             this.btn_login.Text = "登录";
             this.btn_login.UseVisualStyleBackColor = true;
@@ -116,10 +119,12 @@ namespace GameClient
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.btn_game);
+            this.groupBox1.Controls.Add(this.btn_single);
             this.groupBox1.Controls.Add(this.btn_addai);
-            this.groupBox1.Location = new System.Drawing.Point(12, 126);
+            this.groupBox1.Location = new System.Drawing.Point(5, 126);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(293, 72);
+            this.groupBox1.Size = new System.Drawing.Size(319, 67);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "离线功能";
@@ -127,19 +132,53 @@ namespace GameClient
             // btn_addai
             // 
             this.btn_addai.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btn_addai.Location = new System.Drawing.Point(93, 20);
+            this.btn_addai.Location = new System.Drawing.Point(6, 20);
             this.btn_addai.Name = "btn_addai";
-            this.btn_addai.Size = new System.Drawing.Size(104, 37);
+            this.btn_addai.Size = new System.Drawing.Size(100, 37);
             this.btn_addai.TabIndex = 5;
             this.btn_addai.Text = "添加局域网AI";
             this.btn_addai.UseVisualStyleBackColor = true;
             this.btn_addai.Click += new System.EventHandler(this.Btn_addaiClick);
             // 
+            // btn_single
+            // 
+            this.btn_single.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btn_single.Location = new System.Drawing.Point(110, 20);
+            this.btn_single.Name = "btn_single";
+            this.btn_single.Size = new System.Drawing.Size(100, 37);
+            this.btn_single.TabIndex = 5;
+            this.btn_single.Text = "残局模式";
+            this.btn_single.UseVisualStyleBackColor = true;
+            this.btn_single.Click += new System.EventHandler(this.Btn_Single_Click);
+            // 
+            // btn_game
+            // 
+            this.btn_game.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btn_game.Location = new System.Drawing.Point(215, 20);
+            this.btn_game.Name = "btn_game";
+            this.btn_game.Size = new System.Drawing.Size(100, 37);
+            this.btn_game.TabIndex = 5;
+            this.btn_game.Text = "启动游戏";
+            this.btn_game.UseVisualStyleBackColor = true;
+            this.btn_game.Click += new System.EventHandler(this.Btn_Game_Click);
+            // 
+            // button1
+            // 
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button1.Location = new System.Drawing.Point(229, 93);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(87, 30);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "设置游戏路径";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Btn_SetGamePath_Click);
+            // 
             // LoginForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(317, 204);
+            this.ClientSize = new System.Drawing.Size(328, 199);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.chb_autologin);
             this.Controls.Add(this.chb_record);
@@ -168,5 +207,8 @@ namespace GameClient
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button btn_login;
-	}
+        private System.Windows.Forms.Button btn_game;
+        private System.Windows.Forms.Button btn_single;
+        private System.Windows.Forms.Button button1;
+    }
 }
