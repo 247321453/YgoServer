@@ -1143,6 +1143,9 @@ namespace YGOCore.Game
                 case 2: // Game finished
                     EndDuel(false);
                     break;
+                default:
+                    Logger.Warn("duel process:"+result);
+                    break;
             }
         }
         public void HandResult(GameSession player, int result)

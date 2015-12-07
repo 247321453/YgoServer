@@ -58,7 +58,12 @@ namespace OcgWrapper
 			int fail = 0;
 			while (true)
 			{
-				int result = Api.process(m_pDuel);
+                int result = -1;
+                try {
+                    result = Api.process(m_pDuel);
+                } catch (Exception e){
+                    Console.WriteLine("api.Process:" + e.ToString());
+                }
 				int len = result & 0xFFFF;
 
 				if (len > 0)
@@ -85,15 +90,18 @@ namespace OcgWrapper
 			Api.set_responsei(m_pDuel, (uint)resp);
 		}
 
-		public void SetResponse(byte[] resp)
+		public bool SetResponse(byte[] resp)
 		{
-			if (resp.Length > 64) return;
+			if (resp.Length > 64) return false;
 			IntPtr buf = Marshal.AllocHGlobal(64);
 			Marshal.Copy(resp, 0, buf, resp.Length);
 			Api.set_responseb(m_pDuel, buf);
 			try{
 				Marshal.FreeHGlobal(buf);
-			}catch{}
+                return true;
+			}catch{
+            }
+            return false;
 		}
 
 		public int QueryFieldCount(int player, CardLocation location)

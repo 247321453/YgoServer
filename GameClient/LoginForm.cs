@@ -29,21 +29,30 @@ namespace GameClient
 			Client = new Client();
 			m_main = new MainForm(this, Client);
             Client.SetForm(m_main);
+            InitializeComponent();
             Client.OnLoginSuccess += delegate {
 				BeginInvoke(new Action(()=>{
-                    string pwd = tb_password.Text;
-                    if (!string.IsNullOrEmpty(pwd))
+                    if (chb_record.Checked)
                     {
-                        pwd = Tool.Encrypt(pwd, USER_NAME, KEY);
-                        ConfigManager.Save(PWD, pwd);
+                        string pwd = tb_password.Text;
+                        if (!string.IsNullOrEmpty(pwd))
+                        {
+                            pwd = Tool.Encrypt(pwd, USER_NAME, KEY);
+                            ConfigManager.Save(PWD, pwd);
+                        }
                     }
+                    else
+                    {
+                        tb_password.Text = "";
+                    }
+                    ConfigManager.Save("savepwd", ""+chb_record.Checked);
+                   
                     this.Hide();                    
                     m_main.Show();
 				                       })
 				           );
 				
 			};
-			InitializeComponent();
 			this.Icon = res.favicon;
 		}
 		
@@ -92,6 +101,7 @@ namespace GameClient
                 pwd = Tool.Decrypt(pwd, USER_NAME, KEY);
                 tb_password.Text = pwd;
             }
+            chb_record.Checked = ConfigManager.readBoolean("savepwd");
         }
 
         private void Btn_Game_Click(object sender, EventArgs e)

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("WindBot by ice")]
+[assembly: AssemblyTitle("AI WindBot by ice")]
 [assembly: AssemblyDescription("A C# bot for ygopro, compatible with ygosharp.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]

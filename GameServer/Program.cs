@@ -45,7 +45,7 @@ namespace YGOCore
             {
                 Config.SetNeedAuth(args[3].Trim().ToLower() == "true");
             }
-			Logger.SetErrorFile(Tool.Combine(Config.Path, "error_"+Environment.TickCount+".log"));
+			Logger.SetErrorFile(Tool.Combine(Config.Path, "error_"+ DateTime.UtcNow.ToString("yyyy-MM-dd")+"_"+Config.ServerPort + ".log"));
 			Logger.SetLogLevel(Config.LogLevel);
 #if DEBUG
 			Logger.SetLogLevel(LogLevel.Debug);
@@ -83,7 +83,7 @@ namespace YGOCore
 
 		private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
-			File.WriteAllText("crash_" + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt", e.ExceptionObject.ToString());
+			File.WriteAllText("crash_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt", e.ExceptionObject.ToString());
 			Process.GetCurrentProcess().Kill();
 		}
 	}

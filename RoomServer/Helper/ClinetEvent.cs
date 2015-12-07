@@ -123,8 +123,10 @@ namespace YGOCore
         private static void OnGameConnect(Session session, PacketReader packet)
         {
             session.IsClient = true;
-            session.Name = packet.ReadUnicode(20).Split('$')[0];
-
+            string tag = packet.ReadUnicode(20);
+            session.Name = Password.OnlyName(tag);
+            session.CreateToken(session.Name, Password.GetPwd(tag));
+            session.Server.SendToken(session.Name, session.Token);
             if (session.ip != null)
             {
                 lock (session.Server.GameCliens)
@@ -152,6 +154,7 @@ namespace YGOCore
             session.LobbyError("这是聊天室端口");
             DuelServer srv = session.Server.GetMinServer();
             session.SendMessage("这是聊天端口，随便说一句话即可和所有人聊天。");
+            session.SendMessage("你的短密码是:"+session.Token+" (用户名:"+session.Name+"$"+session.Token+")");
             if (srv != null && srv.Port > 0)
             {
                 session.SendMessage("推荐对战端口:" + srv.Port);

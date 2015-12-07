@@ -60,7 +60,8 @@ namespace YGOCore
 		}
 
 		public static void OnPlayerLeave(GameSession player, GameRoom room){
-			using(PacketWriter writer=new PacketWriter(2)){
+            if (player.Name == null || player.Name.StartsWith("[AI]")) return;
+            using (PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.PlayerLeave);
 				writer.WriteUnicode(player.Name, 20);
 				writer.WriteUnicode(room.Config.Name, 20);
@@ -69,6 +70,7 @@ namespace YGOCore
 		}
 		
 		public static void OnPlayerEnter(GameSession player, GameRoom room){
+            if (player.Name==null||player.Name.StartsWith("[AI]")) return;
 			using(PacketWriter writer=new PacketWriter(2)){
 				writer.Write((byte)RoomMessage.PlayerEnter);
 				writer.WriteUnicode(player.Name, 20);

@@ -73,6 +73,9 @@
     <Compile Include="..\lib\OCGWrapper\Network\StocMessage.cs">
       <Link>Common\StocMessage.cs</Link>
     </Compile>
+    <Compile Include="..\lib\Password.cs">
+      <Link>Common\Password.cs</Link>
+    </Compile>
     <Compile Include="..\lib\Tool.cs">
       <Link>Common\Tool.cs</Link>
     </Compile>

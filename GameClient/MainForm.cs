@@ -68,6 +68,12 @@ namespace GameClient
         {
             
             if(this.m_parentForm != null){
+                Client.Close();
+                lock (lv_user)
+                {
+                    lv_user.Items.Clear();
+                }
+                Players.Clear();
                 this.Hide();
                 this.m_parentForm.Show();
             }
